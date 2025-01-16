@@ -69,9 +69,14 @@ const Home = () => {
       path: '/test/uniformity'
     },
     {
-      title: 'Sharpness Test',
-      description: 'Assess the clarity and detail reproduction capabilities of your display.',
-      path: '/test/sharpness'
+      title: 'Text Clarity Test',
+      description: 'Assess the clarity and readability of text on your display.',
+      path: '/test/text-clarity'
+    },
+    {
+      title: 'Color Gradient Test',
+      description: 'Test your display\'s ability to render smooth color gradients and check for color banding issues.',
+      path: '/test/color-gradient'
     }
   ];
 

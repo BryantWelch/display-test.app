@@ -5,7 +5,8 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import DeadPixelTest from './pages/tests/DeadPixelTest';
 import UniformityTest from './pages/tests/UniformityTest';
-import SharpnessTest from './pages/tests/SharpnessTest';
+import TextClarityTest from './pages/tests/TextClarityTest';
+import ColorGradientTest from './pages/tests/ColorGradientTest';
 import Dashboard from './pages/Dashboard';
 
 const AppContainer = styled.div`
@@ -22,7 +23,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/test/dead-pixel" element={<DeadPixelTest />} />
           <Route path="/test/uniformity" element={<UniformityTest />} />
-          <Route path="/test/sharpness" element={<SharpnessTest />} />
+          <Route path="/test/text-clarity" element={<TextClarityTest />} />
+          <Route path="/test/color-gradient" element={<ColorGradientTest />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Layout>

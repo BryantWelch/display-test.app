@@ -47,7 +47,8 @@ const Navbar = () => {
         <NavLinks>
           <NavLink to="/test/dead-pixel">Dead Pixel</NavLink>
           <NavLink to="/test/uniformity">Uniformity</NavLink>
-          <NavLink to="/test/sharpness">Sharpness</NavLink>
+          <NavLink to="/test/text-clarity">Text Clarity</NavLink>
+          <NavLink to="/test/color-gradient">Color Gradient</NavLink>
           <NavLink to="/dashboard">Dashboard</NavLink>
         </NavLinks>
       </NavContainer>
