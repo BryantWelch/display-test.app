@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const TestContainer = styled.div`
@@ -22,14 +22,15 @@ const TextContent = styled.div`
   overflow: auto;
 `;
 
-const TextPattern = styled.pre`
+const TextPattern = styled.div`
   font-family: ${props => props.font};
   font-size: ${props => props.size}px;
   line-height: 1.5;
   margin: 0;
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: break-word;
   font-weight: normal;
+  width: 100%;
 `;
 
 const ControlPanel = styled.div`
@@ -369,13 +370,13 @@ const CollapsibleContent = styled.div`
 
 const TextClarityTest = () => {
   const [fontSize, setFontSize] = useState(16);
-  const [selectedFont, setSelectedFont] = useState('"Arial", Helvetica, sans-serif');
+  const [selectedFont, setSelectedFont] = useState('Arial, sans-serif');
   const [darkMode, setDarkMode] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isClearTypeOpen, setIsClearTypeOpen] = useState(false);
   const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const contentRef = useRef(null);
+  const [textContent, setTextContent] = useState('');
 
   const generateText = () => {
     const lines = [];
@@ -387,21 +388,26 @@ const TextClarityTest = () => {
     const linesNeeded = Math.ceil((containerHeight / fontSize) * 1.5); // 1.5 is line-height
     
     for (let i = 0; i < linesNeeded * 2; i++) { // Multiply by 2 to ensure enough content
-      lines.push(text.repeat(3));
-      lines.push(numbers.repeat(2));
+      lines.push(text.repeat(8));
+      lines.push(numbers.repeat(6));
     }
     
-    return lines.join('\\n');
+    return lines.join('\n');
   };
 
   // Update text when font size changes or window resizes
   useEffect(() => {
+    setTextContent(generateText());
+  }, [fontSize]);
+
+  // Handle window resize
+  useEffect(() => {
     const handleResize = () => {
-      const text = generateText();
-      contentRef.current.innerHTML = text;
+      setTextContent(generateText());
     };
     
     window.addEventListener('resize', handleResize);
+    handleResize(); // Initial generation
     return () => window.removeEventListener('resize', handleResize);
   }, [fontSize]);
 
@@ -445,21 +451,18 @@ const TextClarityTest = () => {
       scaling
     };
 
-    const text = generateText();
-    contentRef.current.innerHTML = text;
+    setTextContent(generateText());
   }, []);
 
   const fonts = [
-    { value: '"Arial", Helvetica, sans-serif', label: 'Arial' },
-    { value: '"Roboto", "Segoe UI", "Helvetica Neue", sans-serif', label: 'Roboto' },
-    { value: '"Open Sans", "Helvetica Neue", sans-serif', label: 'Open Sans' },
-    { value: '"Noto Sans", "Helvetica Neue", sans-serif', label: 'Noto Sans' },
-    { value: '"Montserrat", "Helvetica Neue", sans-serif', label: 'Montserrat' },
-    { value: '"Inter", "Helvetica Neue", sans-serif', label: 'Inter' },
-    { value: '"Poppins", "Helvetica Neue", sans-serif', label: 'Poppins' },
-    { value: '"Lato", "Helvetica Neue", sans-serif', label: 'Lato' },
-    { value: '"Segoe UI", "Helvetica Neue", sans-serif', label: 'Segoe UI' },
-    { value: '"Times New Roman", Times, serif', label: 'Times New Roman' }
+    { label: 'Arial', value: 'Arial, sans-serif' },
+    { label: 'Times New Roman', value: '"Times New Roman", serif' },
+    { label: 'Courier New', value: '"Courier New", monospace' },
+    { label: 'Georgia', value: 'Georgia, serif' },
+    { label: 'Verdana', value: 'Verdana, sans-serif' },
+    { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
+    { label: 'Tahoma', value: 'Tahoma, sans-serif' },
+    { label: 'Trebuchet MS', value: '"Trebuchet MS", sans-serif' }
   ];
 
   // Add Google Fonts link
@@ -477,7 +480,7 @@ const TextClarityTest = () => {
   const handleReset = () => {
     setFontSize(16);
     setDarkMode(false);
-    setSelectedFont('"Arial", Helvetica, sans-serif');
+    setSelectedFont('Arial, sans-serif');
   };
 
   const clearTypeExample = "Quick brown fox\nABCDEFGHIJKLM\n1234567890";
@@ -509,8 +512,12 @@ const TextClarityTest = () => {
         )}
       </FullScreenButton>
 
-      <TextContent ref={contentRef}>
-        <TextPattern size={fontSize} font={selectedFont}>
+      <TextContent>
+        <TextPattern 
+          size={fontSize} 
+          font={selectedFont}
+        >
+          {textContent}
         </TextPattern>
       </TextContent>
       

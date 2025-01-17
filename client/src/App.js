@@ -7,7 +7,9 @@ import DeadPixelTest from './pages/tests/DeadPixelTest';
 import UniformityTest from './pages/tests/UniformityTest';
 import TextClarityTest from './pages/tests/TextClarityTest';
 import ColorGradientTest from './pages/tests/ColorGradientTest';
+import ResponseTimeTest from './pages/tests/ResponseTimeTest';
 import Dashboard from './pages/Dashboard';
+import GammaTest from './pages/tests/GammaTest';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -25,6 +27,8 @@ const App = () => {
           <Route path="/test/uniformity" element={<UniformityTest />} />
           <Route path="/test/text-clarity" element={<TextClarityTest />} />
           <Route path="/test/color-gradient" element={<ColorGradientTest />} />
+          <Route path="/test/response-time" element={<ResponseTimeTest />} />
+          <Route path="/test/gamma" element={<GammaTest />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Layout>

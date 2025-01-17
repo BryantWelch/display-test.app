@@ -77,6 +77,16 @@ const Home = () => {
       title: 'Color Gradient Test',
       description: 'Test your display\'s ability to render smooth color gradients and check for color banding issues.',
       path: '/test/color-gradient'
+    },
+    {
+      title: 'Response Time Test',
+      description: 'Test your display\'s response time with various moving objects and text. Follow the objects with your eyes to evaluate motion clarity and ghosting.',
+      path: '/test/response-time'
+    },
+    {
+      title: 'Gamma Test',
+      description: 'Evaluate your display\'s gamma calibration and check for proper gray-scale rendering.',
+      path: '/test/gamma'
     }
   ];
 
