@@ -250,7 +250,7 @@ const ColorGradientTest = () => {
   const generateGradient = (stepCount = steps) => {
     const targetColor = getColor();
     const match = targetColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-    const [_, r, g, b] = match.map(Number);
+    const [, r, g, b] = match.map(Number);
     
     if (gradientType === 'radial') {
       return generateRadialGradient(r, g, b, stepCount);

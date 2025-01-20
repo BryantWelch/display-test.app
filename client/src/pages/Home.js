@@ -84,6 +84,11 @@ const Home = () => {
       path: '/test/response-time'
     },
     {
+      title: 'Color Distance Test',
+      description: 'Assess your monitor\'s ability to accurately reproduce similar colors while maintaining their distinction. Test how well your display can differentiate between closely related colors.',
+      path: '/test/color-distance'
+    },
+    {
       title: 'Gamma Test',
       description: 'Evaluate your display\'s gamma calibration and check for proper gray-scale rendering.',
       path: '/test/gamma'

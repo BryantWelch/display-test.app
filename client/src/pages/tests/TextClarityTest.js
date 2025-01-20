@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
 const TestContainer = styled.div`
@@ -378,7 +378,7 @@ const TextClarityTest = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [textContent, setTextContent] = useState('');
 
-  const generateText = () => {
+  const generateText = useCallback(() => {
     const lines = [];
     const text = 'The quick brown fox jumps over the lazy dog. ';
     const numbers = '1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ ';
@@ -393,12 +393,12 @@ const TextClarityTest = () => {
     }
     
     return lines.join('\n');
-  };
+  }, [fontSize]);
 
   // Update text when font size changes or window resizes
   useEffect(() => {
     setTextContent(generateText());
-  }, [fontSize]);
+  }, [fontSize, generateText]);
 
   // Handle window resize
   useEffect(() => {
@@ -409,7 +409,7 @@ const TextClarityTest = () => {
     window.addEventListener('resize', handleResize);
     handleResize(); // Initial generation
     return () => window.removeEventListener('resize', handleResize);
-  }, [fontSize]);
+  }, [fontSize, generateText]);
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -452,7 +452,7 @@ const TextClarityTest = () => {
     };
 
     setTextContent(generateText());
-  }, []);
+  }, [generateText]);
 
   const fonts = [
     { label: 'Arial', value: 'Arial, sans-serif' },
