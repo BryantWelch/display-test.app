@@ -97,6 +97,11 @@ const Home = () => {
       title: 'Test Patterns',
       description: 'View various test patterns to evaluate different aspects of your display\'s performance, including geometry, convergence, and pixel clarity.',
       path: '/test/test-patterns'
+    },
+    {
+      title: 'Viewing Angle Test',
+      description: 'Evaluate your display\'s viewing angle performance by observing white circles against a black background from different angles to check for consistency in brightness, color, and shape.',
+      path: '/test/viewing-angle'
     }
   ];
 

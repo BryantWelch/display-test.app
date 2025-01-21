@@ -10,8 +10,8 @@ import ColorGradientTest from './pages/tests/ColorGradientTest';
 import ResponseTimeTest from './pages/tests/ResponseTimeTest';
 import ColorDistanceTest from './pages/tests/ColorDistanceTest';
 import TestPatternsTest from './pages/tests/TestPatternsTest';
-import Dashboard from './pages/Dashboard';
 import GammaTest from './pages/tests/GammaTest';
+import ViewingAngleTest from './pages/tests/ViewingAngleTest';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -33,7 +33,7 @@ const App = () => {
           <Route path="/test/color-distance" element={<ColorDistanceTest />} />
           <Route path="/test/test-patterns" element={<TestPatternsTest />} />
           <Route path="/test/gamma" element={<GammaTest />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/test/viewing-angle" element={<ViewingAngleTest />} />
         </Routes>
       </Layout>
     </AppContainer>

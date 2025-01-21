@@ -24,11 +24,10 @@ const TestArea = styled.div`
   background: ${props => props.background};
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 2rem;
-  padding-left: 8rem;
+  justify-content: center;
   width: 100%;
   height: 100%;
+  padding: 2rem;
 `;
 
 const GrayStepContainer = styled.div`
@@ -36,6 +35,10 @@ const GrayStepContainer = styled.div`
   flex-direction: column;
   gap: 2rem;
   align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem;
 `;
 
 const StepRow = styled.div`
@@ -43,18 +46,19 @@ const StepRow = styled.div`
   flex-direction: row;
   gap: 1rem;
   align-items: center;
+  justify-content: center;
 `;
 
 const GrayBox = styled.div`
-  width: ${props => props.size}px;
-  height: ${props => props.size}px;
+  width: ${props => props.isFullScreen ? props.size * 1.5 : props.size}px;
+  height: ${props => props.isFullScreen ? props.size * 1.5 : props.size}px;
   background: rgb(${props => props.value}, ${props => props.value}, ${props => props.value});
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: ${props => props.value > 128 ? '#000' : '#fff'};
-  font-size: 0.8rem;
+  font-size: ${props => props.isFullScreen ? '1rem' : '0.8rem'};
   user-select: none;
   text-align: center;
   gap: 0.25rem;
@@ -64,7 +68,7 @@ const GrayBox = styled.div`
   }
 
   span.rgb {
-    font-size: 0.7rem;
+    font-size: ${props => props.isFullScreen ? '0.9rem' : '0.7rem'};
     opacity: 0.8;
   }
 `;
@@ -284,7 +288,6 @@ const GammaTest = () => {
   const [boxSize, setBoxSize] = useState(120);
   const [backgroundColor, setBackgroundColor] = useState('gray');
   const [showValues, setShowValues] = useState(true);
-  const [testType, setTestType] = useState('steps');
   const [selectedGamma, setSelectedGamma] = useState(2.2);
 
   const backgroundColors = {
@@ -315,7 +318,6 @@ const GammaTest = () => {
     setBoxSize(120);
     setBackgroundColor('gray');
     setShowValues(true);
-    setTestType('steps');
     setSelectedGamma(2.2);
   };
 
@@ -332,6 +334,7 @@ const GammaTest = () => {
                 key={index}
                 value={step.rgb}
                 size={boxSize}
+                isFullScreen={isFullScreen}
               >
                 {showValues && (
                   <>
@@ -401,24 +404,6 @@ const GammaTest = () => {
               If gamma is too high, darker areas will appear crushed. The percentage values show target brightness, while RGB values show 
               actual pixel values.
             </Description>
-
-            <Section>
-              <h3>Test Type</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-                <ToggleButton
-                  active={testType === 'steps'}
-                  onClick={() => setTestType('steps')}
-                >
-                  Gray Steps
-                </ToggleButton>
-                <ToggleButton
-                  active={testType === 'gradient'}
-                  onClick={() => setTestType('gradient')}
-                >
-                  Gradient
-                </ToggleButton>
-              </div>
-            </Section>
 
             <Section>
               <h3>Box Size</h3>
