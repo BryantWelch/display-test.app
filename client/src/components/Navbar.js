@@ -52,6 +52,7 @@ const Navbar = () => {
           <NavLink to="/test/color-distance">Color Distance</NavLink>
           <NavLink to="/test/response-time">Response Time</NavLink>
           <NavLink to="/test/gamma">Gamma</NavLink>
+          <NavLink to="/test/test-patterns">Test Patterns</NavLink>
           <NavLink to="/dashboard">Dashboard</NavLink>
         </NavLinks>
       </NavContainer>

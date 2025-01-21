@@ -9,6 +9,7 @@ import TextClarityTest from './pages/tests/TextClarityTest';
 import ColorGradientTest from './pages/tests/ColorGradientTest';
 import ResponseTimeTest from './pages/tests/ResponseTimeTest';
 import ColorDistanceTest from './pages/tests/ColorDistanceTest';
+import TestPatternsTest from './pages/tests/TestPatternsTest';
 import Dashboard from './pages/Dashboard';
 import GammaTest from './pages/tests/GammaTest';
 
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/test/color-gradient" element={<ColorGradientTest />} />
           <Route path="/test/response-time" element={<ResponseTimeTest />} />
           <Route path="/test/color-distance" element={<ColorDistanceTest />} />
+          <Route path="/test/test-patterns" element={<TestPatternsTest />} />
           <Route path="/test/gamma" element={<GammaTest />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>

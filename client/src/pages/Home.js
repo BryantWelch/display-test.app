@@ -92,6 +92,11 @@ const Home = () => {
       title: 'Gamma Test',
       description: 'Evaluate your display\'s gamma calibration and check for proper gray-scale rendering.',
       path: '/test/gamma'
+    },
+    {
+      title: 'Test Patterns',
+      description: 'View various test patterns to evaluate different aspects of your display\'s performance, including geometry, convergence, and pixel clarity.',
+      path: '/test/test-patterns'
     }
   ];
 
