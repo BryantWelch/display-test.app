@@ -377,6 +377,7 @@ const TextClarityTest = () => {
   const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [textContent, setTextContent] = useState('');
+  const [displayInfo, setDisplayInfo] = useState({});
 
   const generateText = useCallback(() => {
     const lines = [];
@@ -445,14 +446,13 @@ const TextClarityTest = () => {
     // Get scaling (devicePixelRatio as percentage)
     const scaling = `${Math.round(window.devicePixelRatio * 100)}%`;
 
-    const technicalInfo = {
+    // Update display information
+    setDisplayInfo({
       resolution,
       pixelDensity: pixelDensity.toFixed(2),
       scaling
-    };
-
-    setTextContent(generateText());
-  }, [generateText]);
+    });
+  }, []);
 
   const fonts = [
     { label: 'Arial', value: 'Arial, sans-serif' },
@@ -607,15 +607,15 @@ const TextClarityTest = () => {
                 <TechnicalInfo>
                   <div>
                     <span>Resolution:</span>
-                    <span>{window.screen.width} × {window.screen.height}</span>
+                    <span>{displayInfo.resolution}</span>
                   </div>
                   <div>
                     <span>Pixel Density:</span>
-                    <span>{window.devicePixelRatio.toFixed(2)}x</span>
+                    <span>{displayInfo.pixelDensity}x</span>
                   </div>
                   <div>
                     <span>Display Scaling:</span>
-                    <span>{Math.round(window.devicePixelRatio * 100)}%</span>
+                    <span>{displayInfo.scaling}</span>
                   </div>
                 </TechnicalInfo>
               </CollapsibleContent>

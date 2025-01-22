@@ -288,7 +288,6 @@ const GammaTest = () => {
   const [boxSize, setBoxSize] = useState(120);
   const [backgroundColor, setBackgroundColor] = useState('gray');
   const [showValues, setShowValues] = useState(true);
-  const [selectedGamma, setSelectedGamma] = useState(2.2);
 
   const backgroundColors = {
     'white': '#FFFFFF',
@@ -318,7 +317,6 @@ const GammaTest = () => {
     setBoxSize(120);
     setBackgroundColor('gray');
     setShowValues(true);
-    setSelectedGamma(2.2);
   };
 
   const renderGraySteps = () => {

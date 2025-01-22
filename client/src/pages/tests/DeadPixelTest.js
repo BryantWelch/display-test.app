@@ -187,14 +187,6 @@ const DeadPixelTest = () => {
   const [changeInterval, setChangeInterval] = useState(2000);
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const isDarkColor = (color) => {
-    const hex = color.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    return (r * 0.299 + g * 0.587 + b * 0.114) < 128;
-  };
-
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch((err) => {

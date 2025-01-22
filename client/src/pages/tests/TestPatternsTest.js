@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -171,7 +171,6 @@ const Description = styled.p`
 const TestPatternsTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedPattern, setSelectedPattern] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -286,10 +285,6 @@ const TestPatternsTest = () => {
     setIsLoading(true);
   };
 
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
-
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch((err) => {
@@ -310,31 +305,17 @@ const TestPatternsTest = () => {
       </ExitButton>
 
       <FullScreenButton onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-            </svg>
-            Full Screen
-          </>
-        )}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
+        </svg>
+        Full Screen
       </FullScreenButton>
 
       {selectedPattern && patterns.patternMap[selectedPattern] && (
-        <Suspense fallback={<LoadingOverlay>Loading pattern...</LoadingOverlay>}>
-          <PatternImage
-            src={patterns.patternMap[selectedPattern].path}
-            alt={patterns.patternMap[selectedPattern].name}
-            onLoad={handleImageLoad}
-          />
-        </Suspense>
+        <PatternImage
+          src={patterns.patternMap[selectedPattern].path}
+          alt={patterns.patternMap[selectedPattern].name}
+        />
       )}
 
       {isLoading && <LoadingOverlay>Loading pattern...</LoadingOverlay>}
