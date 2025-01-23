@@ -102,6 +102,21 @@ const Home = () => {
       title: 'Viewing Angle Test',
       description: 'Evaluate your display\'s viewing angle performance by observing white circles against a black background from different angles to check for consistency in brightness, color, and shape.',
       path: '/test/viewing-angle'
+    },
+    {
+      title: 'Brightness Test',
+      description: 'Test your display\'s brightness capabilities with adjustable window sizes, from 5% to 100% white against a black background.',
+      path: '/test/brightness'
+    },
+    {
+      title: 'Contrast Test',
+      description: 'Evaluate your display\'s contrast capabilities using an adjustable black and white checkerboard pattern, ranging from 2x2 to 50x50 grids.',
+      path: '/test/contrast'
+    },
+    {
+      title: 'Matrix Test',
+      description: 'Experience the iconic Matrix digital rain with customizable text color, size, and speed. How deep does the rabbit hole go?',
+      path: '/test/matrix'
     }
   ];
 
