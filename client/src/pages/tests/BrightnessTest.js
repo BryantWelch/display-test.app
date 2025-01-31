@@ -17,8 +17,8 @@ const TestContainer = styled.div`
 
 const BrightnessWindow = styled.div`
   background: ${props => `rgba(255, 255, 255, ${props.brightness})`};
-  width: ${props => props.size}px;
-  height: ${props => props.size}px;
+  width: ${props => props.size}vw;
+  height: ${props => props.size}vh;
 `;
 
 const ControlPanel = styled.div`
@@ -153,24 +153,12 @@ const BrightnessTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
   const [windowSize, setWindowSize] = useState(15);
-  const [actualSize, setActualSize] = useState(0);
 
   useEffect(() => {
     document.documentElement.requestFullscreen().catch(err => {
       console.log(`Error attempting to enable fullscreen: ${err.message}`);
     });
   }, []);
-
-  useEffect(() => {
-    const updateSize = () => {
-      const minDimension = Math.min(window.innerWidth, window.innerHeight);
-      setActualSize(minDimension * (windowSize / 100));
-    };
-
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, [windowSize]);
 
   const handleExit = async () => {
     if (document.fullscreenElement) {
@@ -194,7 +182,7 @@ const BrightnessTest = () => {
 
       <BrightnessWindow 
         brightness={1} 
-        size={actualSize}
+        size={windowSize}
       />
 
       <ControlPanel isMinimized={isMinimized}>
@@ -216,7 +204,7 @@ const BrightnessTest = () => {
         <Section>
           <h3>Window Size</h3>
           <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-            Size: {windowSize}% of screen
+            Size: {windowSize}%
           </div>
           <Slider
             type="range"
