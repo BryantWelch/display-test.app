@@ -289,16 +289,26 @@ const ColorGradientTest = () => {
 
   const generateRadialGradient = (r, g, b, stepCount) => {
     const gradientStops = [];
+    
+    // Create distinct circular bands
     for (let i = 0; i <= stepCount; i++) {
       const ratio = distributeSteps(i, stepCount);
-      const percent = (i / stepCount) * 100;
+      const startPercent = (i / stepCount) * 100;
+      const endPercent = ((i + 1) / stepCount) * 100;
       
       const currentR = Math.round(r * ratio);
       const currentG = Math.round(g * ratio);
       const currentB = Math.round(b * ratio);
       const color = `rgb(${currentR}, ${currentG}, ${currentB})`;
       
-      gradientStops.push(`${color} ${percent}%`);
+      // Add two stops for each step to create distinct bands
+      // For the last step, we only need one stop
+      if (i < stepCount) {
+        gradientStops.push(`${color} ${startPercent}%`);
+        gradientStops.push(`${color} ${endPercent}%`);
+      } else {
+        gradientStops.push(`${color} ${startPercent}%`);
+      }
     }
 
     return `radial-gradient(circle at center, ${gradientStops.join(', ')})`;
