@@ -55,7 +55,7 @@ const GrayBox = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: ${props => props.value > 128 ? '#000' : '#fff'};
+  color: ${props => props.value === 0 ? '#fff' : '#000'};
   font-size: 1rem;
   user-select: none;
   text-align: center;
@@ -73,7 +73,7 @@ const GrayBox = styled.div`
 
 const RowLabel = styled.div`
   font-size: 0.9rem;
-  color: ${props => props.value > 128 ? '#000' : '#fff'};
+  color: ${props => props.value === 0 ? '#fff' : '#000'};
   margin-right: 1rem;
   width: 80px;
   text-align: right;
