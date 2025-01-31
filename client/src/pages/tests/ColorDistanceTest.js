@@ -269,8 +269,8 @@ const ExitButton = styled.button`
 const ColorDistanceTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState({ r: 128, g: 128, b: 128 });
-  const [foregroundColor, setForegroundColor] = useState({ r: 160, g: 160, b: 160 });
+  const [backgroundColor, setBackgroundColor] = useState({ r: 128, g: 128, b: 128, hex: '#808080' });
+  const [foregroundColor, setForegroundColor] = useState({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
 
   const rgbToHex = (r, g, b) => {
     const toHex = (n) => {
@@ -290,19 +290,63 @@ const ColorDistanceTest = () => {
   };
 
   const handleHexChange = (hex, isBackground) => {
-    const rgb = hexToRgb(hex);
-    if (rgb) {
-      if (isBackground) {
-        setBackgroundColor(rgb);
-      } else {
-        setForegroundColor(rgb);
+    // Handle paste events that might include the #
+    let cleanHex = hex.trim();
+    
+    // If pasted value starts with #, remove it temporarily
+    if (cleanHex.startsWith('#')) {
+      cleanHex = cleanHex.substring(1);
+    }
+    
+    // Remove any non-hex characters
+    cleanHex = cleanHex.replace(/[^0-9a-f]/gi, '');
+    
+    // Limit to 6 characters
+    cleanHex = cleanHex.slice(0, 6);
+    
+    // Add the # back
+    cleanHex = '#' + cleanHex;
+
+    // Update the input value
+    if (isBackground) {
+      setBackgroundColor(prev => ({
+        ...prev,
+        hex: cleanHex
+      }));
+    } else {
+      setForegroundColor(prev => ({
+        ...prev,
+        hex: cleanHex
+      }));
+    }
+
+    // Only convert to RGB if we have a valid 6-digit hex
+    if (cleanHex.length === 7) {  // # plus 6 hex digits
+      const result = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex);
+      if (result) {
+        const rgb = {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        };
+        if (isBackground) {
+          setBackgroundColor(prev => ({
+            ...prev,
+            ...rgb
+          }));
+        } else {
+          setForegroundColor(prev => ({
+            ...prev,
+            ...rgb
+          }));
+        }
       }
     }
   };
 
   const handleReset = () => {
-    setBackgroundColor({ r: 128, g: 128, b: 128 });
-    setForegroundColor({ r: 160, g: 160, b: 160 });
+    setBackgroundColor({ r: 128, g: 128, b: 128, hex: '#808080' });
+    setForegroundColor({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
   };
 
   useEffect(() => {
@@ -367,7 +411,12 @@ const ColorDistanceTest = () => {
                     min="0"
                     max="255"
                     value={backgroundColor.r}
-                    onChange={(e) => setBackgroundColor({ ...backgroundColor, r: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const r = Number(e.target.value);
+                      const newColor = { ...backgroundColor, r };
+                      const hex = rgbToHex(r, newColor.g, newColor.b);
+                      setBackgroundColor({ ...newColor, hex });
+                    }}
                   />
                   <input
                     type="number"
@@ -376,7 +425,9 @@ const ColorDistanceTest = () => {
                     value={backgroundColor.r}
                     onChange={(e) => {
                       const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                      setBackgroundColor({ ...backgroundColor, r: value });
+                      const newColor = { ...backgroundColor, r: value };
+                      const hex = rgbToHex(value, newColor.g, newColor.b);
+                      setBackgroundColor({ ...newColor, hex });
                     }}
                   />
                 </div>
@@ -389,7 +440,12 @@ const ColorDistanceTest = () => {
                     min="0"
                     max="255"
                     value={backgroundColor.g}
-                    onChange={(e) => setBackgroundColor({ ...backgroundColor, g: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const g = Number(e.target.value);
+                      const newColor = { ...backgroundColor, g };
+                      const hex = rgbToHex(newColor.r, g, newColor.b);
+                      setBackgroundColor({ ...newColor, hex });
+                    }}
                   />
                   <input
                     type="number"
@@ -398,7 +454,9 @@ const ColorDistanceTest = () => {
                     value={backgroundColor.g}
                     onChange={(e) => {
                       const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                      setBackgroundColor({ ...backgroundColor, g: value });
+                      const newColor = { ...backgroundColor, g: value };
+                      const hex = rgbToHex(newColor.r, value, newColor.b);
+                      setBackgroundColor({ ...newColor, hex });
                     }}
                   />
                 </div>
@@ -411,7 +469,12 @@ const ColorDistanceTest = () => {
                     min="0"
                     max="255"
                     value={backgroundColor.b}
-                    onChange={(e) => setBackgroundColor({ ...backgroundColor, b: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const b = Number(e.target.value);
+                      const newColor = { ...backgroundColor, b };
+                      const hex = rgbToHex(newColor.r, newColor.g, b);
+                      setBackgroundColor({ ...newColor, hex });
+                    }}
                   />
                   <input
                     type="number"
@@ -420,7 +483,9 @@ const ColorDistanceTest = () => {
                     value={backgroundColor.b}
                     onChange={(e) => {
                       const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                      setBackgroundColor({ ...backgroundColor, b: value });
+                      const newColor = { ...backgroundColor, b: value };
+                      const hex = rgbToHex(newColor.r, newColor.g, value);
+                      setBackgroundColor({ ...newColor, hex });
                     }}
                   />
                 </div>
@@ -430,8 +495,14 @@ const ColorDistanceTest = () => {
                 <ColorCode>{backgroundHex.toUpperCase()}</ColorCode>
                 <HexInput
                   type="text"
-                  value={backgroundHex.toUpperCase()}
+                  value={backgroundColor.hex || backgroundHex.toUpperCase()}
                   onChange={(e) => handleHexChange(e.target.value, true)}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pastedText = e.clipboardData.getData('text');
+                    handleHexChange(pastedText, true);
+                  }}
+                  maxLength={7}
                   placeholder="#000000"
                 />
               </ColorPreview>
@@ -447,7 +518,12 @@ const ColorDistanceTest = () => {
                     min="0"
                     max="255"
                     value={foregroundColor.r}
-                    onChange={(e) => setForegroundColor({ ...foregroundColor, r: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const r = Number(e.target.value);
+                      const newColor = { ...foregroundColor, r };
+                      const hex = rgbToHex(r, newColor.g, newColor.b);
+                      setForegroundColor({ ...newColor, hex });
+                    }}
                   />
                   <input
                     type="number"
@@ -456,7 +532,9 @@ const ColorDistanceTest = () => {
                     value={foregroundColor.r}
                     onChange={(e) => {
                       const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                      setForegroundColor({ ...foregroundColor, r: value });
+                      const newColor = { ...foregroundColor, r: value };
+                      const hex = rgbToHex(value, newColor.g, newColor.b);
+                      setForegroundColor({ ...newColor, hex });
                     }}
                   />
                 </div>
@@ -469,7 +547,12 @@ const ColorDistanceTest = () => {
                     min="0"
                     max="255"
                     value={foregroundColor.g}
-                    onChange={(e) => setForegroundColor({ ...foregroundColor, g: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const g = Number(e.target.value);
+                      const newColor = { ...foregroundColor, g };
+                      const hex = rgbToHex(newColor.r, g, newColor.b);
+                      setForegroundColor({ ...newColor, hex });
+                    }}
                   />
                   <input
                     type="number"
@@ -478,7 +561,9 @@ const ColorDistanceTest = () => {
                     value={foregroundColor.g}
                     onChange={(e) => {
                       const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                      setForegroundColor({ ...foregroundColor, g: value });
+                      const newColor = { ...foregroundColor, g: value };
+                      const hex = rgbToHex(newColor.r, value, newColor.b);
+                      setForegroundColor({ ...newColor, hex });
                     }}
                   />
                 </div>
@@ -491,7 +576,12 @@ const ColorDistanceTest = () => {
                     min="0"
                     max="255"
                     value={foregroundColor.b}
-                    onChange={(e) => setForegroundColor({ ...foregroundColor, b: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const b = Number(e.target.value);
+                      const newColor = { ...foregroundColor, b };
+                      const hex = rgbToHex(newColor.r, newColor.g, b);
+                      setForegroundColor({ ...newColor, hex });
+                    }}
                   />
                   <input
                     type="number"
@@ -500,7 +590,9 @@ const ColorDistanceTest = () => {
                     value={foregroundColor.b}
                     onChange={(e) => {
                       const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                      setForegroundColor({ ...foregroundColor, b: value });
+                      const newColor = { ...foregroundColor, b: value };
+                      const hex = rgbToHex(newColor.r, newColor.g, value);
+                      setForegroundColor({ ...newColor, hex });
                     }}
                   />
                 </div>
@@ -510,8 +602,14 @@ const ColorDistanceTest = () => {
                 <ColorCode>{foregroundHex.toUpperCase()}</ColorCode>
                 <HexInput
                   type="text"
-                  value={foregroundHex.toUpperCase()}
+                  value={foregroundColor.hex || foregroundHex.toUpperCase()}
                   onChange={(e) => handleHexChange(e.target.value, false)}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    const pastedText = e.clipboardData.getData('text');
+                    handleHexChange(pastedText, false);
+                  }}
+                  maxLength={7}
                   placeholder="#000000"
                 />
               </ColorPreview>
