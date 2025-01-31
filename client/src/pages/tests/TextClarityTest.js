@@ -19,8 +19,11 @@ const TextContent = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
-  padding: 2rem;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  padding: 0;
 `;
 
 const TextPattern = styled.div`
@@ -28,10 +31,10 @@ const TextPattern = styled.div`
   font-size: ${props => props.size}px;
   line-height: 1.5;
   margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
   font-weight: normal;
-  width: 100%;
+  padding: 0;
+  text-align: left;
 `;
 
 const ControlPanel = styled.div`
@@ -368,8 +371,8 @@ const TextClarityTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
   const [fontSize, setFontSize] = useState(16);
-  const [selectedFont, setSelectedFont] = useState('Arial, sans-serif');
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+  const [font, setFont] = useState('monospace');
   const [isClearTypeOpen, setIsClearTypeOpen] = useState(false);
   const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
   const [textContent, setTextContent] = useState('');
@@ -382,17 +385,19 @@ const TextClarityTest = () => {
   }, []);
 
   const generateText = useCallback(() => {
-    const lines = [];
     const text = 'The quick brown fox jumps over the lazy dog. ';
-    const numbers = '1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ ';
+    const lines = [];
     
     // Calculate how many lines we need based on the container height and font size
     const containerHeight = window.innerHeight;
-    const linesNeeded = Math.ceil((containerHeight / fontSize) * 1.5); // 1.5 is line-height
+    const linesNeeded = Math.ceil(containerHeight / (fontSize * 1.5)); // 1.5 is line-height
     
-    for (let i = 0; i < linesNeeded * 2; i++) { // Multiply by 2 to ensure enough content
-      lines.push(text.repeat(8));
-      lines.push(numbers.repeat(6));
+    // Create a very long line of text by repeating the sentence many times
+    const fullLineText = text.repeat(50); // Increased repetitions to ensure no gaps
+    
+    // Fill the height with repeated lines
+    for (let i = 0; i < linesNeeded; i++) {
+      lines.push(fullLineText);
     }
     
     return lines.join('\n');
@@ -449,14 +454,22 @@ const TextClarityTest = () => {
   }, [navigate]);
 
   const fonts = [
-    { label: 'Arial', value: 'Arial, sans-serif' },
-    { label: 'Times New Roman', value: '"Times New Roman", serif' },
-    { label: 'Courier New', value: '"Courier New", monospace' },
-    { label: 'Georgia', value: 'Georgia, serif' },
-    { label: 'Verdana', value: 'Verdana, sans-serif' },
-    { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
-    { label: 'Tahoma', value: 'Tahoma, sans-serif' },
-    { label: 'Trebuchet MS', value: '"Trebuchet MS", sans-serif' }
+    { value: 'monospace', label: 'Monospace' },
+    { value: 'Arial, sans-serif', label: 'Arial' },
+    { value: 'Times New Roman, serif', label: 'Times New Roman' },
+    { value: 'Helvetica, Arial, sans-serif', label: 'Helvetica' },
+    { value: 'Georgia, serif', label: 'Georgia' },
+    { value: 'Verdana, sans-serif', label: 'Verdana' },
+    { value: 'Courier New, monospace', label: 'Courier New' },
+    { value: 'Tahoma, sans-serif', label: 'Tahoma' },
+    { value: 'Trebuchet MS, sans-serif', label: 'Trebuchet MS' },
+    { value: 'sans-serif', label: 'Sans Serif' },
+    { value: 'serif', label: 'Serif' },
+    { value: 'Calibri, sans-serif', label: 'Calibri' },
+    { value: 'Cambria, serif', label: 'Cambria' },
+    { value: 'Consolas, monospace', label: 'Consolas' },
+    { value: 'Palatino, serif', label: 'Palatino' },
+    { value: 'Segoe UI, sans-serif', label: 'Segoe UI' }
   ];
 
   // Add Google Fonts link
@@ -473,8 +486,8 @@ const TextClarityTest = () => {
 
   const handleReset = () => {
     setFontSize(16);
-    setDarkMode(false);
-    setSelectedFont('Arial, sans-serif');
+    setDarkMode(true);
+    setFont('monospace');
   };
 
   const clearTypeExample = "Quick brown fox\nABCDEFGHIJKLM\n1234567890";
@@ -491,7 +504,7 @@ const TextClarityTest = () => {
       <TextContent>
         <TextPattern 
           size={fontSize} 
-          font={selectedFont}
+          font={font}
         >
           {textContent}
         </TextPattern>
@@ -522,8 +535,8 @@ const TextClarityTest = () => {
             <Section>
               <h3>Font Family</h3>
               <Select 
-                value={selectedFont}
-                onChange={(e) => setSelectedFont(e.target.value)}
+                value={font}
+                onChange={(e) => setFont(e.target.value)}
               >
                 {fonts.map(font => (
                   <option key={font.value} value={font.value}>
@@ -560,8 +573,9 @@ const TextClarityTest = () => {
               <SliderContainer>
                 <Slider
                   type="range"
-                  min="6"
-                  max="24"
+                  min="8"
+                  max="32"
+                  step="2"
                   value={fontSize}
                   onChange={(e) => setFontSize(Number(e.target.value))}
                 />
@@ -616,11 +630,11 @@ const TextClarityTest = () => {
                     ClearType is probably enabled.
                   </p>
                   <ComparisonGrid>
-                    <ComparisonBox darkMode={darkMode} font={selectedFont} smoothing="none">
+                    <ComparisonBox darkMode={darkMode} font={font} smoothing="none">
                       <h5>ClearType Disabled</h5>
                       <div className="sample">{clearTypeExample}</div>
                     </ComparisonBox>
-                    <ComparisonBox darkMode={darkMode} font={selectedFont} smoothing="antialiased">
+                    <ComparisonBox darkMode={darkMode} font={font} smoothing="antialiased">
                       <h5>ClearType Enabled</h5>
                       <div className="sample">{clearTypeExample}</div>
                     </ComparisonBox>
