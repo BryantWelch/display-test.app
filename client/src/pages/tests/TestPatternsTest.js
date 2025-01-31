@@ -163,6 +163,27 @@ const Description = styled.p`
   font-size: 0.95rem;
 `;
 
+const Section = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const ResetButton = styled.button`
+  width: 100%;
+  padding: 1rem;
+  background: #4169e1;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #3658c5;
+  }
+`;
+
 const TestPatternsTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
@@ -291,6 +312,19 @@ const TestPatternsTest = () => {
     navigate(-1);
   };
 
+  const handleReset = () => {
+    // Reset to first category
+    const firstCategory = Object.keys(patterns.categories).sort()[0];
+    setSelectedCategory(firstCategory);
+    
+    // Reset to first pattern (clipping target broadcast)
+    if (patterns.categories[firstCategory]?.length > 0) {
+      const targetPattern = patterns.categories[firstCategory].find(pattern => 
+        pattern.name.toLowerCase().includes('clipping target broadcast'));
+      setSelectedPattern(targetPattern?.id || patterns.categories[firstCategory][0].id);
+    }
+  };
+
   return (
     <TestContainer>
       <ExitButton onClick={handleExit}>
@@ -354,6 +388,10 @@ const TestPatternsTest = () => {
                 This pattern helps test your display's {selectedCategory.toLowerCase()} characteristics.
               </Description>
             )}
+
+            <Section>
+              <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
+            </Section>
           </>
         )}
       </ControlPanel>

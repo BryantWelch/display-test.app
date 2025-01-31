@@ -88,22 +88,23 @@ export const RangeControl = styled.div`
 
 export const ResetButton = styled.button`
   width: 100%;
-  padding: 8px;
-  background: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 1rem;
+  background: #4169e1;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 0.9rem;
-  color: #333;
+  font-weight: 500;
+  font-size: 1.1rem;
   transition: all 0.2s ease;
 
   &:hover {
-    background: #e0e0e0;
+    background: #3658c5;
   }
 `;
 
 // Wrap the ControlPanel to handle the header and minimize functionality
-export const ControlPanelWrapper = ({ title, isMinimized, onMinimize, children }) => {
+export const ControlPanelWrapper = ({ title, isMinimized, onMinimize, onReset, children }) => {
   return (
     <ControlPanel isMinimized={isMinimized}>
       <PanelHeader onClick={onMinimize}>
@@ -116,6 +117,11 @@ export const ControlPanelWrapper = ({ title, isMinimized, onMinimize, children }
       </PanelHeader>
       <PanelContent isMinimized={isMinimized}>
         {children}
+        {onReset && (
+          <Section>
+            <ResetButton onClick={onReset}>Reset Settings</ResetButton>
+          </Section>
+        )}
       </PanelContent>
     </ControlPanel>
   );

@@ -141,6 +141,23 @@ const Description = styled.p`
   color: #666;
 `;
 
+const ResetButton = styled.button`
+  width: 100%;
+  padding: 1rem;
+  background: #4169e1;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #3658c5;
+  }
+`;
+
 const ContrastTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
@@ -230,6 +247,10 @@ const ContrastTest = () => {
             value={gridSize}
             onChange={(e) => setGridSize(Number(e.target.value))}
           />
+        </Section>
+
+        <Section>
+          <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
         </Section>
       </ControlPanel>
     </TestContainer>
