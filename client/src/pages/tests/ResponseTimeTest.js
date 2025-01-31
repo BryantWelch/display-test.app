@@ -279,7 +279,6 @@ const ResponseTimeTest = () => {
   const [objectColor, setObjectColor] = useState('black');
   const [direction, setDirection] = useState('horizontal');
   const [objectCount, setObjectCount] = useState(1);
-  const [spacing, setSpacing] = useState(100);
 
   const backgroundColors = {
     'white': '#FFFFFF',
@@ -315,13 +314,12 @@ const ResponseTimeTest = () => {
     setObjectColor('black');
     setDirection('horizontal');
     setObjectCount(1);
-    setSpacing(100);
   };
 
   const renderTest = () => {
     const objects = [];
     for (let i = 0; i < objectCount; i++) {
-      const offset = (i * spacing) + (window.innerHeight - (objectCount * spacing)) / 2;
+      const offset = (i * 100) + (window.innerHeight - (objectCount * 100)) / 2;
 
       if (testType === 'moving-block') {
         objects.push(
@@ -471,23 +469,6 @@ const ResponseTimeTest = () => {
                   step="1"
                   value={objectCount}
                   onChange={(e) => setObjectCount(Number(e.target.value))}
-                />
-              </RangeControl>
-            </Section>
-
-            <Section>
-              <h3>Object Spacing</h3>
-              <RangeControl>
-                <label>
-                  <span>Spacing: {spacing}px</span>
-                </label>
-                <input
-                  type="range"
-                  min="50"
-                  max="200"
-                  step="10"
-                  value={spacing}
-                  onChange={(e) => setSpacing(Number(e.target.value))}
                 />
               </RangeControl>
             </Section>

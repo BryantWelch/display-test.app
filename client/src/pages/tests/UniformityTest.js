@@ -277,63 +277,6 @@ const Crosshair = styled.div`
   }
 `;
 
-const TechnicalInfo = styled.div`
-  background: #f8f9fa;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-top: 1rem;
-  font-size: 1rem;
-  color: #666;
-
-  div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  span:last-child {
-    font-weight: 500;
-    color: #333;
-  }
-`;
-
-const CollapsibleHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  padding: 0.5rem 0;
-  user-select: none;
-
-  &:hover h3 {
-    color: #4169e1;
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-    color: #666;
-    transition: transform 0.2s ease;
-    transform: rotate(${props => props.isOpen ? '180deg' : '0deg'});
-  }
-
-  &:hover svg {
-    color: #4169e1;
-  }
-`;
-
-const CollapsibleContent = styled.div`
-  overflow: hidden;
-  max-height: ${props => props.isOpen ? '1000px' : '0'};
-  opacity: ${props => props.isOpen ? '1' : '0'};
-  transition: all 0.3s ease-in-out;
-  margin-top: ${props => props.isOpen ? '1rem' : '0'};
-`;
-
 const UniformityTest = () => {
   const navigate = useNavigate();
   const [brightness, setBrightness] = useState(50);
@@ -344,7 +287,6 @@ const UniformityTest = () => {
   const [patternType, setPatternType] = useState('solid');
   const [showCrosshair, setShowCrosshair] = useState(false);
   const [checkerboardSize, setCheckerboardSize] = useState(50);
-  const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.requestFullscreen().catch(err => {
@@ -366,8 +308,7 @@ const UniformityTest = () => {
     const colors = {
       red: `rgb(${brightness * 2.55}, 0, 0)`,
       green: `rgb(0, ${brightness * 2.55}, 0)`,
-      blue: `rgb(0, 0, ${brightness * 2.55})`,
-      black: 'rgb(0, 0, 0)',
+      blue: `rgb(0, 0, ${brightness * 2.55})`
     };
     return colors[selectedColor] || colors.white;
   };
@@ -440,7 +381,7 @@ const UniformityTest = () => {
               <h3>Background Color</h3>
               <ColorPreview color={getBackgroundColor()} />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
-                {['white', 'red', 'green', 'blue', 'black'].map(color => (
+                {['white', 'red', 'green', 'blue'].map(color => (
                   <ToggleButton
                     key={color}
                     active={selectedColor === color}
@@ -539,37 +480,7 @@ const UniformityTest = () => {
             </Section>
 
             <Section>
-              <CollapsibleHeader 
-                onClick={() => setIsDisplayInfoOpen(!isDisplayInfoOpen)}
-                isOpen={isDisplayInfoOpen}
-              >
-                <h3>Display Information</h3>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 9l-7 7-7-7" />
-                </svg>
-              </CollapsibleHeader>
-              <CollapsibleContent isOpen={isDisplayInfoOpen}>
-                <TechnicalInfo>
-                  <div>
-                    <span>Resolution:</span>
-                    <span>{window.screen.width} × {window.screen.height}</span>
-                  </div>
-                  <div>
-                    <span>Pixel Density:</span>
-                    <span>{window.devicePixelRatio.toFixed(2)}x</span>
-                  </div>
-                  <div>
-                    <span>Display Scaling:</span>
-                    <span>{Math.round(window.devicePixelRatio * 100)}%</span>
-                  </div>
-                </TechnicalInfo>
-              </CollapsibleContent>
-            </Section>
-
-            <Section>
-              <ResetButton onClick={handleReset}>
-                Reset settings
-              </ResetButton>
+              <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
             </Section>
           </>
         )}
