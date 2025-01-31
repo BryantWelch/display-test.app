@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { IoMdArrowRoundBack } from 'react-icons/io';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
-import { MdFullscreen, MdFullscreenExit } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -50,15 +48,15 @@ const StepRow = styled.div`
 `;
 
 const GrayBox = styled.div`
-  width: ${props => props.isFullScreen ? props.size * 1.5 : props.size}px;
-  height: ${props => props.isFullScreen ? props.size * 1.5 : props.size}px;
+  width: ${props => props.size * 1.5}px;
+  height: ${props => props.size * 1.5}px;
   background: rgb(${props => props.value}, ${props => props.value}, ${props => props.value});
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: ${props => props.value > 128 ? '#000' : '#fff'};
-  font-size: ${props => props.isFullScreen ? '1rem' : '0.8rem'};
+  font-size: 1rem;
   user-select: none;
   text-align: center;
   gap: 0.25rem;
@@ -68,7 +66,7 @@ const GrayBox = styled.div`
   }
 
   span.rgb {
-    font-size: ${props => props.isFullScreen ? '0.9rem' : '0.7rem'};
+    font-size: 0.9rem;
     opacity: 0.8;
   }
 `;
@@ -146,7 +144,7 @@ const MinimizeButton = styled.button`
   }
 `;
 
-const ExitButton = styled(Link)`
+const ExitButton = styled.button`
   position: fixed;
   top: 1.5rem;
   left: 1.5rem;
@@ -161,7 +159,6 @@ const ExitButton = styled(Link)`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  text-decoration: none;
   z-index: 100;
 
   &:hover {
@@ -172,11 +169,11 @@ const ExitButton = styled(Link)`
   &:active {
     transform: translateY(0);
   }
-`;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const Section = styled.div`
@@ -283,11 +280,24 @@ const Description = styled.p`
 `;
 
 const GammaTest = () => {
+  const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [boxSize, setBoxSize] = useState(120);
   const [backgroundColor, setBackgroundColor] = useState('gray');
   const [showValues, setShowValues] = useState(true);
+
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  }, []);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
+    navigate(-1);
+  };
 
   const backgroundColors = {
     'white': '#FFFFFF',
@@ -332,7 +342,6 @@ const GammaTest = () => {
                 key={index}
                 value={step.rgb}
                 size={boxSize}
-                isFullScreen={isFullScreen}
               >
                 {showValues && (
                   <>
@@ -348,36 +357,14 @@ const GammaTest = () => {
     );
   };
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
-
   return (
     <TestContainer>
-      <ExitButton to="/">
-        <IoMdArrowRoundBack />
+      <ExitButton onClick={handleExit}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M15 19l-7-7 7-7" />
+        </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton as="button" onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <MdFullscreenExit />
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <MdFullscreen />
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
 
       <TestArea background={backgroundColors[backgroundColor]}>
         {renderGraySteps()}

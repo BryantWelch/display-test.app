@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -233,11 +234,6 @@ const ExitButton = styled.button`
   }
 `;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
-`;
-
 const Select = styled.select`
   width: 100%;
   padding: 0.5rem;
@@ -369,15 +365,21 @@ const CollapsibleContent = styled.div`
 `;
 
 const TextClarityTest = () => {
+  const navigate = useNavigate();
+  const [isMinimized, setIsMinimized] = useState(false);
   const [fontSize, setFontSize] = useState(16);
   const [selectedFont, setSelectedFont] = useState('Arial, sans-serif');
   const [darkMode, setDarkMode] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [isClearTypeOpen, setIsClearTypeOpen] = useState(false);
   const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [textContent, setTextContent] = useState('');
   const [displayInfo, setDisplayInfo] = useState({});
+
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  }, []);
 
   const generateText = useCallback(() => {
     const lines = [];
@@ -412,47 +414,39 @@ const TextClarityTest = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [fontSize, generateText]);
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
+  useEffect(() => {
+    const updateDisplayInfo = () => {
+      setDisplayInfo({
+        resolution: `${window.screen.width}x${window.screen.height}`,
+        pixelDensity: `${window.devicePixelRatio}`,
+        scaling: `${window.devicePixelRatio * 100}%`
       });
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
+    };
+
+    updateDisplayInfo();
+    window.addEventListener('resize', updateDisplayInfo);
+    return () => window.removeEventListener('resize', updateDisplayInfo);
+  }, []);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
     }
+    navigate(-1);
   };
 
   useEffect(() => {
     const handleFullScreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
+      if (!document.fullscreenElement) {
+        navigate(-1);
+      }
     };
 
     document.addEventListener('fullscreenchange', handleFullScreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
-  }, []);
-
-  // Get technical information on mount
-  useEffect(() => {
-    // Get resolution
-    const resolution = `${window.screen.width} × ${window.screen.height}`;
-    
-    // Get pixel density
-    const pixelDensity = window.devicePixelRatio;
-    
-    // Get scaling (devicePixelRatio as percentage)
-    const scaling = `${Math.round(window.devicePixelRatio * 100)}%`;
-
-    // Update display information
-    setDisplayInfo({
-      resolution,
-      pixelDensity: pixelDensity.toFixed(2),
-      scaling
-    });
-  }, []);
+  }, [navigate]);
 
   const fonts = [
     { label: 'Arial', value: 'Arial, sans-serif' },
@@ -487,30 +481,12 @@ const TextClarityTest = () => {
 
   return (
     <TestContainer darkMode={darkMode}>
-      <ExitButton onClick={() => window.history.back()}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-            </svg>
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
 
       <TextContent>
         <TextPattern 

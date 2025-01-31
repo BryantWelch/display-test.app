@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { IoMdArrowRoundBack } from 'react-icons/io';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
-import { MdFullscreen, MdFullscreenExit } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -29,8 +27,8 @@ const TestArea = styled.div`
 `;
 
 const PatternContainer = styled.div`
-  width: ${props => props.isFullScreen ? '98vw' : '95vw'};
-  height: ${props => props.isFullScreen ? '98vh' : '95vh'};
+  width: ${props => `calc(${props.screenWidth}px * 0.98)`};
+  height: ${props => `calc(${props.screenHeight}px * 0.98)`};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,8 +43,8 @@ const Pattern = styled.div`
   display: grid;
   grid-template-columns: repeat(${props => props.columns}, 1fr);
   grid-template-rows: repeat(${props => props.rows}, 1fr);
-  gap: ${props => props.isFullScreen ? '0.5vh' : '0.75vh'};
-  padding: ${props => props.isFullScreen ? '0.5vh' : '0.75vh'};
+  gap: ${props => `calc(${props.screenHeight}px * 0.005)`};
+  padding: ${props => `calc(${props.screenHeight}px * 0.005)`};
 `;
 
 const CircleContainer = styled.div`
@@ -145,7 +143,7 @@ const MinimizeButton = styled.button`
   }
 `;
 
-const ExitButton = styled(Link)`
+const ExitButton = styled.button`
   position: fixed;
   top: 1.5rem;
   left: 1.5rem;
@@ -160,7 +158,6 @@ const ExitButton = styled(Link)`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  text-decoration: none;
   z-index: 100;
 
   &:hover {
@@ -171,11 +168,11 @@ const ExitButton = styled(Link)`
   &:active {
     transform: translateY(0);
   }
-`;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const Section = styled.div`
@@ -280,53 +277,61 @@ const ResetButton = styled.button`
 `;
 
 const ViewingAngleTest = () => {
+  const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [gridSize, setGridSize] = useState(5);
+  const [screenDimensions, setScreenDimensions] = useState({
+    width: window.screen.width,
+    height: window.screen.height
+  });
+
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+
+    const handleResize = () => {
+      setScreenDimensions({
+        width: window.screen.width,
+        height: window.screen.height
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
+    navigate(-1);
+  };
 
   const handleReset = () => {
     setGridSize(5);
-  };
-
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
   };
 
   const totalCircles = gridSize * gridSize;
 
   return (
     <TestContainer>
-      <ExitButton to="/">
-        <IoMdArrowRoundBack />
+      <ExitButton onClick={handleExit}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M15 19l-7-7 7-7" />
+        </svg>
         Exit Test
       </ExitButton>
 
-      <FullScreenButton as="button" onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <MdFullscreenExit />
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <MdFullscreen />
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
-
       <TestArea>
-        <PatternContainer isFullScreen={isFullScreen}>
+        <PatternContainer 
+          screenWidth={screenDimensions.width}
+          screenHeight={screenDimensions.height}
+        >
           <Pattern 
-            isFullScreen={isFullScreen} 
             rows={gridSize} 
             columns={gridSize}
+            screenHeight={screenDimensions.height}
           >
             {Array.from({ length: totalCircles }, (_, i) => (
               <CircleContainer key={i}>

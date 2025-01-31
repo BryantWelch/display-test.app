@@ -108,11 +108,6 @@ const ExitButton = styled.button`
   }
 `;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
-`;
-
 const Section = styled.div`
   margin-bottom: 1.5rem;
 
@@ -217,6 +212,9 @@ const MatrixTest = () => {
   }, [backgroundColor, textColor, fontSize, speed]);
 
   useEffect(() => {
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
     initMatrix();
     
     const handleResize = () => {
@@ -236,16 +234,6 @@ const MatrixTest = () => {
     };
   }, [initMatrix]);
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
-    }
-  };
-
   const handleReset = () => {
     setTextColor('#00ff00');
     setBackgroundColor('#000000');
@@ -253,21 +241,21 @@ const MatrixTest = () => {
     setSpeed(50);
   };
 
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
+    navigate(-1);
+  };
+
   return (
     <TestContainer backgroundColor={backgroundColor}>
-      <ExitButton onClick={() => navigate(-1)}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-        </svg>
-        Full Screen
-      </FullScreenButton>
 
       <MatrixCanvas ref={canvasRef} />
 

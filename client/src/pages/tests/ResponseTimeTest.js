@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import testPatternImage from '../../assets/test-pattern.svg';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -113,11 +114,6 @@ const ExitButton = styled.button`
   }
 `;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
-`;
-
 const Section = styled.div`
   margin-bottom: 2rem;
 
@@ -198,7 +194,7 @@ const MovingBlock = styled.div`
       transform: translateX(0);
     }
     to {
-      transform: translateX(calc(100vw + ${props => props.size}px));
+      transform: translateX(calc(${window.screen.width}px + ${props => props.size}px));
     }
   }
 
@@ -207,7 +203,7 @@ const MovingBlock = styled.div`
       transform: translateY(0);
     }
     to {
-      transform: translateY(calc(100vh + ${props => props.size}px));
+      transform: translateY(calc(${window.screen.height}px + ${props => props.size}px));
     }
   }
 `;
@@ -221,6 +217,24 @@ const PursuitText = styled.div`
   white-space: nowrap;
   animation: ${props => props.direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.speed}s linear infinite;
   will-change: transform;
+
+  @keyframes moveRight {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(${window.screen.width}px + ${props => props.size}px));
+    }
+  }
+
+  @keyframes moveDown {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(${window.screen.height}px + ${props => props.size}px));
+    }
+  }
 `;
 
 const ResetButton = styled.button`
@@ -256,12 +270,12 @@ const Select = styled.select`
 `;
 
 const ResponseTimeTest = () => {
+  const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [testType, setTestType] = useState('moving-block');
-  const [speed, setSpeed] = useState(50);
+  const [speed, setSpeed] = useState(35);
   const [blockSize, setBlockSize] = useState(50);
-  const [backgroundColor, setBackgroundColor] = useState('white');
+  const [backgroundColor, setBackgroundColor] = useState('gray');
   const [objectColor, setObjectColor] = useState('black');
   const [direction, setDirection] = useState('horizontal');
   const [objectCount, setObjectCount] = useState(1);
@@ -280,21 +294,24 @@ const ResponseTimeTest = () => {
     'burgundy': '#800020'
   };
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  }, []);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
     }
+    navigate(-1);
   };
 
   const handleReset = () => {
     setTestType('moving-block');
-    setSpeed(50);
+    setSpeed(35);
     setBlockSize(50);
-    setBackgroundColor('white');
+    setBackgroundColor('gray');
     setObjectColor('black');
     setDirection('horizontal');
     setObjectCount(1);
@@ -337,30 +354,12 @@ const ResponseTimeTest = () => {
 
   return (
     <TestContainer>
-      <ExitButton onClick={() => window.history.back()}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-            </svg>
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
 
       <TestArea background={backgroundColors[backgroundColor]}>
         {renderTest()}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -189,19 +190,27 @@ const ExitButton = styled.button`
   }
 `;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
-`;
-
 const ColorGradientTest = () => {
+  const navigate = useNavigate();
   const [steps, setSteps] = useState(32);
   const [selectedColor, setSelectedColor] = useState('white');
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [gradientDirection, setGradientDirection] = useState('horizontal');
   const [gradientType, setGradientType] = useState('linear');
   const [distribution, setDistribution] = useState('linear');
+
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  }, []);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
+    navigate(-1);
+  };
 
   const handleReset = () => {
     setSteps(32);
@@ -295,55 +304,14 @@ const ColorGradientTest = () => {
     return `radial-gradient(circle at center, ${gradientStops.join(', ')})`;
   };
 
-  useEffect(() => {
-    const handleFullScreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullScreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullScreenChange);
-    };
-  }, []);
-
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
-
   return (
     <TestContainer style={{ background: generateGradient() }}>
-      <ExitButton onClick={() => window.history.back()}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-            </svg>
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
 
       <ControlPanel isMinimized={isMinimized}>
         <PanelHeader isMinimized={isMinimized}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -45,11 +46,6 @@ const ExitButton = styled.button`
     width: 20px;
     height: 20px;
   }
-`;
-
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
 `;
 
 const ControlPanel = styled.div`
@@ -339,9 +335,9 @@ const CollapsibleContent = styled.div`
 `;
 
 const UniformityTest = () => {
+  const navigate = useNavigate();
   const [brightness, setBrightness] = useState(50);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [showGridLines, setShowGridLines] = useState(false);
   const [gridSize, setGridSize] = useState(3);
   const [selectedColor, setSelectedColor] = useState('white');
@@ -350,28 +346,18 @@ const UniformityTest = () => {
   const [checkerboardSize, setCheckerboardSize] = useState(50);
   const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
-
   useEffect(() => {
-    const handleFullScreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullScreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullScreenChange);
-    };
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
   }, []);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
+    navigate(-1);
+  };
 
   const getBackgroundColor = () => {
     if (selectedColor === 'white') {
@@ -398,30 +384,12 @@ const UniformityTest = () => {
 
   return (
     <TestContainer color={getBackgroundColor()}>
-      <ExitButton onClick={() => window.history.back()}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-            </svg>
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
 
       {patternType === 'checkerboard' && (
         <Checkerboard 

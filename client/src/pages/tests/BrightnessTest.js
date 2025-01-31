@@ -87,7 +87,7 @@ const ExitButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 1000;
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -135,9 +135,14 @@ const Description = styled.p`
 const BrightnessTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [windowSize, setWindowSize] = useState(15);
   const [actualSize, setActualSize] = useState(0);
+
+  useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  }, []);
 
   useEffect(() => {
     const updateSize = () => {
@@ -150,35 +155,21 @@ const BrightnessTest = () => {
     return () => window.removeEventListener('resize', updateSize);
   }, [windowSize]);
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
     }
-  };
-
-  const handleReset = () => {
-    setWindowSize(15);
+    navigate(-1);
   };
 
   return (
     <TestContainer>
-      <ExitButton onClick={() => navigate(-1)}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-        </svg>
-        Full Screen
-      </FullScreenButton>
 
       <BrightnessWindow 
         brightness={1} 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -29,7 +30,7 @@ const ExitButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 1000;
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -181,82 +182,72 @@ const colors = [
 ];
 
 const DeadPixelTest = () => {
-  const [currentColor, setCurrentColor] = useState(0);
+  const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [autoChange, setAutoChange] = useState(false);
-  const [changeInterval, setChangeInterval] = useState(2000);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
-
-  const handleReset = () => {
-    setCurrentColor(0);
-    setAutoChange(false);
-    if (changeInterval) {
-      clearInterval(changeInterval);
-      setChangeInterval(2000);
-    }
-  };
+  const [currentColor, setCurrentColor] = useState(colors[0].value);
+  const [isAutoChanging, setIsAutoChanging] = useState(false);
+  const autoChangeRef = useRef(null);
 
   useEffect(() => {
-    let intervalId;
-    if (autoChange) {
-      intervalId = setInterval(() => {
-        setCurrentColor((prev) => (prev + 1) % colors.length);
-      }, changeInterval);
-    }
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [autoChange, changeInterval]);
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+  }, []);
 
   useEffect(() => {
     const handleFullScreenChange = () => {
-      setIsFullScreen(!!document.fullscreenElement);
+      if (!document.fullscreenElement) {
+        navigate(-1);
+      }
     };
 
     document.addEventListener('fullscreenchange', handleFullScreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
-  }, []);
+  }, [navigate]);
+
+  useEffect(() => {
+    if (isAutoChanging) {
+      const colors = colors.map(color => color.value);
+      let currentIndex = colors.indexOf(currentColor);
+
+      autoChangeRef.current = setInterval(() => {
+        currentIndex = (currentIndex + 1) % colors.length;
+        setCurrentColor(colors[currentIndex]);
+      }, 2000);
+
+      return () => {
+        if (autoChangeRef.current) {
+          clearInterval(autoChangeRef.current);
+        }
+      };
+    }
+  }, [isAutoChanging, currentColor]);
+
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    }
+    navigate(-1);
+  };
+
+  const handleReset = () => {
+    setCurrentColor(colors[0].value);
+    setIsAutoChanging(false);
+    if (autoChangeRef.current) {
+      clearInterval(autoChangeRef.current);
+    }
+  };
 
   return (
-    <TestContainer style={{ backgroundColor: colors[currentColor].value }}>
-      <ExitButton onClick={() => window.history.back()}>
+    <TestContainer style={{ backgroundColor: currentColor }}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
-
-      <FullScreenButton onClick={toggleFullScreen}>
-        {isFullScreen ? (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-            Exit Full Screen
-          </>
-        ) : (
-          <>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-            </svg>
-            Full Screen
-          </>
-        )}
-      </FullScreenButton>
 
       <ControlPanel isMinimized={isMinimized}>
         <PanelHeader isMinimized={isMinimized}>
@@ -289,8 +280,8 @@ const DeadPixelTest = () => {
                   <ColorButton
                     key={color.name}
                     color={color.value}
-                    isSelected={currentColor === index}
-                    onClick={() => setCurrentColor(index)}
+                    isSelected={currentColor === color.value}
+                    onClick={() => setCurrentColor(color.value)}
                     title={color.name}
                   />
                 ))}
@@ -302,24 +293,11 @@ const DeadPixelTest = () => {
               <label>
                 <input
                   type="checkbox"
-                  checked={autoChange}
-                  onChange={(e) => setAutoChange(e.target.checked)}
+                  checked={isAutoChanging}
+                  onChange={(e) => setIsAutoChanging(e.target.checked)}
                 />
                 {' '}Enable auto color change
               </label>
-              {autoChange && (
-                <div>
-                  <input
-                    type="range"
-                    min="500"
-                    max="5000"
-                    step="500"
-                    value={changeInterval}
-                    onChange={(e) => setChangeInterval(Number(e.target.value))}
-                  />
-                  <span>{changeInterval / 1000}s</span>
-                </div>
-              )}
             </Section>
 
             <Section>

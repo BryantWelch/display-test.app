@@ -108,11 +108,6 @@ const ExitButton = styled.button`
   }
 `;
 
-const FullScreenButton = styled(ExitButton)`
-  left: auto;
-  right: 1.5rem;
-`;
-
 const PanelHeader = styled.div`
   display: flex;
   align-items: center;
@@ -178,6 +173,10 @@ const TestPatternsTest = () => {
   const [patterns, setPatterns] = useState({ categories: {}, patternMap: {} });
 
   useEffect(() => {
+    document.documentElement.requestFullscreen().catch(err => {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+    });
+
     const width = window.screen.width;
     const height = window.screen.height;
     
@@ -285,36 +284,27 @@ const TestPatternsTest = () => {
     setIsLoading(true);
   };
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch((err) => {
-        console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
+  const handleExit = async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
     }
+    navigate(-1);
   };
 
   return (
     <TestContainer>
-      <ExitButton onClick={() => navigate(-1)}>
+      <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
         Exit Test
       </ExitButton>
 
-      <FullScreenButton onClick={toggleFullScreen}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 8V3h5M3 16v5h5m8-5v5h5M21 8V3h-5" />
-        </svg>
-        Full Screen
-      </FullScreenButton>
-
       {selectedPattern && patterns.patternMap[selectedPattern] && (
         <PatternImage
           src={patterns.patternMap[selectedPattern].path}
           alt={patterns.patternMap[selectedPattern].name}
+          onLoad={() => setIsLoading(false)}
         />
       )}
 
