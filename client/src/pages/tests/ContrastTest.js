@@ -16,11 +16,16 @@ const TestContainer = styled.div`
 `;
 
 const CheckerboardContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: grid;
   grid-template-columns: ${props => `repeat(${props.size}, 1fr)`};
   grid-template-rows: ${props => `repeat(${props.size}, 1fr)`};
-  width: ${props => props.dimension}px;
-  height: ${props => props.dimension}px;
+  width: 100%;
+  height: 100%;
   background: white;
 `;
 
@@ -162,23 +167,11 @@ const ContrastTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
   const [gridSize, setGridSize] = useState(8);
-  const [dimension, setDimension] = useState(0);
 
   useEffect(() => {
     document.documentElement.requestFullscreen().catch(err => {
       console.log(`Error attempting to enable fullscreen: ${err.message}`);
     });
-  }, []);
-
-  useEffect(() => {
-    const updateDimension = () => {
-      const minDimension = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-      setDimension(minDimension);
-    };
-
-    updateDimension();
-    window.addEventListener('resize', updateDimension);
-    return () => window.removeEventListener('resize', updateDimension);
   }, []);
 
   const handleExit = async () => {
@@ -212,10 +205,7 @@ const ContrastTest = () => {
         Exit Test
       </ExitButton>
 
-      <CheckerboardContainer 
-        size={gridSize}
-        dimension={dimension}
-      >
+      <CheckerboardContainer size={gridSize}>
         {renderCheckerboard()}
       </CheckerboardContainer>
 
