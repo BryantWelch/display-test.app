@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -349,18 +349,24 @@ const ColorDistanceTest = () => {
     setForegroundColor({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
   };
 
-  useEffect(() => {
-    document.documentElement.requestFullscreen().catch(err => {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-    });
-  }, []);
+  const initializeTest = () => {
+    // Removed fullscreen initialization
+  };
 
-  const handleExit = async () => {
+  useEffect(() => {
+    initializeTest();
+  }, [initializeTest]);
+
+  const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.log(`Error exiting fullscreen: ${err.message}`);
+      }
     }
     navigate(-1);
-  };
+  }, [navigate]);
 
   const backgroundHex = rgbToHex(backgroundColor.r, backgroundColor.g, backgroundColor.b);
   const foregroundHex = rgbToHex(foregroundColor.r, foregroundColor.g, foregroundColor.b);

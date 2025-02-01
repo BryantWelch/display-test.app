@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -188,10 +188,12 @@ const DeadPixelTest = () => {
   const [isAutoChanging, setIsAutoChanging] = useState(false);
   const autoChangeRef = useRef(null);
 
+  const initializeTest = useCallback(() => {
+    // Add any initialization logic here if needed
+  }, []);
+
   useEffect(() => {
-    document.documentElement.requestFullscreen().catch(err => {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-    });
+    initializeTest();
   }, []);
 
   useEffect(() => {
@@ -225,12 +227,16 @@ const DeadPixelTest = () => {
     }
   }, [isAutoChanging, currentColor]);
 
-  const handleExit = async () => {
+  const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.log(`Error exiting fullscreen: ${err.message}`);
+      }
     }
     navigate(-1);
-  };
+  }, [navigate]);
 
   const handleReset = () => {
     setCurrentColor(colors[0].value);

@@ -378,10 +378,12 @@ const TextClarityTest = () => {
   const [textContent, setTextContent] = useState('');
   const [displayInfo, setDisplayInfo] = useState({});
 
+  const initializeTest = useCallback(() => {
+    // Add any initialization logic here if needed
+  }, []);
+
   useEffect(() => {
-    document.documentElement.requestFullscreen().catch(err => {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-    });
+    initializeTest();
   }, []);
 
   const generateText = useCallback(() => {
@@ -433,12 +435,16 @@ const TextClarityTest = () => {
     return () => window.removeEventListener('resize', updateDisplayInfo);
   }, []);
 
-  const handleExit = async () => {
+  const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.log(`Error exiting fullscreen: ${err.message}`);
+      }
     }
     navigate(-1);
-  };
+  }, [navigate]);
 
   useEffect(() => {
     const handleFullScreenChange = () => {

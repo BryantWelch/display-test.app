@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import FullscreenLink from '../components/FullscreenLink';
 
 const HomeContainer = styled.div`
   max-width: 1200px;
@@ -33,27 +33,6 @@ const TestGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 3rem;
-`;
-
-const TestCard = styled(Link)`
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2rem;
-  border-radius: 1rem;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-`;
-
-const TestTitle = styled.h3`
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: var(--primary);
-`;
-
-const TestDescription = styled.p`
-  color: var(--secondary);
 `;
 
 const Home = () => {
@@ -131,10 +110,12 @@ const Home = () => {
 
       <TestGrid>
         {tests.map((test) => (
-          <TestCard key={test.path} to={test.path}>
-            <TestTitle>{test.title}</TestTitle>
-            <TestDescription>{test.description}</TestDescription>
-          </TestCard>
+          <FullscreenLink
+            key={test.path}
+            to={test.path}
+            title={test.title}
+            description={test.description}
+          />
         ))}
       </TestGrid>
     </HomeContainer>

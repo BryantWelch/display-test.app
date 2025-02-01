@@ -178,6 +178,7 @@ const MatrixTest = () => {
   const [speed, setSpeed] = useState(50);
   const canvasRef = React.useRef(null);
   const animationRef = React.useRef(null);
+  const isUnmountedRef = React.useRef(false);
 
   const textColors = [
     { name: 'Matrix Green', value: '#00ff00' },
@@ -229,13 +230,11 @@ const MatrixTest = () => {
   }, [backgroundColor, textColor, fontSize, speed]);
 
   useEffect(() => {
-    document.documentElement.requestFullscreen().catch((err) => {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-    });
+    isUnmountedRef.current = false;
     initMatrix();
     
     const handleResize = () => {
-      if (canvasRef.current) {
+      if (canvasRef.current && !isUnmountedRef.current) {
         canvasRef.current.width = window.innerWidth;
         canvasRef.current.height = window.innerHeight;
         initMatrix();
@@ -251,6 +250,12 @@ const MatrixTest = () => {
     };
   }, [initMatrix]);
 
+  const cleanup = useCallback(() => {
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+    }
+  }, []);
+
   const handleReset = () => {
     setTextColor('#00ff00');
     setBackgroundColor('#000000');
@@ -258,12 +263,22 @@ const MatrixTest = () => {
     setSpeed(50);
   };
 
-  const handleExit = async () => {
+  const handleExit = useCallback(async () => {
+    // First cleanup the animation
+    cleanup();
+    
+    // Then exit fullscreen if we're in it
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.log(`Error exiting fullscreen: ${err.message}`);
+      }
     }
+    
+    // Finally navigate back
     navigate(-1);
-  };
+  }, [navigate, cleanup]);
 
   return (
     <TestContainer backgroundColor={backgroundColor}>

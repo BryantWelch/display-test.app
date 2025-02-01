@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
@@ -283,21 +283,27 @@ const GammaTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
   const [boxSize, setBoxSize] = useState(120);
-  const [backgroundColor, setBackgroundColor] = useState('gray');
+  const [backgroundColor, setBackgroundColor] = useState('white');
   const [showValues, setShowValues] = useState(true);
 
-  useEffect(() => {
-    document.documentElement.requestFullscreen().catch(err => {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-    });
+  const initializeTest = useCallback(() => {
+    // Add any initialization logic here if needed
   }, []);
 
-  const handleExit = async () => {
+  useEffect(() => {
+    initializeTest();
+  }, []);
+
+  const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.log(`Error exiting fullscreen: ${err.message}`);
+      }
     }
     navigate(-1);
-  };
+  }, [navigate]);
 
   const backgroundColors = {
     'white': '#FFFFFF',
@@ -325,7 +331,7 @@ const GammaTest = () => {
 
   const handleReset = () => {
     setBoxSize(120);
-    setBackgroundColor('gray');
+    setBackgroundColor('white');
     setShowValues(true);
   };
 

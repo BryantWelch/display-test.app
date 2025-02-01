@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
@@ -193,11 +193,7 @@ const TestPatternsTest = () => {
   const [resolution, setResolution] = useState('');
   const [patterns, setPatterns] = useState({ categories: {}, patternMap: {} });
 
-  useEffect(() => {
-    document.documentElement.requestFullscreen().catch(err => {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-    });
-
+  const initializeTest = useCallback(() => {
     const width = window.screen.width;
     const height = window.screen.height;
     
@@ -290,7 +286,11 @@ const TestPatternsTest = () => {
     };
 
     loadPatterns();
-  }, []);
+  }, [setResolution, setPatterns, setIsLoading, setSelectedCategory, setSelectedPattern]);
+
+  useEffect(() => {
+    initializeTest();
+  }, [initializeTest]);
 
   const handleCategoryChange = (e) => {
     const category = e.target.value;
@@ -305,12 +305,16 @@ const TestPatternsTest = () => {
     setIsLoading(true);
   };
 
-  const handleExit = async () => {
+  const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
-      await document.exitFullscreen();
+      try {
+        await document.exitFullscreen();
+      } catch (err) {
+        console.log(`Error exiting fullscreen: ${err.message}`);
+      }
     }
     navigate(-1);
-  };
+  }, [navigate]);
 
   const handleReset = () => {
     // Reset to first category
