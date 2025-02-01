@@ -27,8 +27,8 @@ const TestArea = styled.div`
 `;
 
 const PatternContainer = styled.div`
-  width: ${props => `calc(${props.screenWidth}px * 0.98)`};
-  height: ${props => `calc(${props.screenHeight}px * 0.98)`};
+  width: ${props => `calc(${props.$screenWidth}px * 0.98)`};
+  height: ${props => `calc(${props.$screenHeight}px * 0.98)`};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,10 +41,10 @@ const Pattern = styled.div`
   position: relative;
   background: #000;
   display: grid;
-  grid-template-columns: repeat(${props => props.columns}, 1fr);
-  grid-template-rows: repeat(${props => props.rows}, 1fr);
-  gap: ${props => `calc(${props.screenHeight}px * 0.005)`};
-  padding: ${props => `calc(${props.screenHeight}px * 0.005)`};
+  grid-template-columns: repeat(${props => props.$columns}, 1fr);
+  grid-template-rows: repeat(${props => props.$rows}, 1fr);
+  gap: ${props => `calc(${props.$screenHeight}px * 0.005)`};
+  padding: ${props => `calc(${props.$screenHeight}px * 0.005)`};
 `;
 
 const CircleContainer = styled.div`
@@ -86,10 +86,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -99,9 +99,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -321,13 +321,13 @@ const ViewingAngleTest = () => {
 
       <TestArea>
         <PatternContainer 
-          screenWidth={screenDimensions.width}
-          screenHeight={screenDimensions.height}
+          $screenWidth={screenDimensions.width}
+          $screenHeight={screenDimensions.height}
         >
           <Pattern 
-            rows={gridSize} 
-            columns={gridSize}
-            screenHeight={screenDimensions.height}
+            $rows={gridSize} 
+            $columns={gridSize}
+            $screenHeight={screenDimensions.height}
           >
             {Array.from({ length: totalCircles }, (_, i) => (
               <CircleContainer key={i}>
@@ -338,8 +338,8 @@ const ViewingAngleTest = () => {
         </PatternContainer>
       </TestArea>
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Viewing Angle Test Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? <IoChevronUp /> : <IoChevronDown />}

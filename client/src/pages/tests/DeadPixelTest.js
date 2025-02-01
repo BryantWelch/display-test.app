@@ -60,10 +60,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -73,9 +73,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -141,7 +141,7 @@ const ColorGrid = styled.div`
 const ColorButton = styled.button`
   width: 100%;
   aspect-ratio: 1;
-  border: 2px solid ${props => props.isSelected ? '#4169e1' : 'transparent'};
+  border: 2px solid ${props => props.$isSelected ? '#4169e1' : 'transparent'};
   border-radius: 0.5rem;
   cursor: pointer;
   background: ${props => props.color};
@@ -255,8 +255,8 @@ const DeadPixelTest = () => {
         Exit Test
       </ExitButton>
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Dead Pixel Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? (
@@ -286,7 +286,7 @@ const DeadPixelTest = () => {
                   <ColorButton
                     key={color.name}
                     color={color.value}
-                    isSelected={currentColor === color.value}
+                    $isSelected={currentColor === color.value}
                     onClick={() => setCurrentColor(color.value)}
                     title={color.name}
                   />

@@ -56,31 +56,23 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  z-index: 1000;
 `;
 
 const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
-
-  h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 `;
 
 const MinimizeButton = styled.button`
@@ -174,8 +166,8 @@ const RangeControl = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background: ${props => props.active ? '#4169e1' : '#f0f0f0'};
-  color: ${props => props.active ? 'white' : '#666'};
+  background: ${props => props.$active ? '#4169e1' : '#f0f0f0'};
+  color: ${props => props.$active ? 'white' : '#666'};
   border: none;
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
@@ -184,7 +176,7 @@ const ToggleButton = styled.button`
   width: 100%;
   
   &:hover {
-    background: ${props => props.active ? '#3658c5' : '#e0e0e0'};
+    background: ${props => props.$active ? '#3658c5' : '#e0e0e0'};
   }
 `;
 
@@ -359,8 +351,8 @@ const UniformityTest = () => {
 
       {showCrosshair && <Crosshair />}
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Uniformity Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? (
@@ -390,7 +382,7 @@ const UniformityTest = () => {
                 {['white', 'red', 'green', 'blue'].map(color => (
                   <ToggleButton
                     key={color}
-                    active={selectedColor === color}
+                    $active={selectedColor === color}
                     onClick={() => setSelectedColor(color)}
                   >
                     {color.charAt(0).toUpperCase() + color.slice(1)}
@@ -421,7 +413,7 @@ const UniformityTest = () => {
                 {['solid', 'checkerboard'].map(type => (
                   <ToggleButton
                     key={type}
-                    active={patternType === type}
+                    $active={patternType === type}
                     onClick={() => setPatternType(type)}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -451,7 +443,7 @@ const UniformityTest = () => {
             <Section>
               <h3>Grid Pattern</h3>
               <ToggleButton
-                active={showGridLines}
+                $active={showGridLines}
                 onClick={() => setShowGridLines(!showGridLines)}
                 style={{ marginBottom: '1rem' }}
               >
@@ -477,7 +469,7 @@ const UniformityTest = () => {
             <Section>
               <h3>Additional Tools</h3>
               <ToggleButton
-                active={showCrosshair}
+                $active={showCrosshair}
                 onClick={() => setShowCrosshair(!showCrosshair)}
                 style={{ marginBottom: '1rem' }}
               >

@@ -11,14 +11,14 @@ const TestContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.backgroundColor};
+  background: ${props => props.$backgroundColor};
   transition: background-color 0.3s ease;
 `;
 
 const ColorSquare = styled.div`
   width: 35vh;
   height: 35vh;
-  background: ${props => props.foregroundColor};
+  background: ${props => props.$foregroundColor};
   transition: background-color 0.3s ease;
 `;
 
@@ -30,10 +30,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -43,9 +43,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -131,9 +131,9 @@ const ColorControl = styled.div`
     height: 6px;
     -webkit-appearance: none;
     background: ${props => {
-      if (props.color === 'red') return 'linear-gradient(to right, #000, #f00)';
-      if (props.color === 'green') return 'linear-gradient(to right, #000, #0f0)';
-      if (props.color === 'blue') return 'linear-gradient(to right, #000, #00f)';
+      if (props.$color === 'red') return 'linear-gradient(to right, #000, #f00)';
+      if (props.$color === 'green') return 'linear-gradient(to right, #000, #0f0)';
+      if (props.$color === 'blue') return 'linear-gradient(to right, #000, #00f)';
       return '#e0e0e0';
     }};
     border-radius: 3px;
@@ -143,9 +143,9 @@ const ColorControl = styled.div`
       width: 16px;
       height: 16px;
       background: ${props => {
-        if (props.color === 'red') return '#f00';
-        if (props.color === 'green') return '#0f0';
-        if (props.color === 'blue') return '#00f';
+        if (props.$color === 'red') return '#f00';
+        if (props.$color === 'green') return '#0f0';
+        if (props.$color === 'blue') return '#00f';
         return '#4169e1';
       }};
       border: 2px solid white;
@@ -207,7 +207,7 @@ const ColorBox = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 4px;
-  background: ${props => props.color};
+  background: ${props => props.$color};
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
@@ -372,7 +372,7 @@ const ColorDistanceTest = () => {
   const foregroundHex = rgbToHex(foregroundColor.r, foregroundColor.g, foregroundColor.b);
 
   return (
-    <TestContainer backgroundColor={backgroundHex}>
+    <TestContainer $backgroundColor={backgroundHex}>
       <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
@@ -380,10 +380,10 @@ const ColorDistanceTest = () => {
         Exit Test
       </ExitButton>
 
-      <ColorSquare foregroundColor={foregroundHex} />
+      <ColorSquare $foregroundColor={foregroundHex} />
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Color Distance Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? (
@@ -409,7 +409,7 @@ const ColorDistanceTest = () => {
 
             <Section>
               <h3>Background Color</h3>
-              <ColorControl color="red">
+              <ColorControl $color="red">
                 <label>Red (R)</label>
                 <div className="slider-container">
                   <input
@@ -438,7 +438,7 @@ const ColorDistanceTest = () => {
                   />
                 </div>
               </ColorControl>
-              <ColorControl color="green">
+              <ColorControl $color="green">
                 <label>Green (G)</label>
                 <div className="slider-container">
                   <input
@@ -467,7 +467,7 @@ const ColorDistanceTest = () => {
                   />
                 </div>
               </ColorControl>
-              <ColorControl color="blue">
+              <ColorControl $color="blue">
                 <label>Blue (B)</label>
                 <div className="slider-container">
                   <input
@@ -497,7 +497,7 @@ const ColorDistanceTest = () => {
                 </div>
               </ColorControl>
               <ColorPreview>
-                <ColorBox color={backgroundHex} />
+                <ColorBox $color={backgroundHex} />
                 <ColorCode>{backgroundHex.toUpperCase()}</ColorCode>
                 <HexInput
                   type="text"
@@ -516,7 +516,7 @@ const ColorDistanceTest = () => {
 
             <Section>
               <h3>Foreground Color</h3>
-              <ColorControl color="red">
+              <ColorControl $color="red">
                 <label>Red (R)</label>
                 <div className="slider-container">
                   <input
@@ -545,7 +545,7 @@ const ColorDistanceTest = () => {
                   />
                 </div>
               </ColorControl>
-              <ColorControl color="green">
+              <ColorControl $color="green">
                 <label>Green (G)</label>
                 <div className="slider-container">
                   <input
@@ -574,7 +574,7 @@ const ColorDistanceTest = () => {
                   />
                 </div>
               </ColorControl>
-              <ColorControl color="blue">
+              <ColorControl $color="blue">
                 <label>Blue (B)</label>
                 <div className="slider-container">
                   <input
@@ -604,7 +604,7 @@ const ColorDistanceTest = () => {
                 </div>
               </ColorControl>
               <ColorPreview>
-                <ColorBox color={foregroundHex} />
+                <ColorBox $color={foregroundHex} />
                 <ColorCode>{foregroundHex.toUpperCase()}</ColorCode>
                 <HexInput
                   type="text"

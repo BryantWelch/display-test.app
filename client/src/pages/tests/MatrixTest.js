@@ -11,7 +11,7 @@ const TestContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.backgroundColor};
+  background: ${props => props.$backgroundColor};
   overflow: hidden;
   font-family: monospace;
 `;
@@ -32,10 +32,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -46,9 +46,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -126,10 +126,10 @@ const Slider = styled.input`
 
 const ColorButton = styled.button`
   padding: 0.5rem 1rem;
-  border: 2px solid ${props => props.isSelected ? '#4169e1' : '#ddd'};
+  border: 2px solid ${props => props.$isSelected ? '#4169e1' : '#ddd'};
   border-radius: 0.25rem;
-  background: ${props => props.color};
-  color: ${props => props.textColor || (props.isSelected ? 'white' : '#666')};
+  background: ${props => props.$color};
+  color: ${props => props.$textColor || (props.$isSelected ? 'white' : '#666')};
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.2s ease;
@@ -281,7 +281,7 @@ const MatrixTest = () => {
   }, [navigate, cleanup]);
 
   return (
-    <TestContainer backgroundColor={backgroundColor}>
+    <TestContainer $backgroundColor={backgroundColor}>
       <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
@@ -291,8 +291,8 @@ const MatrixTest = () => {
 
       <MatrixCanvas ref={canvasRef} />
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Matrix Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? '▼' : '▲'}
@@ -311,9 +311,9 @@ const MatrixTest = () => {
             {textColors.map(color => (
               <ColorButton
                 key={color.value}
-                color={color.value}
-                textColor={color.value === '#ffffff' ? '#000000' : undefined}
-                isSelected={textColor === color.value}
+                $color={color.value}
+                $textColor={color.value === '#ffffff' ? '#000000' : undefined}
+                $isSelected={textColor === color.value}
                 onClick={() => setTextColor(color.value)}
               >
                 {color.name}
@@ -328,9 +328,9 @@ const MatrixTest = () => {
             {backgroundColors.map(color => (
               <ColorButton
                 key={color.value}
-                color={color.value}
-                textColor="#ffffff"
-                isSelected={backgroundColor === color.value}
+                $color={color.value}
+                $textColor="#ffffff"
+                $isSelected={backgroundColor === color.value}
                 onClick={() => setBackgroundColor(color.value)}
               >
                 {color.name}

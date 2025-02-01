@@ -23,10 +23,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -36,9 +36,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -117,8 +117,8 @@ const RangeControl = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background: ${props => props.active ? '#4169e1' : '#f0f0f0'};
-  color: ${props => props.active ? 'white' : '#333'};
+  background: ${props => props.$active ? '#4169e1' : '#f0f0f0'};
+  color: ${props => props.$active ? 'white' : '#333'};
   border: none;
   border-radius: 4px;
   padding: 0.75rem;
@@ -128,7 +128,7 @@ const ToggleButton = styled.button`
   width: 100%;
 
   &:hover {
-    background: ${props => props.active ? '#365bb7' : '#e0e0e0'};
+    background: ${props => props.$active ? '#365bb7' : '#e0e0e0'};
   }
 `;
 
@@ -154,7 +154,7 @@ const ColorPreview = styled.div`
   height: 40px;
   margin-bottom: 1rem;
   border-radius: 4px;
-  background: ${props => props.gradient};
+  background: ${props => props.$gradient};
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
@@ -188,6 +188,12 @@ const ExitButton = styled.button`
     width: 20px;
     height: 20px;
   }
+`;
+
+const GradientBox = styled.div`
+  width: 100%;
+  height: 100%;
+  background: ${props => props.$gradient};
 `;
 
 const ColorGradientTest = () => {
@@ -329,8 +335,8 @@ const ColorGradientTest = () => {
         Exit Test
       </ExitButton>
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>GRADIENT CONTROLS</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? (
@@ -354,12 +360,12 @@ const ColorGradientTest = () => {
 
             <Section>
               <h3>Target Color</h3>
-              <ColorPreview gradient={generateGradient()} />
+              <ColorPreview $gradient={generateGradient()} />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
                 {['white', 'red', 'green', 'blue', 'magenta', 'yellow', 'cyan'].map(color => (
                   <ToggleButton
                     key={color}
-                    active={selectedColor === color}
+                    $active={selectedColor === color}
                     onClick={() => setSelectedColor(color)}
                   >
                     {color.charAt(0).toUpperCase() + color.slice(1)}
@@ -391,7 +397,7 @@ const ColorGradientTest = () => {
                 {['horizontal', 'vertical', 'diagonal-1', 'diagonal-2'].map(direction => (
                   <ToggleButton
                     key={direction}
-                    active={gradientDirection === direction}
+                    $active={gradientDirection === direction}
                     onClick={() => setGradientDirection(direction)}
                   >
                     {direction.charAt(0).toUpperCase() + direction.slice(1)}
@@ -406,7 +412,7 @@ const ColorGradientTest = () => {
                 {['linear', 'radial'].map(type => (
                   <ToggleButton
                     key={type}
-                    active={gradientType === type}
+                    $active={gradientType === type}
                     onClick={() => setGradientType(type)}
                   >
                     {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -421,7 +427,7 @@ const ColorGradientTest = () => {
                 {['linear', 'non-linear'].map(dist => (
                   <ToggleButton
                     key={dist}
-                    active={distribution === dist}
+                    $active={distribution === dist}
                     onClick={() => setDistribution(dist)}
                   >
                     {dist.charAt(0).toUpperCase() + dist.slice(1)}

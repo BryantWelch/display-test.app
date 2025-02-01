@@ -10,8 +10,8 @@ const TestContainer = styled.div`
   bottom: 0;
   display: flex;
   flex-direction: column;
-  background: ${props => props.darkMode ? '#000' : '#fff'};
-  color: ${props => props.darkMode ? '#fff' : '#000'};
+  background-color: ${props => props.$darkMode ? '#000' : '#fff'};
+  color: ${props => props.$darkMode ? '#fff' : '#000'};
   overflow: hidden;
 `;
 
@@ -27,7 +27,7 @@ const TextContent = styled.div`
 `;
 
 const TextPattern = styled.div`
-  font-family: ${props => props.font};
+  font-family: ${props => props.$font};
   font-size: ${props => props.size}px;
   line-height: 1.5;
   margin: 0;
@@ -45,10 +45,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -76,9 +76,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -310,27 +310,27 @@ const ComparisonGrid = styled.div`
 `;
 
 const ComparisonBox = styled.div`
-  background: ${props => props.darkMode ? '#000' : '#fff'};
-  color: ${props => props.darkMode ? '#fff' : '#000'};
+  background: ${props => props.$darkMode ? '#000' : '#fff'};
+  color: ${props => props.$darkMode ? '#fff' : '#000'};
   padding: 0.75rem;
   border-radius: 0.25rem;
-  border: 1px solid ${props => props.darkMode ? '#333' : '#ddd'};
+  border: 1px solid ${props => props.$darkMode ? '#333' : '#ddd'};
   min-width: 0; /* Prevent grid item overflow */
 
   h5 {
     font-size: 0.9rem;
     margin: 0 0 0.75rem 0;
-    color: ${props => props.darkMode ? '#fff' : '#333'};
+    color: ${props => props.$darkMode ? '#fff' : '#333'};
   }
 
   .sample {
-    font-family: ${props => props.font};
+    font-family: ${props => props.$font};
     font-size: 13px;
     line-height: 1.6;
     margin: 0;
     white-space: pre-line;
     word-break: keep-all;
-    -webkit-font-smoothing: ${props => props.smoothing};
+    -webkit-font-smoothing: ${props => props.$smoothing};
   }
 `;
 
@@ -351,7 +351,7 @@ const CollapsibleHeader = styled.div`
     height: 20px;
     color: #666;
     transition: transform 0.2s ease;
-    transform: rotate(${props => props.isOpen ? '180deg' : '0deg'});
+    transform: rotate(${props => props.$isOpen ? '180deg' : '0deg'});
   }
 
   &:hover svg {
@@ -361,10 +361,10 @@ const CollapsibleHeader = styled.div`
 
 const CollapsibleContent = styled.div`
   overflow: hidden;
-  max-height: ${props => props.isOpen ? '1000px' : '0'};
-  opacity: ${props => props.isOpen ? '1' : '0'};
+  max-height: ${props => props.$isOpen ? '1000px' : '0'};
+  opacity: ${props => props.$isOpen ? '1' : '0'};
   transition: all 0.3s ease-in-out;
-  margin-top: ${props => props.isOpen ? '1rem' : '0'};
+  margin-top: ${props => props.$isOpen ? '1rem' : '0'};
 `;
 
 const TextClarityTest = () => {
@@ -499,7 +499,7 @@ const TextClarityTest = () => {
   const clearTypeExample = "Quick brown fox\nABCDEFGHIJKLM\n1234567890";
 
   return (
-    <TestContainer darkMode={darkMode}>
+    <TestContainer $darkMode={darkMode}>
       <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
@@ -510,14 +510,14 @@ const TextClarityTest = () => {
       <TextContent>
         <TextPattern 
           size={fontSize} 
-          font={font}
+          $font={font}
         >
           {textContent}
         </TextPattern>
       </TextContent>
       
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Text Clarity Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? (
@@ -592,14 +592,14 @@ const TextClarityTest = () => {
             <Section>
               <CollapsibleHeader 
                 onClick={() => setIsDisplayInfoOpen(!isDisplayInfoOpen)}
-                isOpen={isDisplayInfoOpen}
+                $isOpen={isDisplayInfoOpen}
               >
                 <h3>Display Information</h3>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 9l-7 7-7-7" />
                 </svg>
               </CollapsibleHeader>
-              <CollapsibleContent isOpen={isDisplayInfoOpen}>
+              <CollapsibleContent $isOpen={isDisplayInfoOpen}>
                 <TechnicalInfo>
                   <div>
                     <span>Resolution:</span>
@@ -620,14 +620,14 @@ const TextClarityTest = () => {
             <Section>
               <CollapsibleHeader 
                 onClick={() => setIsClearTypeOpen(!isClearTypeOpen)}
-                isOpen={isClearTypeOpen}
+                $isOpen={isClearTypeOpen}
               >
                 <h3>ClearType Test</h3>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M19 9l-7 7-7-7" />
                 </svg>
               </CollapsibleHeader>
-              <CollapsibleContent isOpen={isClearTypeOpen}>
+              <CollapsibleContent $isOpen={isClearTypeOpen}>
                 <ClearTypeSection>
                   <h4>Check Your ClearType Status</h4>
                   <p>
@@ -636,11 +636,11 @@ const TextClarityTest = () => {
                     ClearType is probably enabled.
                   </p>
                   <ComparisonGrid>
-                    <ComparisonBox darkMode={darkMode} font={font} smoothing="none">
+                    <ComparisonBox $darkMode={darkMode} $font={font} $smoothing="none">
                       <h5>ClearType Disabled</h5>
                       <div className="sample">{clearTypeExample}</div>
                     </ComparisonBox>
-                    <ComparisonBox darkMode={darkMode} font={font} smoothing="antialiased">
+                    <ComparisonBox $darkMode={darkMode} $font={font} $smoothing="antialiased">
                       <h5>ClearType Enabled</h5>
                       <div className="sample">{clearTypeExample}</div>
                     </ComparisonBox>

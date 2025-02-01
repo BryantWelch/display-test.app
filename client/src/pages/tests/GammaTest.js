@@ -19,7 +19,7 @@ const TestContainer = styled.div`
 
 const TestArea = styled.div`
   flex: 1;
-  background: ${props => props.background};
+  background: ${props => props.$background};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,10 +87,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -100,9 +100,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -226,8 +226,8 @@ const RangeControl = styled.div`
 
 const ToggleButton = styled.button`
   padding: 0.5rem;
-  background: ${props => props.active ? '#4169e1' : '#f0f0f0'};
-  color: ${props => props.active ? 'white' : '#666'};
+  background: ${props => props.$active ? '#4169e1' : '#f0f0f0'};
+  color: ${props => props.$active ? 'white' : '#666'};
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -235,7 +235,7 @@ const ToggleButton = styled.button`
   font-size: 0.9rem;
 
   &:hover {
-    background: ${props => props.active ? '#3658c5' : '#e0e0e0'};
+    background: ${props => props.$active ? '#3658c5' : '#e0e0e0'};
   }
 `;
 
@@ -372,12 +372,12 @@ const GammaTest = () => {
         Exit Test
       </ExitButton>
 
-      <TestArea background={backgroundColors[backgroundColor]}>
+      <TestArea $background={backgroundColors[backgroundColor]}>
         {renderGraySteps()}
       </TestArea>
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Gamma Test Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
@@ -431,13 +431,13 @@ const GammaTest = () => {
               <h3>Show Values</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
                 <ToggleButton
-                  active={showValues}
+                  $active={showValues}
                   onClick={() => setShowValues(true)}
                 >
                   Show
                 </ToggleButton>
                 <ToggleButton
-                  active={!showValues}
+                  $active={!showValues}
                   onClick={() => setShowValues(false)}
                 >
                   Hide

@@ -22,8 +22,8 @@ const CheckerboardContainer = styled.div`
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: ${props => `repeat(${props.size}, 1fr)`};
-  grid-template-rows: ${props => `repeat(${props.size}, 1fr)`};
+  grid-template-columns: ${props => `repeat(${props.$size}, 1fr)`};
+  grid-template-rows: ${props => `repeat(${props.$size}, 1fr)`};
   width: 100%;
   height: 100%;
   background: white;
@@ -32,7 +32,7 @@ const CheckerboardContainer = styled.div`
 const Square = styled.div`
   width: 100%;
   height: 100%;
-  background: ${props => props.isBlack ? 'black' : 'white'};
+  background: ${props => props.$isBlack ? 'black' : 'white'};
 `;
 
 const ControlPanel = styled.div`
@@ -43,10 +43,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -56,9 +56,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -197,7 +197,7 @@ const ContrastTest = () => {
       const row = Math.floor(i / gridSize);
       const col = i % gridSize;
       const isBlack = (row + col) % 2 === 0;
-      squares.push(<Square key={i} isBlack={isBlack} />);
+      squares.push(<Square key={i} $isBlack={isBlack} />);
     }
     return squares;
   };
@@ -211,12 +211,12 @@ const ContrastTest = () => {
         Exit Test
       </ExitButton>
 
-      <CheckerboardContainer size={gridSize}>
+      <CheckerboardContainer $size={gridSize}>
         {renderCheckerboard()}
       </CheckerboardContainer>
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>Contrast Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? '▼' : '▲'}

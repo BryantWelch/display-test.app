@@ -25,10 +25,10 @@ const ControlPanel = styled.div`
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
   width: 400px;
-  padding: ${props => props.isMinimized ? '1.25rem' : '2rem'};
+  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
   transition: all 0.3s ease;
-  transform: translateY(${props => props.isMinimized ? 'calc(100% - 4rem)' : '0'});
+  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
@@ -38,9 +38,9 @@ const PanelHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${props => props.isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
+  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
+  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
+  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
 
   h2 {
     margin: 0;
@@ -151,8 +151,8 @@ const RangeControl = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background: ${props => props.active ? '#4169e1' : '#f0f0f0'};
-  color: ${props => props.active ? 'white' : '#333'};
+  background: ${props => props.$active ? '#4169e1' : '#f0f0f0'};
+  color: ${props => props.$active ? 'white' : '#333'};
   border: none;
   border-radius: 4px;
   padding: 0.75rem;
@@ -162,7 +162,7 @@ const ToggleButton = styled.button`
   width: 100%;
 
   &:hover {
-    background: ${props => props.active ? '#365bb7' : '#e0e0e0'};
+    background: ${props => props.$active ? '#365bb7' : '#e0e0e0'};
   }
 `;
 
@@ -173,20 +173,20 @@ const TestArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.background};
+  background: ${props => props.$background};
   overflow: hidden;
 `;
 
 const MovingBlock = styled.div`
   position: absolute;
-  width: ${props => props.size}px;
-  height: ${props => props.size}px;
-  left: ${props => props.direction === 'horizontal' ? -props.size : props.offset}px;
-  top: ${props => props.direction === 'vertical' ? -props.size : props.offset}px;
-  animation: ${props => props.direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.speed}s linear infinite;
+  width: ${props => props.$size}px;
+  height: ${props => props.$size}px;
+  left: ${props => props.$direction === 'horizontal' ? -props.$size : props.$offset}px;
+  top: ${props => props.$direction === 'vertical' ? -props.$size : props.$offset}px;
+  animation: ${props => props.$direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.$speed}s linear infinite;
   background: url(${testPatternImage}) no-repeat center center;
   background-size: contain;
-  filter: ${props => props.color === 'white' ? 'invert(1)' : 'none'};
+  filter: ${props => props.$color === 'white' ? 'invert(1)' : 'none'};
   will-change: transform;
 
   @keyframes moveRight {
@@ -194,7 +194,7 @@ const MovingBlock = styled.div`
       transform: translateX(0);
     }
     to {
-      transform: translateX(calc(${window.screen.width}px + ${props => props.size}px));
+      transform: translateX(calc(${window.screen.width}px + ${props => props.$size}px));
     }
   }
 
@@ -203,19 +203,19 @@ const MovingBlock = styled.div`
       transform: translateY(0);
     }
     to {
-      transform: translateY(calc(${window.screen.height}px + ${props => props.size}px));
+      transform: translateY(calc(${window.screen.height}px + ${props => props.$size}px));
     }
   }
 `;
 
 const PursuitText = styled.div`
   position: absolute;
-  color: ${props => props.color === 'white' ? 'white' : 'black'};
-  font-size: ${props => props.size}px;
-  left: ${props => props.direction === 'horizontal' ? -props.size : props.offset}px;
-  top: ${props => props.direction === 'vertical' ? -props.size : props.offset}px;
+  color: ${props => props.$color === 'white' ? 'white' : 'black'};
+  font-size: ${props => props.$size}px;
+  left: ${props => props.$direction === 'horizontal' ? -props.$size : props.$offset}px;
+  top: ${props => props.$direction === 'vertical' ? -props.$size : props.$offset}px;
   white-space: nowrap;
-  animation: ${props => props.direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.speed}s linear infinite;
+  animation: ${props => props.$direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.$speed}s linear infinite;
   will-change: transform;
 
   @keyframes moveRight {
@@ -223,7 +223,7 @@ const PursuitText = styled.div`
       transform: translateX(0);
     }
     to {
-      transform: translateX(calc(${window.screen.width}px + ${props => props.size}px));
+      transform: translateX(calc(${window.screen.width}px + ${props => props.$size}px));
     }
   }
 
@@ -232,7 +232,7 @@ const PursuitText = styled.div`
       transform: translateY(0);
     }
     to {
-      transform: translateY(calc(${window.screen.height}px + ${props => props.size}px));
+      transform: translateY(calc(${window.screen.height}px + ${props => props.$size}px));
     }
   }
 `;
@@ -340,22 +340,22 @@ const ResponseTimeTest = () => {
         objects.push(
           <MovingBlock
             key={i}
-            size={blockSize}
-            color={objectColor}
-            speed={speed}
-            direction={direction}
-            offset={offset}
+            $size={blockSize}
+            $color={objectColor}
+            $speed={speed}
+            $direction={direction}
+            $offset={offset}
           />
         );
       } else {
         objects.push(
           <PursuitText
             key={i}
-            size={blockSize}
-            speed={speed}
-            color={objectColor}
-            direction={direction}
-            offset={offset}
+            $size={blockSize}
+            $speed={speed}
+            $color={objectColor}
+            $direction={direction}
+            $offset={offset}
           >
             PURSUIT TEST
           </PursuitText>
@@ -374,12 +374,12 @@ const ResponseTimeTest = () => {
         Exit Test
       </ExitButton>
 
-      <TestArea background={backgroundColors[backgroundColor]}>
+      <TestArea $background={backgroundColors[backgroundColor]}>
         {renderTest()}
       </TestArea>
 
-      <ControlPanel isMinimized={isMinimized}>
-        <PanelHeader isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized}>
+        <PanelHeader $isMinimized={isMinimized}>
           <h2>RESPONSE TIME CONTROLS</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? (
@@ -405,13 +405,13 @@ const ResponseTimeTest = () => {
               <h3>Test Type</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
                 <ToggleButton
-                  active={testType === 'moving-block'}
+                  $active={testType === 'moving-block'}
                   onClick={() => setTestType('moving-block')}
                 >
                   Moving Block
                 </ToggleButton>
                 <ToggleButton
-                  active={testType === 'pursuit'}
+                  $active={testType === 'pursuit'}
                   onClick={() => setTestType('pursuit')}
                 >
                   Pursuit Text
@@ -423,13 +423,13 @@ const ResponseTimeTest = () => {
               <h3>Direction</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
                 <ToggleButton
-                  active={direction === 'horizontal'}
+                  $active={direction === 'horizontal'}
                   onClick={() => setDirection('horizontal')}
                 >
                   Horizontal
                 </ToggleButton>
                 <ToggleButton
-                  active={direction === 'vertical'}
+                  $active={direction === 'vertical'}
                   onClick={() => setDirection('vertical')}
                 >
                   Vertical
@@ -492,13 +492,13 @@ const ResponseTimeTest = () => {
               <h3>Object & Text Color</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
                 <ToggleButton
-                  active={objectColor === 'black'}
+                  $active={objectColor === 'black'}
                   onClick={() => setObjectColor('black')}
                 >
                   Dark
                 </ToggleButton>
                 <ToggleButton
-                  active={objectColor === 'white'}
+                  $active={objectColor === 'white'}
                   onClick={() => setObjectColor('white')}
                 >
                   Light
