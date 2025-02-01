@@ -201,29 +201,60 @@ const MatrixTest = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    // Clear the entire canvas with the new background color
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     const columns = Math.floor(canvas.width / fontSize);
-    const drops = new Array(columns).fill(1);
+    // Initialize drops at staggered positions
+    const drops = new Array(columns).fill(0).map(() => 
+      Math.floor(Math.random() * -canvas.height / fontSize)
+    );
+
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+    let prevBgColor = backgroundColor;
+    let prevTextColor = textColor;
 
     const draw = () => {
+      // Check if colors changed
+      if (prevBgColor !== backgroundColor || prevTextColor !== textColor) {
+        // Clear canvas with new background color
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        prevBgColor = backgroundColor;
+        prevTextColor = textColor;
+      }
+
+      // Semi-transparent background for trail effect
       ctx.fillStyle = backgroundColor + '0a';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Set text properties
       ctx.fillStyle = textColor;
       ctx.font = fontSize + 'px monospace';
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'top';
 
       for (let i = 0; i < drops.length; i++) {
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        // Only draw if drop is on screen
+        if (drops[i] * fontSize > 0) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        }
         
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+        // Reset to random position above screen when reaching bottom
+        if (drops[i] * fontSize > canvas.height) {
+          drops[i] = Math.random() > 0.975 ? 0 : -10;
         }
         drops[i]++;
       }
 
-      animationRef.current = setTimeout(() => {
-        requestAnimationFrame(draw);
-      }, 100 - speed); // Adjust speed (0-100)
+      // Schedule next frame with proper timing
+      if (!isUnmountedRef.current) {
+        animationRef.current = setTimeout(() => {
+          requestAnimationFrame(draw);
+        }, Math.max(1, 100 - speed));
+      }
     };
 
     draw();
