@@ -85,7 +85,7 @@ const ControlPanel = styled.div`
   right: 2rem;
   background: white;
   border-radius: 0.75rem;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   width: 400px;
   padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
@@ -94,6 +94,22 @@ const ControlPanel = styled.div`
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  z-index: 1000;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
 `;
 
 const PanelHeader = styled.div`
@@ -128,10 +144,11 @@ const MinimizeButton = styled.button`
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-
+  padding: 0;
+  
   &:hover {
+    background: #3658c5;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(65, 105, 225, 0.3);
   }
 
   &:active {
@@ -139,8 +156,8 @@ const MinimizeButton = styled.button`
   }
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
   }
 `;
 
@@ -159,7 +176,7 @@ const ExitButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 1000;
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -176,19 +193,34 @@ const ExitButton = styled.button`
   }
 `;
 
+const Description = styled.p`
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+`;
+
 const Section = styled.div`
   margin-bottom: 1.5rem;
 
   h3 {
-    font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-    color: #666;
-    font-weight: 500;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   &:last-child {
     margin-bottom: 0;
   }
+`;
+
+const Label = styled.div`
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 `;
 
 const RangeControl = styled.div`
@@ -242,26 +274,19 @@ const Select = styled.select`
 
 const ResetButton = styled.button`
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   background: #4169e1;
   color: white;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   transition: all 0.2s ease;
 
   &:hover {
     background: #3658c5;
   }
-`;
-
-const Description = styled.p`
-  margin: 0 0 2rem 0;
-  color: #666;
-  line-height: 1.5;
-  font-size: 0.95rem;
 `;
 
 const GammaTest = () => {
@@ -371,7 +396,7 @@ const GammaTest = () => {
 
       <ControlPanel $isMinimized={isMinimized}>
         <PanelHeader $isMinimized={isMinimized}>
-          <h2>Gamma Test Controls</h2>
+          <h2>Gamma Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
           </MinimizeButton>
@@ -392,9 +417,7 @@ const GammaTest = () => {
             <Section>
               <h3>Box Size</h3>
               <RangeControl>
-                <label>
-                  <span>Size: {boxSize}px</span>
-                </label>
+                <Label>Size: {boxSize}px</Label>
                 <input
                   type="range"
                   min="50"

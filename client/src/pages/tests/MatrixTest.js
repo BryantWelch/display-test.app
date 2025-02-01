@@ -31,7 +31,7 @@ const ControlPanel = styled.div`
   right: 2rem;
   background: white;
   border-radius: 0.75rem;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   width: 400px;
   padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
   color: #333;
@@ -41,6 +41,21 @@ const ControlPanel = styled.div`
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   z-index: 1000;
+
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
 `;
 
 const PanelHeader = styled.div`
@@ -75,9 +90,15 @@ const MinimizeButton = styled.button`
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-
+  padding: 0;
+  
   &:hover {
-    background: #365bb7;
+    background: #3658c5;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   svg {
@@ -118,15 +139,34 @@ const ExitButton = styled.button`
   }
 `;
 
+const Description = styled.p`
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+`;
+
 const Section = styled.div`
   margin-bottom: 1.5rem;
 
   h3 {
-    margin: 0 0 0.75rem 0;
-    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
     font-weight: 600;
-    color: #666;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const Label = styled.div`
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 `;
 
 const Slider = styled.input`
@@ -153,13 +193,6 @@ const ColorGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
-`;
-
-const Description = styled.p`
-  margin: 0 0 1.5rem 0;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #666;
 `;
 
 const ResetButton = styled.button`
@@ -384,9 +417,7 @@ const MatrixTest = () => {
 
             <Section>
               <h3>Text Size</h3>
-              <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                Size: {fontSize}px
-              </div>
+              <Label>Size: {fontSize}px</Label>
               <Slider
                 type="range"
                 min="10"
@@ -398,9 +429,7 @@ const MatrixTest = () => {
 
             <Section>
               <h3>Speed</h3>
-              <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                Speed: {speed}%
-              </div>
+              <Label>Speed: {speed}%</Label>
               <Slider
                 type="range"
                 min="1"

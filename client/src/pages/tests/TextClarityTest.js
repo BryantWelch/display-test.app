@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -41,32 +42,30 @@ const ControlPanel = styled.div`
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: white;
+  background: ${props => props.$darkMode ? '#333' : '#fff'};
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   width: 400px;
   padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
-  color: #333;
+  color: ${props => props.$darkMode ? '#fff' : '#333'};
   transition: all 0.3s ease;
   transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  z-index: 1000;
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
     width: 8px;
   }
-
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-
   &::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
   }
-
   &::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
   }
@@ -84,7 +83,7 @@ const PanelHeader = styled.div`
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
+    color: ${props => props.$darkMode ? '#fff' : '#333'};
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -115,32 +114,40 @@ const MinimizeButton = styled.button`
     transform: translateY(0);
   }
 
-  span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 24px;
-    margin-top: -2px;
-    font-weight: 300; /* Make the symbols slightly thinner */
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 `;
 
 const Description = styled.p`
-  margin: 1.5rem 0;
   color: #666;
-  line-height: 1.6;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
 `;
 
 const Section = styled.div`
-  margin: 2rem 0;
+  margin-bottom: 1.5rem;
 
   h3 {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 0.75rem;
-    font-weight: 500;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: ${props => props.$darkMode ? '#fff' : '#333'};
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const Label = styled.div`
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 `;
 
 const RadioGroup = styled.div`
@@ -238,7 +245,7 @@ const ExitButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 1000;
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -369,6 +376,8 @@ const TextClarityTest = () => {
   const [font, setFont] = useState('monospace');
   const [isClearTypeOpen, setIsClearTypeOpen] = useState(false);
   const [textContent, setTextContent] = useState('');
+  const [lineHeight, setLineHeight] = useState(1.5);
+  const [letterSpacing, setLetterSpacing] = useState(0);
 
   const initializeTest = useCallback(() => {
     // Add any initialization logic here if needed
@@ -384,7 +393,7 @@ const TextClarityTest = () => {
     
     // Calculate how many lines we need based on the container height and font size
     const containerHeight = window.innerHeight;
-    const linesNeeded = Math.ceil(containerHeight / (fontSize * 1.5)); // 1.5 is line-height
+    const linesNeeded = Math.ceil(containerHeight / (fontSize * lineHeight)); // 1.5 is line-height
     
     // Create a very long line of text by repeating the sentence many times
     const fullLineText = text.repeat(50); // Increased repetitions to ensure no gaps
@@ -395,12 +404,12 @@ const TextClarityTest = () => {
     }
     
     return lines.join('\n');
-  }, [fontSize]);
+  }, [fontSize, lineHeight]);
 
   // Update text when font size changes or window resizes
   useEffect(() => {
     setTextContent(generateText());
-  }, [fontSize, generateText]);
+  }, [fontSize, lineHeight, generateText]);
 
   // Handle window resize
   useEffect(() => {
@@ -411,7 +420,7 @@ const TextClarityTest = () => {
     window.addEventListener('resize', handleResize);
     handleResize(); // Initial generation
     return () => window.removeEventListener('resize', handleResize);
-  }, [fontSize, generateText]);
+  }, [fontSize, lineHeight, generateText]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -472,6 +481,8 @@ const TextClarityTest = () => {
     setFontSize(16);
     setDarkMode(true);
     setFont('monospace');
+    setLineHeight(1.5);
+    setLetterSpacing(0);
   };
 
   const clearTypeExample = "Quick brown fox\nABCDEFGHIJKLM\n1234567890";
@@ -489,6 +500,7 @@ const TextClarityTest = () => {
         <TextPattern 
           size={fontSize} 
           $font={font}
+          style={{ lineHeight, letterSpacing: `${letterSpacing}px` }}
         >
           {textContent}
         </TextPattern>
@@ -498,15 +510,7 @@ const TextClarityTest = () => {
         <PanelHeader $isMinimized={isMinimized}>
           <h2>Text Clarity Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
-            {isMinimized ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 15l-6-6-6 6" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            )}
+            {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
           </MinimizeButton>
         </PanelHeader>
         
@@ -533,16 +537,43 @@ const TextClarityTest = () => {
             <Section>
               <h3>Font Size</h3>
               <RangeControl>
-                <label>
-                  <span>Size: {fontSize}px</span>
-                </label>
+                <Label>Size: {fontSize}px</Label>
                 <input
                   type="range"
                   min="8"
-                  max="32"
-                  step="2"
+                  max="72"
                   value={fontSize}
                   onChange={(e) => setFontSize(Number(e.target.value))}
+                />
+              </RangeControl>
+            </Section>
+
+            <Section>
+              <h3>Line Height</h3>
+              <RangeControl>
+                <Label>Height: {lineHeight}</Label>
+                <input
+                  type="range"
+                  min="1"
+                  max="2"
+                  step="0.1"
+                  value={lineHeight}
+                  onChange={(e) => setLineHeight(Number(e.target.value))}
+                />
+              </RangeControl>
+            </Section>
+
+            <Section>
+              <h3>Letter Spacing</h3>
+              <RangeControl>
+                <Label>Spacing: {letterSpacing}px</Label>
+                <input
+                  type="range"
+                  min="-2"
+                  max="10"
+                  step="0.5"
+                  value={letterSpacing}
+                  onChange={(e) => setLetterSpacing(Number(e.target.value))}
                 />
               </RangeControl>
             </Section>
