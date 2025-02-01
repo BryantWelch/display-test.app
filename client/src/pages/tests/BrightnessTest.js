@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -57,18 +58,27 @@ const PanelHeader = styled.div`
 `;
 
 const MinimizeButton = styled.button`
-  background: none;
+  background: #4169e1;
   border: none;
-  color: #666;
+  color: white;
+  font-size: 1.75rem;
   cursor: pointer;
-  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 1;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  transition: all 0.2s ease;
 
   &:hover {
-    color: #333;
+    background: #365bb7;
+  }
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 `;
 
@@ -195,35 +205,39 @@ const BrightnessTest = () => {
         <PanelHeader $isMinimized={isMinimized}>
           <h2>Brightness Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
-            {isMinimized ? '▼' : '▲'}
+            {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
           </MinimizeButton>
         </PanelHeader>
 
-        <Description>
-          This test helps evaluate your display's ability to show different levels of brightness 
-          across varying window sizes. A larger window size can help identify brightness 
-          uniformity issues, while smaller sizes can help test local brightness accuracy. 
-          The test uses a pure white square (100% brightness) against a black background 
-          for maximum contrast.
-        </Description>
+        {!isMinimized && (
+          <>
+            <Description>
+              This test helps evaluate your display's ability to show different levels of brightness 
+              across varying window sizes. A larger window size can help identify brightness 
+              uniformity issues, while smaller sizes can help test local brightness accuracy. 
+              The test uses a pure white square (100% brightness) against a black background 
+              for maximum contrast.
+            </Description>
 
-        <Section>
-          <h3>Window Size</h3>
-          <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-            Size: {windowSize}%
-          </div>
-          <Slider
-            type="range"
-            min="5"
-            max="100"
-            value={windowSize}
-            onChange={(e) => setWindowSize(Number(e.target.value))}
-          />
-        </Section>
+            <Section>
+              <h3>Window Size</h3>
+              <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                Size: {windowSize}%
+              </div>
+              <Slider
+                type="range"
+                min="5"
+                max="100"
+                value={windowSize}
+                onChange={(e) => setWindowSize(Number(e.target.value))}
+              />
+            </Section>
 
-        <Section>
-          <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
-        </Section>
+            <Section>
+              <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
+            </Section>
+          </>
+        )}
       </ControlPanel>
     </TestContainer>
   );

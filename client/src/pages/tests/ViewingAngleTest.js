@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
@@ -197,61 +197,21 @@ const Description = styled.p`
   margin-bottom: 1.5rem;
 `;
 
-const SliderContainer = styled.div`
+const RangeControl = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 100%;
-`;
+  margin-bottom: 1rem;
 
-const SliderLabel = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #666;
-  font-size: 0.9rem;
-
-  span {
-    font-weight: 500;
-  }
-`;
-
-const Slider = styled.input`
-  width: 100%;
-  height: 4px;
-  background: #ddd;
-  border-radius: 2px;
-  appearance: none;
-  outline: none;
-
-  &::-webkit-slider-thumb {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #4169e1;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      transform: scale(1.2);
-      background: #2851db;
-    }
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #666;
   }
 
-  &::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: #4169e1;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      transform: scale(1.2);
-      background: #2851db;
-    }
+  input[type="range"] {
+    width: 100%;
   }
 `;
 
@@ -279,19 +239,34 @@ const ResetButton = styled.button`
 const ViewingAngleTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [gridSize, setGridSize] = useState(5);
+  const [circleDiameter, setCircleDiameter] = useState(100); // in pixels
   const [screenDimensions, setScreenDimensions] = useState({
-    width: window.screen.width,
-    height: window.screen.height
+    width: window.innerWidth,
+    height: window.innerHeight
   });
 
-  const initializeTest = useCallback(() => {
-    // Add any initialization logic here if needed
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    initializeTest();
-  }, [initializeTest]);
+  // Calculate optimal grid size based on viewport and circle size
+  const gridDimensions = useMemo(() => {
+    const cols = Math.floor(screenDimensions.width / circleDiameter);
+    const rows = Math.floor(screenDimensions.height / circleDiameter);
+    return { rows, cols, total: rows * cols };
+  }, [screenDimensions, circleDiameter]);
+
+  const circles = useMemo(() => {
+    return Array.from({ length: gridDimensions.total }, (_, i) => i);
+  }, [gridDimensions.total]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -305,10 +280,8 @@ const ViewingAngleTest = () => {
   }, [navigate]);
 
   const handleReset = () => {
-    setGridSize(5);
+    setCircleDiameter(100);
   };
-
-  const totalCircles = gridSize * gridSize;
 
   return (
     <TestContainer>
@@ -325,11 +298,11 @@ const ViewingAngleTest = () => {
           $screenHeight={screenDimensions.height}
         >
           <Pattern 
-            $rows={gridSize} 
-            $columns={gridSize}
+            $rows={gridDimensions.rows} 
+            $columns={gridDimensions.cols}
             $screenHeight={screenDimensions.height}
           >
-            {Array.from({ length: totalCircles }, (_, i) => (
+            {circles.map((i) => (
               <CircleContainer key={i}>
                 <Circle />
               </CircleContainer>
@@ -340,7 +313,7 @@ const ViewingAngleTest = () => {
 
       <ControlPanel $isMinimized={isMinimized}>
         <PanelHeader $isMinimized={isMinimized}>
-          <h2>Viewing Angle Test Controls</h2>
+          <h2>Viewing Angle Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
           </MinimizeButton>
@@ -349,26 +322,25 @@ const ViewingAngleTest = () => {
         {!isMinimized && (
           <>
             <Description>
-              This test helps evaluate your display's viewing angle performance. Use the slider to adjust the density of test circles across your screen.
-              Each circle should maintain consistent brightness and shape when viewed from different angles. Higher densities create a more detailed test pattern
-              to help identify any inconsistencies across the entire screen surface.
+              This test helps evaluate your display's viewing angle performance. Adjust the circle size to create an optimal pattern
+              for checking color and brightness consistency across your screen from different viewing angles.
             </Description>
 
             <Section>
-              <h3>Circle Density</h3>
-              <SliderContainer>
-                <SliderLabel>
-                  <span>Grid Size:</span>
-                  <span>{gridSize} × {gridSize}</span>
-                </SliderLabel>
-                <Slider
+              <h3>Circle Size</h3>
+              <RangeControl>
+                <label>
+                  <span>Size: {circleDiameter}px ({gridDimensions.cols}×{gridDimensions.rows} grid)</span>
+                </label>
+                <input
                   type="range"
-                  min="2"
-                  max="25"
-                  value={gridSize}
-                  onChange={(e) => setGridSize(parseInt(e.target.value))}
+                  min="50"
+                  max="400"
+                  step="10"
+                  value={circleDiameter}
+                  onChange={(e) => setCircleDiameter(parseInt(e.target.value))}
                 />
-              </SliderContainer>
+              </RangeControl>
             </Section>
 
             <Section>

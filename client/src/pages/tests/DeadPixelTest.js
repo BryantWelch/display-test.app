@@ -184,7 +184,7 @@ const colors = [
 const DeadPixelTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [currentColor, setCurrentColor] = useState(colors[0].value);
+  const [backgroundColor, setBackgroundColor] = useState('#808080');
   const [isAutoChanging, setIsAutoChanging] = useState(false);
   const autoChangeRef = useRef(null);
 
@@ -212,11 +212,11 @@ const DeadPixelTest = () => {
   useEffect(() => {
     if (isAutoChanging) {
       const colors = colors.map(color => color.value);
-      let currentIndex = colors.indexOf(currentColor);
+      let currentIndex = colors.indexOf(backgroundColor);
 
       autoChangeRef.current = setInterval(() => {
         currentIndex = (currentIndex + 1) % colors.length;
-        setCurrentColor(colors[currentIndex]);
+        setBackgroundColor(colors[currentIndex]);
       }, 2000);
 
       return () => {
@@ -225,7 +225,7 @@ const DeadPixelTest = () => {
         }
       };
     }
-  }, [isAutoChanging, currentColor]);
+  }, [isAutoChanging, backgroundColor]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -239,7 +239,7 @@ const DeadPixelTest = () => {
   }, [navigate]);
 
   const handleReset = () => {
-    setCurrentColor(colors[0].value);
+    setBackgroundColor('#808080');
     setIsAutoChanging(false);
     if (autoChangeRef.current) {
       clearInterval(autoChangeRef.current);
@@ -247,7 +247,7 @@ const DeadPixelTest = () => {
   };
 
   return (
-    <TestContainer style={{ backgroundColor: currentColor }}>
+    <TestContainer style={{ backgroundColor: backgroundColor }}>
       <ExitButton onClick={handleExit}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
@@ -286,8 +286,8 @@ const DeadPixelTest = () => {
                   <ColorButton
                     key={color.name}
                     color={color.value}
-                    $isSelected={currentColor === color.value}
-                    onClick={() => setCurrentColor(color.value)}
+                    $isSelected={backgroundColor === color.value}
+                    onClick={() => setBackgroundColor(color.value)}
                     title={color.name}
                   />
                 ))}

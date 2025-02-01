@@ -240,21 +240,26 @@ const ColorGradientTest = () => {
       blue: 'rgb(0, 0, 255)',
       magenta: 'rgb(255, 0, 255)',
       yellow: 'rgb(255, 255, 0)',
-      cyan: 'rgb(0, 255, 255)'
+      cyan: 'rgb(0, 255, 255)',
+      orange: 'rgb(255, 165, 0)'
     };
     return colors[selectedColor] || colors.white;
   };
 
-  const getGradientDirection = () => {
-    switch (gradientDirection) {
+  const getGradientDirection = (direction) => {
+    switch (direction) {
       case 'horizontal':
-        return 'to right';
+        return '90deg';
       case 'vertical':
-        return 'to bottom';
+        return '180deg';
       case 'diagonal-1':
         return '45deg';
       case 'diagonal-2':
         return '135deg';
+      case 'diagonal-3':
+        return '225deg';  // For top-right black to bottom-left color
+      case 'diagonal-4':
+        return '315deg';  // For bottom-right black to top-left color
       default:
         return 'to right';
     }
@@ -295,7 +300,7 @@ const ColorGradientTest = () => {
       }
     }
 
-    const direction = getGradientDirection();
+    const direction = getGradientDirection(gradientDirection);
     return `linear-gradient(${direction}, ${gradientStops.join(', ')})`;
   };
 
@@ -362,7 +367,7 @@ const ColorGradientTest = () => {
               <h3>Target Color</h3>
               <ColorPreview $gradient={generateGradient()} />
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-                {['white', 'red', 'green', 'blue', 'magenta', 'yellow', 'cyan'].map(color => (
+                {['white', 'red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'orange'].map(color => (
                   <ToggleButton
                     key={color}
                     $active={selectedColor === color}
@@ -394,7 +399,7 @@ const ColorGradientTest = () => {
             <Section>
               <h3>Gradient Direction</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-                {['horizontal', 'vertical', 'diagonal-1', 'diagonal-2'].map(direction => (
+                {['horizontal', 'vertical', 'diagonal-1', 'diagonal-2', 'diagonal-3', 'diagonal-4'].map(direction => (
                   <ToggleButton
                     key={direction}
                     $active={gradientDirection === direction}

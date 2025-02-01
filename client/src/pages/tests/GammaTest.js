@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
@@ -192,35 +192,20 @@ const Section = styled.div`
 `;
 
 const RangeControl = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
   label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
     color: #666;
   }
 
   input[type="range"] {
     width: 100%;
-    height: 4px;
-    background: #e0e0e0;
-    border-radius: 2px;
-    appearance: none;
-
-    &::-webkit-slider-thumb {
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      background: #4169e1;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
   }
 `;
 
@@ -282,8 +267,8 @@ const Description = styled.p`
 const GammaTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
-  const [boxSize, setBoxSize] = useState(120);
-  const [backgroundColor, setBackgroundColor] = useState('white');
+  const [boxSize, setBoxSize] = useState(100);
+  const [backgroundColor, setBackgroundColor] = useState('#808080');
   const [showValues, setShowValues] = useState(true);
 
   const initializeTest = useCallback(() => {
@@ -330,12 +315,20 @@ const GammaTest = () => {
   };
 
   const handleReset = () => {
-    setBoxSize(120);
-    setBackgroundColor('white');
+    setBoxSize(100);
+    setBackgroundColor('#808080');
     setShowValues(true);
   };
 
-  const renderGraySteps = () => {
+  const graySteps = useMemo(() => {
+    const steps = [];
+    for (let i = 0; i <= 255; i += 17) { 
+      steps.push(i);
+    }
+    return steps;
+  }, []);
+
+  const renderGraySteps = useCallback(() => {
     return (
       <GrayStepContainer>
         {Object.entries(gammaValues).map(([gamma, steps]) => (
@@ -361,7 +354,7 @@ const GammaTest = () => {
         ))}
       </GrayStepContainer>
     );
-  };
+  }, [boxSize, gammaValues, showValues, backgroundColor]);
 
   return (
     <TestContainer>
@@ -372,7 +365,7 @@ const GammaTest = () => {
         Exit Test
       </ExitButton>
 
-      <TestArea $background={backgroundColors[backgroundColor]}>
+      <TestArea $background={backgroundColor}>
         {renderGraySteps()}
       </TestArea>
 
@@ -406,7 +399,7 @@ const GammaTest = () => {
                   type="range"
                   min="50"
                   max="200"
-                  step="10"
+                  step="5"
                   value={boxSize}
                   onChange={(e) => setBoxSize(Number(e.target.value))}
                 />
@@ -420,7 +413,7 @@ const GammaTest = () => {
                 onChange={(e) => setBackgroundColor(e.target.value)}
               >
                 {Object.entries(backgroundColors).map(([name, value]) => (
-                  <option key={name} value={name}>
+                  <option key={name} value={value}>
                     {name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                   </option>
                 ))}

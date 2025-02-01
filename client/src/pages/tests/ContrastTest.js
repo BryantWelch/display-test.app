@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -71,18 +72,27 @@ const PanelHeader = styled.div`
 `;
 
 const MinimizeButton = styled.button`
-  background: none;
+  background: #4169e1;
   border: none;
-  color: #666;
+  color: white;
+  font-size: 1.75rem;
   cursor: pointer;
-  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 1;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  transition: all 0.2s ease;
 
   &:hover {
-    color: #333;
+    background: #365bb7;
+  }
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 `;
 
@@ -219,35 +229,39 @@ const ContrastTest = () => {
         <PanelHeader $isMinimized={isMinimized}>
           <h2>Contrast Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
-            {isMinimized ? '▼' : '▲'}
+            {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
           </MinimizeButton>
         </PanelHeader>
 
-        <Description>
-          This test evaluates your display's contrast capabilities using a black and white 
-          checkerboard pattern. By adjusting the grid size, you can test contrast at different 
-          scales, which helps identify any contrast ratio issues or display artifacts. 
-          Smaller grid sizes are useful for testing fine detail contrast, while larger 
-          patterns help evaluate overall contrast performance.
-        </Description>
+        {!isMinimized && (
+          <>
+            <Description>
+              This test evaluates your display's contrast capabilities using a black and white 
+              checkerboard pattern. By adjusting the grid size, you can test contrast at different 
+              scales, which helps identify any contrast ratio issues or display artifacts. 
+              Smaller grid sizes are useful for testing fine detail contrast, while larger 
+              patterns help evaluate overall contrast performance.
+            </Description>
 
-        <Section>
-          <h3>Grid Size</h3>
-          <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-            Size: {gridSize}x{gridSize} grid
-          </div>
-          <Slider
-            type="range"
-            min="2"
-            max="50"
-            value={gridSize}
-            onChange={(e) => setGridSize(Number(e.target.value))}
-          />
-        </Section>
+            <Section>
+              <h3>Grid Size</h3>
+              <div style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                Size: {gridSize}x{gridSize} grid
+              </div>
+              <Slider
+                type="range"
+                min="2"
+                max="50"
+                value={gridSize}
+                onChange={(e) => setGridSize(Number(e.target.value))}
+              />
+            </Section>
 
-        <Section>
-          <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
-        </Section>
+            <Section>
+              <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
+            </Section>
+          </>
+        )}
       </ControlPanel>
     </TestContainer>
   );

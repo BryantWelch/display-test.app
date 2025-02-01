@@ -157,6 +157,24 @@ const RadioLabel = styled.label`
   font-size: 1.1rem;
 `;
 
+const RangeControl = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #666;
+  }
+
+  input[type="range"] {
+    width: 100%;
+  }
+`;
+
 const SliderContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -258,30 +276,6 @@ const Select = styled.select`
   }
 `;
 
-const TechnicalInfo = styled.div`
-  background: #f8f9fa;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-top: 1rem;
-  font-size: 1rem;
-  color: #666;
-
-  div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  span:last-child {
-    font-weight: 500;
-    color: #333;
-  }
-`;
-
 const ClearTypeSection = styled.div`
   background: #f8f9fa;
   border-radius: 0.5rem;
@@ -374,9 +368,7 @@ const TextClarityTest = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [font, setFont] = useState('monospace');
   const [isClearTypeOpen, setIsClearTypeOpen] = useState(false);
-  const [isDisplayInfoOpen, setIsDisplayInfoOpen] = useState(false);
   const [textContent, setTextContent] = useState('');
-  const [displayInfo, setDisplayInfo] = useState({});
 
   const initializeTest = useCallback(() => {
     // Add any initialization logic here if needed
@@ -420,20 +412,6 @@ const TextClarityTest = () => {
     handleResize(); // Initial generation
     return () => window.removeEventListener('resize', handleResize);
   }, [fontSize, generateText]);
-
-  useEffect(() => {
-    const updateDisplayInfo = () => {
-      setDisplayInfo({
-        resolution: `${window.screen.width}x${window.screen.height}`,
-        pixelDensity: `${window.devicePixelRatio}`,
-        scaling: `${window.devicePixelRatio * 100}%`
-      });
-    };
-
-    updateDisplayInfo();
-    window.addEventListener('resize', updateDisplayInfo);
-    return () => window.removeEventListener('resize', updateDisplayInfo);
-  }, []);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -553,6 +531,23 @@ const TextClarityTest = () => {
             </Section>
 
             <Section>
+              <h3>Font Size</h3>
+              <RangeControl>
+                <label>
+                  <span>Size: {fontSize}px</span>
+                </label>
+                <input
+                  type="range"
+                  min="8"
+                  max="32"
+                  step="2"
+                  value={fontSize}
+                  onChange={(e) => setFontSize(Number(e.target.value))}
+                />
+              </RangeControl>
+            </Section>
+
+            <Section>
               <h3>Color</h3>
               <RadioGroup>
                 <RadioLabel>
@@ -572,49 +567,6 @@ const TextClarityTest = () => {
                   White on black
                 </RadioLabel>
               </RadioGroup>
-            </Section>
-
-            <Section>
-              <h3>Font size (point)</h3>
-              <SliderContainer>
-                <Slider
-                  type="range"
-                  min="8"
-                  max="32"
-                  step="2"
-                  value={fontSize}
-                  onChange={(e) => setFontSize(Number(e.target.value))}
-                />
-                <SliderValue>{fontSize}</SliderValue>
-              </SliderContainer>
-            </Section>
-
-            <Section>
-              <CollapsibleHeader 
-                onClick={() => setIsDisplayInfoOpen(!isDisplayInfoOpen)}
-                $isOpen={isDisplayInfoOpen}
-              >
-                <h3>Display Information</h3>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 9l-7 7-7-7" />
-                </svg>
-              </CollapsibleHeader>
-              <CollapsibleContent $isOpen={isDisplayInfoOpen}>
-                <TechnicalInfo>
-                  <div>
-                    <span>Resolution:</span>
-                    <span>{displayInfo.resolution}</span>
-                  </div>
-                  <div>
-                    <span>Pixel Density:</span>
-                    <span>{displayInfo.pixelDensity}x</span>
-                  </div>
-                  <div>
-                    <span>Display Scaling:</span>
-                    <span>{displayInfo.scaling}</span>
-                  </div>
-                </TechnicalInfo>
-              </CollapsibleContent>
             </Section>
 
             <Section>
