@@ -42,12 +42,12 @@ const ControlPanel = styled.div`
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: ${props => props.$darkMode ? '#333' : '#fff'};
+  background: white;
   border-radius: 0.75rem;
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   width: 400px;
   padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
-  color: ${props => props.$darkMode ? '#fff' : '#333'};
+  color: #333;
   transition: all 0.3s ease;
   transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
   backdrop-filter: blur(10px);
@@ -83,7 +83,7 @@ const PanelHeader = styled.div`
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: ${props => props.$darkMode ? '#fff' : '#333'};
+    color: #333;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -134,7 +134,7 @@ const Section = styled.div`
     margin: 0 0 1rem 0;
     font-size: 1rem;
     font-weight: 600;
-    color: ${props => props.$darkMode ? '#fff' : '#333'};
+    color: #333;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
