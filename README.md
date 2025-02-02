@@ -110,11 +110,7 @@ Tested and supported in:
 The application will be available at http://localhost:3000
 
 ## Roadmap
-- Advanced calibration tools
-- Custom test pattern creator
-- Test result export functionality
-- Multi-display support
-- Mobile app version
+[Coming soon!]
 
 ## FAQ
 
