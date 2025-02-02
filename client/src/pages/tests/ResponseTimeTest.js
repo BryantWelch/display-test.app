@@ -207,8 +207,8 @@ const MovingBlock = styled.div`
   position: absolute;
   width: ${props => props.$size}px;
   height: ${props => props.$size}px;
-  left: ${props => props.$direction === 'horizontal' ? -props.$size : props.$offset}px;
-  top: ${props => props.$direction === 'vertical' ? -props.$size : props.$offset}px;
+  left: ${props => props.$direction === 'horizontal' ? 0 : props.$offset}px;
+  top: ${props => props.$direction === 'vertical' ? 0 : props.$offset}px;
   animation: ${props => props.$direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.$speed}s linear infinite;
   background: url(${testPatternImage}) no-repeat center center;
   background-size: contain;
@@ -238,8 +238,8 @@ const PursuitText = styled.div`
   position: absolute;
   color: ${props => props.$color === 'white' ? 'white' : 'black'};
   font-size: ${props => props.$size}px;
-  left: ${props => props.$direction === 'horizontal' ? -props.$size : props.$offset}px;
-  top: ${props => props.$direction === 'vertical' ? -props.$size : props.$offset}px;
+  left: ${props => props.$direction === 'horizontal' ? 0 : props.$offset}px;
+  top: ${props => props.$direction === 'vertical' ? 0 : props.$offset}px;
   white-space: nowrap;
   animation: ${props => props.$direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.$speed}s linear infinite;
   will-change: transform;
@@ -300,7 +300,7 @@ const ResponseTimeTest = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [testType, setTestType] = useState('moving-block');
   const [speed, setSpeed] = useState(35);
-  const [blockSize, setBlockSize] = useState(50);
+  const [blockSize, setBlockSize] = useState(100);
   const [backgroundColor, setBackgroundColor] = useState('gray');
   const [objectColor, setObjectColor] = useState('black');
   const [direction, setDirection] = useState('horizontal');
@@ -350,7 +350,7 @@ const ResponseTimeTest = () => {
   const handleReset = () => {
     setTestType('moving-block');
     setSpeed(35);
-    setBlockSize(50);
+    setBlockSize(100);
     setBackgroundColor('gray');
     setObjectColor('black');
     setDirection('horizontal');
@@ -360,7 +360,15 @@ const ResponseTimeTest = () => {
   const renderTest = () => {
     const objects = [];
     for (let i = 0; i < objectCount; i++) {
-      const offset = (i * 100) + (window.innerHeight - (objectCount * 100)) / 2;
+      // Calculate section size for each item
+      const sectionSize = direction === 'horizontal' 
+        ? window.innerHeight / objectCount
+        : window.innerWidth / objectCount;
+      
+      // Calculate offset with centering
+      const offset = direction === 'horizontal'
+        ? (i * sectionSize) + (sectionSize / 2) - (blockSize / 2) // Center vertically within each section
+        : (i * sectionSize) + (sectionSize / 2) - (blockSize / 2); // Center horizontally within each section
 
       if (testType === 'moving-block') {
         objects.push(
@@ -480,8 +488,8 @@ const ResponseTimeTest = () => {
                 </Label>
                 <input
                   type="range"
-                  min="20"
-                  max="100"
+                  min="50"
+                  max="200"
                   step="10"
                   value={blockSize}
                   onChange={(e) => setBlockSize(Number(e.target.value))}

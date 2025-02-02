@@ -219,6 +219,7 @@ const MatrixTest = () => {
   const [backgroundColor, setBackgroundColor] = useState('#000000');
   const [fontSize, setFontSize] = useState(16);
   const [speed, setSpeed] = useState(50);
+  const [resetKey, setResetKey] = useState(0);
   const canvasRef = React.useRef(null);
   const animationRef = React.useRef(null);
   const isUnmountedRef = React.useRef(false);
@@ -244,12 +245,11 @@ const MatrixTest = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Clear the entire canvas with the new background color
+    // Always start with a completely clean canvas
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const columns = Math.floor(canvas.width / fontSize);
-    // Initialize drops at staggered positions
     const drops = new Array(columns).fill(0).map(() => 
       Math.floor(Math.random() * -canvas.height / fontSize)
     );
@@ -259,18 +259,17 @@ const MatrixTest = () => {
     let prevTextColor = textColor;
 
     const draw = () => {
-      // Check if colors changed
+      // Always clear with solid background when colors change
       if (prevBgColor !== backgroundColor || prevTextColor !== textColor) {
-        // Clear canvas with new background color
         ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         prevBgColor = backgroundColor;
         prevTextColor = textColor;
+      } else {
+        // Semi-transparent background for trail effect
+        ctx.fillStyle = backgroundColor + '0a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
-
-      // Semi-transparent background for trail effect
-      ctx.fillStyle = backgroundColor + '0a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Set text properties
       ctx.fillStyle = textColor;
@@ -331,10 +330,19 @@ const MatrixTest = () => {
   }, []);
 
   const handleReset = () => {
+    // First cleanup the current animation
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+    }
+    
+    // Reset all states
     setTextColor('#00ff00');
     setBackgroundColor('#000000');
     setFontSize(16);
     setSpeed(50);
+    
+    // Force a remount by changing the key
+    setResetKey(prev => prev + 1);
   };
 
   const handleExit = useCallback(async () => {
@@ -363,7 +371,7 @@ const MatrixTest = () => {
         Exit Test
       </ExitButton>
 
-      <MatrixCanvas ref={canvasRef} />
+      <MatrixCanvas key={resetKey} ref={canvasRef} />
 
       <ControlPanel $isMinimized={isMinimized}>
         <PanelHeader $isMinimized={isMinimized}>
