@@ -1,6 +1,6 @@
 # Display Test App
 
-A modern, comprehensive display testing application designed to help users evaluate and diagnose various aspects of their displays. From dead pixels to response time, this tool provides a suite of tests to ensure your display is performing optimally.
+A modern, comprehensive display testing application designed to help users evaluate and diagnose various aspects of their displays. From dead pixels to response time, this tool provides a suite of tests to ensure your display is performing optimally. This is a client-side only application built with React, requiring no backend server.
 
 ## Available Tests
 
@@ -86,8 +86,8 @@ Tested and supported in:
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm (v6 or higher)
+- Node.js (v18 or higher)
+- npm (v9 or higher)
 
 ### Installation
 
@@ -99,15 +99,46 @@ Tested and supported in:
 
 2. Install dependencies:
    ```bash
-   npm run install-all
+   npm install
    ```
 
-3. Start the application:
+3. Start the development server:
    ```bash
    npm start
    ```
 
 The application will be available at http://localhost:3000
+
+### Building for Production
+
+To create a production build:
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `build/` directory.
+
+## Development Workflow
+
+### Pattern Generation
+The application includes a pattern generation script that creates test patterns for various display tests:
+```bash
+node scripts/generate-pattern-index.js
+```
+This script should be run whenever new patterns are added to the `src/assets/patterns` directory.
+
+### Development Best Practices
+- Use the provided ESLint configuration for code consistency
+- Follow React hooks best practices for component development
+- Ensure all tests are responsive and work in fullscreen mode
+- Test changes across different browsers before submitting PRs
+
+### Code Organization
+- `/src/pages/tests/` - Individual test components
+- `/src/components/` - Reusable UI components
+- `/src/styles/` - Global styles and theme configuration
+- `/src/assets/` - Static assets and test patterns
+- `/src/store/` - Redux store configuration and slices
 
 ## Roadmap
 [Coming soon!]
@@ -134,15 +165,23 @@ A: Screen recording may affect test performance. It's recommended to run tests w
 ## Tech Stack
 
 ### Frontend
-- React.js
+- React.js (v19)
+- Redux Toolkit for state management
+- React Router v6 for navigation
 - Styled-components for styling
-- React Router for navigation
 - Modern JavaScript (ES6+)
 
 ### Development
 - Create React App
 - ESLint for code quality
 - Prettier for code formatting
+
+### Key Dependencies
+- @reduxjs/toolkit: ^2.5.1
+- react: ^19.0.0
+- react-dom: ^19.0.0
+- react-router-dom: ^6.22.0
+- styled-components: ^6.1.14
 
 ## Contributing
 

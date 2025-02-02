@@ -291,15 +291,15 @@ const ColorDistanceTest = () => {
   const [backgroundColor, setBackgroundColor] = useState({ r: 128, g: 128, b: 128, hex: '#808080' });
   const [foregroundColor, setForegroundColor] = useState({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
 
-  const rgbToHex = (r, g, b) => {
+  const rgbToHex = useCallback((r, g, b) => {
     const toHex = (n) => {
       const hex = Math.round(n).toString(16);
       return hex.length === 1 ? '0' + hex : hex;
     };
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  };
+  }, []);
 
-  const handleHexChange = (hex, isBackground) => {
+  const handleHexChange = useCallback((hex, isBackground) => {
     // Handle paste events that might include the #
     let cleanHex = hex.trim();
     
@@ -352,20 +352,20 @@ const ColorDistanceTest = () => {
         }
       }
     }
-  };
+  }, []);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setBackgroundColor({ r: 128, g: 128, b: 128, hex: '#808080' });
     setForegroundColor({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
-  };
-
-  const initializeTest = () => {
-    // Removed fullscreen initialization
-  };
+  }, []);
 
   useEffect(() => {
-    initializeTest();
-  }, [initializeTest]);
+    // Initialize test setup here
+    // Any initialization code can go here
+    return () => {
+      // Cleanup code if needed
+    };
+  }, []); // Empty dependency array since we don't have any dependencies
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
