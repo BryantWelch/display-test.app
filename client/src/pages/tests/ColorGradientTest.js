@@ -216,12 +216,6 @@ const ExitButton = styled.button`
   }
 `;
 
-const GradientBox = styled.div`
-  width: 100%;
-  height: 100%;
-  background: ${props => props.$gradient};
-`;
-
 const ColorGradientTest = () => {
   const navigate = useNavigate();
   const [steps, setSteps] = useState(32);

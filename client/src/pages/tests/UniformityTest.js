@@ -155,12 +155,6 @@ const Section = styled.div`
   }
 `;
 
-const Label = styled.div`
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-`;
-
 const ResetButton = styled.button`
   width: 100%;
   padding: 1rem;

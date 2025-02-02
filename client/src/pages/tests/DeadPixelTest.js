@@ -154,12 +154,6 @@ const Section = styled.div`
   }
 `;
 
-const Label = styled.div`
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-`;
-
 const ColorGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);

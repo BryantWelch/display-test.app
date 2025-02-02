@@ -182,37 +182,6 @@ const RangeControl = styled.div`
   }
 `;
 
-const SliderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Slider = styled.input`
-  width: 100%;
-  -webkit-appearance: none;
-  height: 4px;
-  background: #e0e0e0;
-  border-radius: 2px;
-  outline: none;
-  
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #4169e1;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-`;
-
-const SliderValue = styled.div`
-  text-align: right;
-  color: #666;
-  font-size: 1.1rem;
-  font-weight: 500;
-`;
-
 const ResetButton = styled.button`
   width: 100%;
   padding: 1rem;
