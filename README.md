@@ -102,7 +102,7 @@ Tested and supported in:
    npm run install-all
    ```
 
-3. Start the development servers:
+3. Start the application:
    ```bash
    npm start
    ```

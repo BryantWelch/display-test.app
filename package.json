@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "description": "A comprehensive display testing website",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && npm start",
-    "client": "cd client && npm start",
-    "install-all": "npm install && cd client && npm install && cd ../server && npm install"
+    "start": "cd client && npm start",
+    "install-all": "npm install && cd client && npm install"
   },
   "dependencies": {
     "concurrently": "^8.2.0"
