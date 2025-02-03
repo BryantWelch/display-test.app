@@ -8,6 +8,7 @@ const FooterContainer = styled.footer`
   padding: 3rem 0 2rem;
   margin-top: auto;
   text-align: center;
+  position: relative;
 `;
 
 const FooterContent = styled.div`
@@ -68,6 +69,28 @@ const Copyright = styled.div`
   color: var(--text-light);
   opacity: 0.6;
   font-size: 0.9rem;
+  position: relative;
+`;
+
+const KofiButton = styled.div`
+  position: absolute;
+  bottom: 1.5rem;
+  right: 2rem;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    position: static;
+    margin-top: 2rem;
+  }
+
+  img {
+    height: 36px;
+    border: 0;
+  }
 `;
 
 const Footer = () => {
@@ -80,21 +103,23 @@ const Footer = () => {
           <h3>About</h3>
           <FooterLinks>
             <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <a href="https://www.displayninja.com/monitor-basics/" target="_blank" rel="noopener noreferrer">
-                Display Technology Guide
+              <a href="https://github.com/BryantWelch/display-test.app" target="_blank" rel="noopener noreferrer">
+                GitHub Repo
               </a>
             </li>
             <li>
-              <a href="https://www.rtings.com/monitor/tests" target="_blank" rel="noopener noreferrer">
-                Monitor Testing Methods
+              <a href="https://github.com/BryantWelch/display-test.app/issues" target="_blank" rel="noopener noreferrer">
+                Issues
               </a>
             </li>
             <li>
-              <a href="https://www.tftcentral.co.uk/articles.htm" target="_blank" rel="noopener noreferrer">
-                Display Articles
+              <a href="https://github.com/BryantWelch/display-test.app/pulls" target="_blank" rel="noopener noreferrer">
+                Pull Requests
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/BryantWelch/display-test.app/releases" target="_blank" rel="noopener noreferrer">
+                Releases
               </a>
             </li>
           </FooterLinks>
@@ -109,18 +134,18 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="https://www.eizo.com/library/" target="_blank" rel="noopener noreferrer">
-                Display Knowledge Base
+              <a href="https://www.displayninja.com/knowledge-base/" target="_blank" rel="noopener noreferrer">
+                Display Ninja Knowledge Base
               </a>
             </li>
             <li>
-              <a href="https://www.lagom.nl/lcd-test/" target="_blank" rel="noopener noreferrer">
-                Lagom LCD Tests
+              <a href="https://www.rtings.com/research" target="_blank" rel="noopener noreferrer">
+                Rtings Research
               </a>
             </li>
             <li>
-              <a href="https://www.blur-busters.com/" target="_blank" rel="noopener noreferrer">
-                Motion Blur Research
+              <a href="https://www.testufo.com/" target="_blank" rel="noopener noreferrer">
+                UFO Test
               </a>
             </li>
           </FooterLinks>
@@ -136,17 +161,17 @@ const Footer = () => {
             </li>
             <li>
               <a href="https://forums.blurbusters.com/" target="_blank" rel="noopener noreferrer">
-                Display Enthusiasts Forum
+                Blur Busters Forum
               </a>
             </li>
             <li>
-              <a href="https://discord.gg/monitors" target="_blank" rel="noopener noreferrer">
-                Monitor Discord
+              <a href="https://www.avsforum.com/forums/display-calibration.139/" target="_blank" rel="noopener noreferrer">
+                AVS Forum - Display Calibration
               </a>
             </li>
             <li>
-              <a href="https://github.com/topics/display-testing" target="_blank" rel="noopener noreferrer">
-                Open Source Tools
+              <a href="https://hub.displaycal.net/forums/forum/general-discussion/" target="_blank" rel="noopener noreferrer">
+                DisplayCal Forum
               </a>
             </li>
           </FooterLinks>
@@ -156,6 +181,12 @@ const Footer = () => {
       <Copyright>
         &copy; {currentYear} Display Test App. All rights reserved.
       </Copyright>
+
+      <KofiButton>
+        <a href='https://ko-fi.com/V7V01A0SJC' target='_blank' rel="noopener noreferrer">
+          <img src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' alt='Buy Me a Coffee at ko-fi.com' />
+        </a>
+      </KofiButton>
     </FooterContainer>
   );
 };
