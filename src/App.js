@@ -1,7 +1,8 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from './components/Layout';
+import Footer from './components/Footer';
 import Home from './pages/Home';
 import DeadPixelTest from './pages/tests/DeadPixelTest';
 import UniformityTest from './pages/tests/UniformityTest';
@@ -23,6 +24,9 @@ const AppContainer = styled.div`
 `;
 
 const App = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   return (
     <AppContainer>
       <Layout>
@@ -42,6 +46,7 @@ const App = () => {
           <Route path="/test/matrix" element={<MatrixTest />} />
         </Routes>
       </Layout>
+      {isHomePage && <Footer />}
     </AppContainer>
   );
 };
