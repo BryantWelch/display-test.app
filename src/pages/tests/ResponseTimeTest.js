@@ -203,64 +203,111 @@ const TestArea = styled.div`
   overflow: hidden;
 `;
 
-const MovingBlock = styled.div`
+const Display = styled.div`
   position: absolute;
   width: ${props => props.$size}px;
   height: ${props => props.$size}px;
-  left: ${props => props.$direction === 'horizontal' ? 0 : props.$offset}px;
-  top: ${props => props.$direction === 'vertical' ? 0 : props.$offset}px;
-  animation: ${props => props.$direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.$speed}s linear infinite;
+  ${props => props.$direction === 'horizontal' ? `
+    top: ${props.$offset}px;
+    left: -${props.$size}px;
+  ` : `
+    left: ${props.$offset}px;
+    top: -${props.$size}px;
+  `}
+  animation: ${props => props.$direction === 'horizontal' ? 'blockRight' : 'blockDown'} ${props => 100/props.$speed}s linear infinite;
   background: url(${testPatternImage}) no-repeat center center;
   background-size: contain;
   filter: ${props => props.$color === 'white' ? 'invert(1)' : 'none'};
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
-  @keyframes moveRight {
+  @keyframes blockRight {
     from {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translateX(calc(${window.screen.width}px + ${props => props.$size}px));
+      transform: translate3d(calc(100vw + ${props => props.$size}px), 0, 0);
     }
   }
 
-  @keyframes moveDown {
+  @keyframes blockDown {
     from {
-      transform: translateY(0);
+      transform: translate3d(0, 0, 0);
     }
     to {
-      transform: translateY(calc(${window.screen.height}px + ${props => props.$size}px));
+      transform: translate3d(0, calc(100vh + ${props => props.$size}px), 0);
+    }
+  }
+`;
+
+const HorizontalWrapper = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  height: 100vh;
+  top: 0;
+  left: -${props => props.$size * 12}px;
+  animation: moveRight ${props => 100/props.$speed}s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @keyframes moveRight {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(100vw + ${props => props.$size * 12}px), 0, 0);
+    }
+  }
+`;
+
+const VerticalWrapper = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  top: -${props => props.$size}px;
+  left: 0;
+  animation: moveDown ${props => 100/props.$speed}s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @keyframes moveDown {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(0, calc(100vh + ${props => props.$size}px), 0);
     }
   }
 `;
 
 const PursuitText = styled.div`
-  position: absolute;
   color: ${props => props.$color === 'white' ? 'white' : 'black'};
   font-size: ${props => props.$size}px;
-  left: ${props => props.$direction === 'horizontal' ? 0 : props.$offset}px;
-  top: ${props => props.$direction === 'vertical' ? 0 : props.$offset}px;
   white-space: nowrap;
-  animation: ${props => props.$direction === 'horizontal' ? 'moveRight' : 'moveDown'} ${props => 100/props.$speed}s linear infinite;
-  will-change: transform;
-
-  @keyframes moveRight {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(calc(${window.screen.width}px + ${props => props.$size}px));
-    }
-  }
-
-  @keyframes moveDown {
-    from {
-      transform: translateY(0);
-    }
-    to {
-      transform: translateY(calc(${window.screen.height}px + ${props => props.$size}px));
-    }
-  }
+  text-align: center;
+  min-height: ${props => props.$size}px;
+  line-height: 1;
+  margin: ${props => props.$direction === 'vertical' ? `0 ${props.$margin}px` : `${props.$margin}px 0`};
 `;
 
 const ResetButton = styled.button`
@@ -320,22 +367,21 @@ const ResponseTimeTest = () => {
     'burgundy': '#800020'
   };
 
-  const initializeTest = () => {
-    // Initialize test here
-  };
-
   useEffect(() => {
-    initializeTest();
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+    const cleanup = () => {
+      const currentAnimation = animationFrameRef.current;
+      if (currentAnimation) {
+        cancelAnimationFrame(currentAnimation);
       }
     };
-  }, [initializeTest]);
+
+    return cleanup;
+  }, []); 
 
   const handleExit = useCallback(async () => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
+    const currentAnimation = animationFrameRef.current;
+    if (currentAnimation) {
+      cancelAnimationFrame(currentAnimation);
     }
     if (document.fullscreenElement) {
       try {
@@ -347,7 +393,7 @@ const ResponseTimeTest = () => {
     navigate(-1);
   }, [navigate]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setTestType('moving-block');
     setSpeed(35);
     setBlockSize(100);
@@ -355,24 +401,19 @@ const ResponseTimeTest = () => {
     setObjectColor('black');
     setDirection('horizontal');
     setObjectCount(1);
-  };
+  }, []);
 
   const renderTest = () => {
-    const objects = [];
-    for (let i = 0; i < objectCount; i++) {
-      // Calculate section size for each item
-      const sectionSize = direction === 'horizontal' 
-        ? window.innerHeight / objectCount
-        : window.innerWidth / objectCount;
-      
-      // Calculate offset with centering
-      const offset = direction === 'horizontal'
-        ? (i * sectionSize) + (sectionSize / 2) - (blockSize / 2) // Center vertically within each section
-        : (i * sectionSize) + (sectionSize / 2) - (blockSize / 2); // Center horizontally within each section
+    if (testType === 'moving-block') {
+      return Array.from({ length: objectCount }).map((_, i) => {
+        const sectionSize = direction === 'horizontal' 
+          ? window.innerHeight / objectCount
+          : window.innerWidth / objectCount;
+        
+        const offset = (i * sectionSize) + (sectionSize / 2) - (blockSize / 2);
 
-      if (testType === 'moving-block') {
-        objects.push(
-          <MovingBlock
+        return (
+          <Display
             key={i}
             $size={blockSize}
             $color={objectColor}
@@ -381,22 +422,33 @@ const ResponseTimeTest = () => {
             $offset={offset}
           />
         );
-      } else {
-        objects.push(
+      });
+    }
+
+    // Calculate margin based on number of objects
+    const margin = objectCount > 1 ? blockSize / 2 : 0;
+
+    const Wrapper = direction === 'horizontal' ? HorizontalWrapper : VerticalWrapper;
+
+    // For pursuit text, wrap all texts in a single container
+    return (
+      <Wrapper
+        $speed={speed}
+        $size={blockSize}
+      >
+        {Array.from({ length: objectCount }).map((_, i) => (
           <PursuitText
             key={i}
             $size={blockSize}
-            $speed={speed}
             $color={objectColor}
+            $margin={margin}
             $direction={direction}
-            $offset={offset}
           >
             PURSUIT TEST
           </PursuitText>
-        );
-      }
-    }
-    return objects;
+        ))}
+      </Wrapper>
+    );
   };
 
   return (
@@ -423,8 +475,8 @@ const ResponseTimeTest = () => {
         {!isMinimized && (
           <>
             <Description>
-              Test your display's response time with various moving patterns and transitions.
-              Follow the objects with your eyes to evaluate motion clarity and ghosting.
+              Test your display's response time with either an image of a display or the word pursuit text.
+              Follow the objects with your eyes or camera to evaluate motion clarity and ghosting.
             </Description>
 
             <Section>
@@ -434,7 +486,7 @@ const ResponseTimeTest = () => {
                   $active={testType === 'moving-block'}
                   onClick={() => setTestType('moving-block')}
                 >
-                  Moving Block
+                  Display
                 </ToggleButton>
                 <ToggleButton
                   $active={testType === 'pursuit'}
