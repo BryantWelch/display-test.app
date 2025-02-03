@@ -1,38 +1,45 @@
 import React from 'react';
 import styled from 'styled-components';
 import FullscreenLink from '../components/FullscreenLink';
+import Header from '../components/Header';
 
-const HomeContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-`;
-
-const Hero = styled.section`
-  text-align: center;
-  margin-bottom: 4rem;
-`;
-
-const Title = styled.h1`
-  font-size: 3.5rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(to right, var(--primary), #60a5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.25rem;
-  color: var(--secondary);
-  max-width: 600px;
-  margin: 0 auto;
-`;
+const HomeContainer = styled.div``;
 
 const TestGrid = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
-  margin-top: 3rem;
+`;
+
+const StyledFullscreenLink = styled(FullscreenLink)`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 2rem;
+  text-decoration: none;
+  color: var(--text-light);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+  }
+
+  p {
+    color: var(--secondary);
+    line-height: 1.6;
+    font-size: 1rem;
+  }
 `;
 
 const Home = () => {
@@ -101,16 +108,10 @@ const Home = () => {
 
   return (
     <HomeContainer>
-      <Hero>
-        <Title>Professional Display Testing</Title>
-        <Subtitle>
-          Comprehensive tools to evaluate and optimize your display's performance
-        </Subtitle>
-      </Hero>
-
+      <Header />
       <TestGrid>
         {tests.map((test) => (
-          <FullscreenLink
+          <StyledFullscreenLink
             key={test.path}
             to={test.path}
             title={test.title}

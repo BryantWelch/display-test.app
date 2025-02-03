@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Nav = styled.nav`
@@ -15,8 +15,8 @@ const NavContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 2rem;
 `;
 
 const Logo = styled(Link)`
@@ -25,36 +25,131 @@ const Logo = styled(Link)`
   color: var(--primary);
 `;
 
-const NavLinks = styled.div`
-  display: flex;
-  gap: 2rem;
+const DropdownContainer = styled.div`
+  position: relative;
+  display: inline-block;
 `;
 
-const NavLink = styled(Link)`
+const DropdownButton = styled.button`
   color: var(--text);
-  transition: color 0.2s;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  border-radius: 6px;
 
   &:hover {
     color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  svg {
+    transition: transform 0.2s;
+    transform: ${props => props.show ? 'rotate(180deg)' : 'rotate(0)'};
   }
 `;
 
+const DropdownContent = styled.div`
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background-color: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  min-width: 220px;
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.3);
+  opacity: ${props => props.show ? '1' : '0'};
+  visibility: ${props => props.show ? 'visible' : 'hidden'};
+  transform: translateY(${props => props.show ? '0' : '-10px'});
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 1rem;
+    width: 8px;
+    height: 8px;
+    background: rgba(15, 23, 42, 0.95);
+    transform: rotate(45deg);
+  }
+`;
+
+const DropdownItem = styled.a`
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  display: block;
+  text-decoration: none;
+  transition: all 0.2s;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+
+  &:hover {
+    color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+`;
+
+const FullscreenNavLink = ({ to, children }) => {
+  const navigate = useNavigate();
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    try {
+      await document.documentElement.requestFullscreen();
+      navigate(to);
+    } catch (err) {
+      console.log(`Error attempting to enable fullscreen: ${err.message}`);
+      navigate(to);
+    }
+  };
+
+  return (
+    <DropdownItem onClick={handleClick}>
+      {children}
+    </DropdownItem>
+  );
+};
+
 const Navbar = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
+
   return (
     <Nav>
       <NavContainer>
         <Logo to="/">Display Test</Logo>
-        <NavLinks>
-          <NavLink to="/test/dead-pixel">Dead Pixel</NavLink>
-          <NavLink to="/test/uniformity">Uniformity</NavLink>
-          <NavLink to="/test/text-clarity">Text Clarity</NavLink>
-          <NavLink to="/test/color-gradient">Color Gradient</NavLink>
-          <NavLink to="/test/color-distance">Color Distance</NavLink>
-          <NavLink to="/test/response-time">Response Time</NavLink>
-          <NavLink to="/test/gamma">Gamma</NavLink>
-          <NavLink to="/test/test-patterns">Test Patterns</NavLink>
-          <NavLink to="/test/viewing-angle">Viewing Angle</NavLink>
-        </NavLinks>
+        <DropdownContainer 
+          onMouseEnter={() => setShowDropdown(true)}
+          onMouseLeave={() => setShowDropdown(false)}
+        >
+          <DropdownButton show={showDropdown}>
+            Tests
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </DropdownButton>
+          <DropdownContent show={showDropdown}>
+            <FullscreenNavLink to="/test/dead-pixel">Dead Pixel</FullscreenNavLink>
+            <FullscreenNavLink to="/test/uniformity">Uniformity</FullscreenNavLink>
+            <FullscreenNavLink to="/test/text-clarity">Text Clarity</FullscreenNavLink>
+            <FullscreenNavLink to="/test/color-gradient">Color Gradient</FullscreenNavLink>
+            <FullscreenNavLink to="/test/color-distance">Color Distance</FullscreenNavLink>
+            <FullscreenNavLink to="/test/response-time">Response Time</FullscreenNavLink>
+            <FullscreenNavLink to="/test/gamma">Gamma</FullscreenNavLink>
+            <FullscreenNavLink to="/test/test-patterns">Test Patterns</FullscreenNavLink>
+            <FullscreenNavLink to="/test/viewing-angle">Viewing Angle</FullscreenNavLink>
+            <FullscreenNavLink to="/test/brightness">Brightness</FullscreenNavLink>
+            <FullscreenNavLink to="/test/contrast">Contrast</FullscreenNavLink>
+            <FullscreenNavLink to="/test/matrix">Matrix</FullscreenNavLink>
+          </DropdownContent>
+        </DropdownContainer>
       </NavContainer>
     </Nav>
   );

@@ -3,18 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const TestCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2rem;
-  border-radius: 1rem;
-  transition: transform 0.2s;
   cursor: pointer;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
 `;
 
-const TestTitle = styled.h3`
+const TestTitle = styled.h2`
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: var(--primary);
@@ -22,9 +14,11 @@ const TestTitle = styled.h3`
 
 const TestDescription = styled.p`
   color: var(--secondary);
+  line-height: 1.6;
+  font-size: 1rem;
 `;
 
-const FullscreenLink = ({ to, title, description }) => {
+const FullscreenLink = ({ to, title, description, className }) => {
   const navigate = useNavigate();
 
   const handleClick = async (e) => {
@@ -40,7 +34,7 @@ const FullscreenLink = ({ to, title, description }) => {
   };
 
   return (
-    <TestCard onClick={handleClick}>
+    <TestCard onClick={handleClick} className={className}>
       <TestTitle>{title}</TestTitle>
       <TestDescription>{description}</TestDescription>
     </TestCard>
