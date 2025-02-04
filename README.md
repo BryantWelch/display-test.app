@@ -24,6 +24,41 @@ A modern, comprehensive display testing application designed to help users evalu
 - Cross-browser compatibility
 - Mobile-responsive design
 
+## Getting Started
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm (v9 or higher)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/BryantWelch/display-test.app.git
+   cd display-test.app
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+The application will be available at http://localhost:3000
+
+### Building for Production
+
+To create a production build:
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `build/` directory.
+
 ## Screenshots
 [Coming Soon] Visual examples of each test will be added here.
 
@@ -82,41 +117,6 @@ Tested and supported in:
    - Disable night light/blue light filters
    - Check color profile settings
    - Disable auto-brightness
-
-## Getting Started
-
-### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/BryantWelch/display-test.app.git
-   cd display-test.app
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm start
-   ```
-
-The application will be available at http://localhost:3000
-
-### Building for Production
-
-To create a production build:
-```bash
-npm run build
-```
-
-The build artifacts will be stored in the `build/` directory.
 
 ## Development Workflow
 
