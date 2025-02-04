@@ -16,6 +16,7 @@ import ViewingAngleTest from './pages/tests/ViewingAngleTest';
 import BrightnessTest from './pages/tests/BrightnessTest';
 import ContrastTest from './pages/tests/ContrastTest';
 import MatrixTest from './pages/tests/MatrixTest';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -32,6 +33,7 @@ const App = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/test/dead-pixel" element={<DeadPixelTest />} />
           <Route path="/test/uniformity" element={<UniformityTest />} />
           <Route path="/test/text-clarity" element={<TextClarityTest />} />

@@ -97,6 +97,18 @@ const DropdownItem = styled.a`
   }
 `;
 
+const ExternalDropdownItem = styled(DropdownItem)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.7;
+  }
+`;
+
 const FullscreenNavLink = ({ to, children }) => {
   const navigate = useNavigate();
 
@@ -119,23 +131,24 @@ const FullscreenNavLink = ({ to, children }) => {
 };
 
 const Navbar = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showTestsDropdown, setShowTestsDropdown] = useState(false);
+  const [showToolsDropdown, setShowToolsDropdown] = useState(false);
 
   return (
     <Nav>
       <NavContainer>
         <Logo to="/">Display Test</Logo>
         <DropdownContainer 
-          onMouseEnter={() => setShowDropdown(true)}
-          onMouseLeave={() => setShowDropdown(false)}
+          onMouseEnter={() => setShowTestsDropdown(true)}
+          onMouseLeave={() => setShowTestsDropdown(false)}
         >
-          <DropdownButton show={showDropdown}>
+          <DropdownButton show={showTestsDropdown}>
             Tests
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </DropdownButton>
-          <DropdownContent show={showDropdown}>
+          <DropdownContent show={showTestsDropdown}>
             <FullscreenNavLink to="/test/dead-pixel">Dead Pixel</FullscreenNavLink>
             <FullscreenNavLink to="/test/uniformity">Uniformity</FullscreenNavLink>
             <FullscreenNavLink to="/test/text-clarity">Text Clarity</FullscreenNavLink>
@@ -148,6 +161,39 @@ const Navbar = () => {
             <FullscreenNavLink to="/test/brightness">Brightness</FullscreenNavLink>
             <FullscreenNavLink to="/test/contrast">Contrast</FullscreenNavLink>
             <FullscreenNavLink to="/test/matrix">Matrix</FullscreenNavLink>
+          </DropdownContent>
+        </DropdownContainer>
+        <DropdownContainer 
+          onMouseEnter={() => setShowToolsDropdown(true)}
+          onMouseLeave={() => setShowToolsDropdown(false)}
+        >
+          <DropdownButton show={showToolsDropdown}>
+            Other Tools
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </DropdownButton>
+          <DropdownContent show={showToolsDropdown}>
+            <ExternalDropdownItem 
+              href="https://keyboard-test.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Keyboard Test
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://controller-test.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              Controller Test
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
           </DropdownContent>
         </DropdownContainer>
       </NavContainer>

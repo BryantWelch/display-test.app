@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const FooterContainer = styled.footer`
   background: linear-gradient(to right, var(--primary-dark), var(--primary));
@@ -78,6 +79,35 @@ const ExternalLink = styled.a`
   }
 `;
 
+const InternalLink = styled(Link)`
+  color: var(--text-light);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s;
+
+  &:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background: linear-gradient(to right, var(--primary), #60a5fa);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+  }
+
+  &:hover {
+    color: #60a5fa;
+    
+    &:after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+  }
+`;
+
 const Copyright = styled.div`
   text-align: center;
   margin-top: 3rem;
@@ -87,6 +117,25 @@ const Copyright = styled.div`
   opacity: 0.6;
   font-size: 0.9rem;
   position: relative;
+`;
+
+const LegalLinks = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+  
+  a {
+    color: var(--text-light);
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    font-size: 0.9rem;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
 `;
 
 const KofiButton = styled.div`
@@ -206,7 +255,18 @@ const Footer = () => {
       </FooterContent>
       
       <Copyright>
-        &copy; {currentYear} Display Test App. All rights reserved.
+        <div>
+          &copy; {currentYear} Display Test App. Open source under{' '}
+          <ExternalLink 
+            href="https://github.com/BryantWelch/display-test.app/blob/main/LICENSE" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            MIT License
+          </ExternalLink>
+          {' • '}
+          <InternalLink to="/privacy">Privacy Policy</InternalLink>
+        </div>
       </Copyright>
 
       <KofiButton>
