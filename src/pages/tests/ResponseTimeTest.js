@@ -367,31 +367,50 @@ const ResponseTimeTest = () => {
     'burgundy': '#800020'
   };
 
-  useEffect(() => {
-    const cleanup = () => {
-      const currentAnimation = animationFrameRef.current;
-      if (currentAnimation) {
-        cancelAnimationFrame(currentAnimation);
-      }
-    };
-
-    return cleanup;
-  }, []); 
-
-  const handleExit = useCallback(async () => {
+  const cleanup = useCallback(() => {
     const currentAnimation = animationFrameRef.current;
     if (currentAnimation) {
       cancelAnimationFrame(currentAnimation);
     }
+  }, []);
+
+  useEffect(() => {
+    return cleanup;
+  }, [cleanup]); 
+
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      if (!document.fullscreenElement) {
+        navigate('/');
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange);
+    };
+  }, [navigate]);
+
+  const handleExit = useCallback(async () => {
+    // First cleanup the animation
+    cleanup();
+    
+    // Then handle fullscreen exit and navigation
     if (document.fullscreenElement) {
       try {
         await document.exitFullscreen();
+        // Wait for the next frame to ensure fullscreen exit is complete
+        requestAnimationFrame(() => {
+          navigate('/');
+        });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
+        navigate('/');
       }
+    } else {
+      navigate('/');
     }
-    navigate(-1);
-  }, [navigate]);
+  }, [navigate, cleanup]);
 
   const handleReset = useCallback(() => {
     setTestType('moving-block');

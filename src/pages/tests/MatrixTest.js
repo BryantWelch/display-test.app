@@ -323,6 +323,19 @@ const MatrixTest = () => {
     };
   }, [initMatrix]);
 
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      if (!document.fullscreenElement) {
+        navigate('/');
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange);
+    };
+  }, [navigate]);
+
   const cleanup = useCallback(() => {
     if (animationRef.current) {
       clearTimeout(animationRef.current);
@@ -349,17 +362,21 @@ const MatrixTest = () => {
     // First cleanup the animation
     cleanup();
     
-    // Then exit fullscreen if we're in it
+    // Then handle fullscreen exit and navigation
     if (document.fullscreenElement) {
       try {
         await document.exitFullscreen();
+        // Wait for the next frame to ensure fullscreen exit is complete
+        requestAnimationFrame(() => {
+          navigate('/');
+        });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
+        navigate('/');
       }
+    } else {
+      navigate('/');
     }
-    
-    // Finally navigate back
-    navigate(-1);
   }, [navigate, cleanup]);
 
   return (

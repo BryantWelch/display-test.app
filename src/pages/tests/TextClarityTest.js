@@ -395,17 +395,23 @@ const TextClarityTest = () => {
     if (document.fullscreenElement) {
       try {
         await document.exitFullscreen();
+        // Wait for the next frame to ensure fullscreen exit is complete
+        requestAnimationFrame(() => {
+          navigate('/');
+        });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
+        navigate('/');
       }
+    } else {
+      navigate('/');
     }
-    navigate(-1);
   }, [navigate]);
 
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
-        navigate(-1);
+        navigate('/');
       }
     };
 

@@ -278,6 +278,19 @@ const ViewingAngleTest = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      if (!document.fullscreenElement) {
+        navigate('/');
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange);
+    };
+  }, [navigate]);
+
   // Calculate optimal grid size based on viewport and circle size
   const gridDimensions = useMemo(() => {
     const cols = Math.floor(screenDimensions.width / circleDiameter);
@@ -293,11 +306,17 @@ const ViewingAngleTest = () => {
     if (document.fullscreenElement) {
       try {
         await document.exitFullscreen();
+        // Wait for the next frame to ensure fullscreen exit is complete
+        requestAnimationFrame(() => {
+          navigate('/');
+        });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
+        navigate('/');
       }
+    } else {
+      navigate('/');
     }
-    navigate(-1);
   }, [navigate]);
 
   const handleReset = () => {
