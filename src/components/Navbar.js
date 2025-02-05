@@ -133,11 +133,16 @@ const FullscreenNavLink = ({ to, children }) => {
 const Navbar = () => {
   const [showTestsDropdown, setShowTestsDropdown] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
+  const [showDiscsDropdown, setShowDiscsDropdown] = useState(false);
+  const [showHardwareDropdown, setShowHardwareDropdown] = useState(false);
+  const [showSoftwareDropdown, setShowSoftwareDropdown] = useState(false);
 
   return (
     <Nav>
       <NavContainer>
         <Logo to="/">Display Test</Logo>
+        
+        {/* Tests Dropdown */}
         <DropdownContainer 
           onMouseEnter={() => setShowTestsDropdown(true)}
           onMouseLeave={() => setShowTestsDropdown(false)}
@@ -163,6 +168,8 @@ const Navbar = () => {
             <FullscreenNavLink to="/test/matrix">Matrix</FullscreenNavLink>
           </DropdownContent>
         </DropdownContainer>
+
+        {/* Other Tools Dropdown */}
         <DropdownContainer 
           onMouseEnter={() => setShowToolsDropdown(true)}
           onMouseLeave={() => setShowToolsDropdown(false)}
@@ -196,6 +203,82 @@ const Navbar = () => {
             </ExternalDropdownItem>
           </DropdownContent>
         </DropdownContainer>
+
+        {/* Calibration Discs */}
+        <DropdownContainer 
+          onMouseEnter={() => setShowDiscsDropdown(true)}
+          onMouseLeave={() => setShowDiscsDropdown(false)}
+        >
+          <DropdownButton show={showDiscsDropdown}>
+            Calibration Discs
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </DropdownButton>
+          <DropdownContent show={showDiscsDropdown}>
+            <ExternalDropdownItem 
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PLACEHOLDER
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+          </DropdownContent>
+        </DropdownContainer>
+
+        {/* Calibration Hardware */}
+        <DropdownContainer 
+          onMouseEnter={() => setShowHardwareDropdown(true)}
+          onMouseLeave={() => setShowHardwareDropdown(false)}
+        >
+          <DropdownButton show={showHardwareDropdown}>
+            Calibration Hardware
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </DropdownButton>
+          <DropdownContent show={showHardwareDropdown}>
+            <ExternalDropdownItem 
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PLACEHOLDER
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+          </DropdownContent>
+        </DropdownContainer>
+
+        {/* Calibration Software */}
+        <DropdownContainer 
+          onMouseEnter={() => setShowSoftwareDropdown(true)}
+          onMouseLeave={() => setShowSoftwareDropdown(false)}
+        >
+          <DropdownButton show={showSoftwareDropdown}>
+            Calibration Software
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </DropdownButton>
+          <DropdownContent show={showSoftwareDropdown}>
+            <ExternalDropdownItem 
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PLACEHOLDER
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+          </DropdownContent>
+        </DropdownContainer>
+
       </NavContainer>
     </Nav>
   );
