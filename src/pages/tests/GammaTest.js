@@ -72,11 +72,15 @@ const GrayBox = styled.div`
 `;
 
 const RowLabel = styled.div`
-  font-size: 0.9rem;
+  font-size: 1.2rem;
+  font-weight: bold;
   color: ${props => props.value === 0 ? '#fff' : '#000'};
   margin-right: 1rem;
   width: 80px;
   text-align: right;
+  background: ${props => props.value === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'};
+  padding: 4px 8px;
+  border-radius: 4px;
 `;
 
 const ControlPanel = styled.div`
@@ -375,7 +379,9 @@ const GammaTest = () => {
   const renderGraySteps = useCallback(() => {
     return (
       <GrayStepContainer>
-        {Object.entries(gammaValues).map(([gamma, steps]) => (
+        {Object.entries(gammaValues)
+          .sort(([a], [b]) => parseFloat(a) - parseFloat(b))  
+          .map(([gamma, steps]) => (
           <StepRow key={gamma}>
             <RowLabel value={backgroundColor === 'white' ? 0 : 255}>
               γ = {gamma}

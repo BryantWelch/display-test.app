@@ -175,24 +175,34 @@ const Slider = styled.input`
 `;
 
 const ColorButton = styled.button`
-  padding: 0.5rem 1rem;
-  border: 2px solid ${props => props.$isSelected ? '#4169e1' : '#ddd'};
-  border-radius: 0.25rem;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 2px solid #4169e1;
+  border-radius: 4px;
   background: ${props => props.$color};
-  color: ${props => props.$textColor || (props.$isSelected ? 'white' : '#666')};
   cursor: pointer;
-  font-size: 0.9rem;
   transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #4169e1;
-  }
 `;
 
 const ColorGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+`;
+
+const ColorSection = styled.div`
+  margin-bottom: 2rem;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 `;
 
 const ResetButton = styled.button`
@@ -217,12 +227,21 @@ const MatrixTest = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [textColor, setTextColor] = useState('#00ff00');
   const [backgroundColor, setBackgroundColor] = useState('#000000');
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize, setFontSize] = useState(30);
   const [speed, setSpeed] = useState(50);
   const [resetKey, setResetKey] = useState(0);
   const canvasRef = React.useRef(null);
   const animationRef = React.useRef(null);
-  const isUnmountedRef = React.useRef(false);
+  const abortControllerRef = React.useRef(null);
+
+  useEffect(() => {
+    abortControllerRef.current = new AbortController();
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const textColors = [
     { name: 'Matrix Green', value: '#00ff00' },
@@ -236,16 +255,28 @@ const MatrixTest = () => {
   const backgroundColors = [
     { name: 'Black', value: '#000000' },
     { name: 'Dark Gray', value: '#222222' },
-    { name: 'Navy', value: '#000033' }
+    { name: 'Navy', value: '#000033' },
+    { name: 'Dark Blue', value: '#000066' }
   ];
 
   const initMatrix = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     const canvas = canvasRef.current;
+    if (!canvas || signal.aborted) return;
+
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Always start with a completely clean canvas
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -255,61 +286,63 @@ const MatrixTest = () => {
     );
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
-    let prevBgColor = backgroundColor;
-    let prevTextColor = textColor;
 
     const draw = () => {
-      // Always clear with solid background when colors change
-      if (prevBgColor !== backgroundColor || prevTextColor !== textColor) {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        prevBgColor = backgroundColor;
-        prevTextColor = textColor;
-      } else {
-        // Semi-transparent background for trail effect
-        ctx.fillStyle = backgroundColor + '0a';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
+      if (signal.aborted) return;
 
-      // Set text properties
+      ctx.fillStyle = backgroundColor + '0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = textColor;
       ctx.font = fontSize + 'px monospace';
       ctx.textAlign = 'start';
       ctx.textBaseline = 'top';
 
       for (let i = 0; i < drops.length; i++) {
-        // Only draw if drop is on screen
         if (drops[i] * fontSize > 0) {
           const text = chars[Math.floor(Math.random() * chars.length)];
           ctx.fillText(text, i * fontSize, drops[i] * fontSize);
         }
         
-        // Reset to random position above screen when reaching bottom
         if (drops[i] * fontSize > canvas.height) {
           drops[i] = Math.random() > 0.975 ? 0 : -10;
         }
         drops[i]++;
       }
 
-      // Schedule next frame with proper timing
-      if (!isUnmountedRef.current) {
+      if (!signal.aborted) {
         animationRef.current = setTimeout(() => {
           requestAnimationFrame(draw);
         }, Math.max(1, 100 - speed));
       }
     };
 
-    draw();
+    if (!signal.aborted) {
+      animationRef.current = setTimeout(() => {
+        requestAnimationFrame(draw);
+      }, Math.max(1, 100 - speed));
+    }
   }, [backgroundColor, textColor, fontSize, speed]);
 
   useEffect(() => {
-    isUnmountedRef.current = false;
     initMatrix();
     
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [backgroundColor, textColor, fontSize, speed, initMatrix]);
+
+  useEffect(() => {
     const handleResize = () => {
-      if (canvasRef.current && !isUnmountedRef.current) {
-        canvasRef.current.width = window.innerWidth;
-        canvasRef.current.height = window.innerHeight;
+      if (canvasRef.current) {
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
         initMatrix();
       }
     };
@@ -317,9 +350,6 @@ const MatrixTest = () => {
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (animationRef.current) {
-        clearTimeout(animationRef.current);
-      }
     };
   }, [initMatrix]);
 
@@ -336,37 +366,33 @@ const MatrixTest = () => {
     };
   }, [navigate]);
 
-  const cleanup = useCallback(() => {
-    if (animationRef.current) {
-      clearTimeout(animationRef.current);
-    }
-  }, []);
-
   const handleReset = () => {
-    // First cleanup the current animation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     if (animationRef.current) {
-      clearTimeout(animationRef.current);
+      cancelAnimationFrame(animationRef.current);
     }
     
-    // Reset all states
     setTextColor('#00ff00');
     setBackgroundColor('#000000');
-    setFontSize(16);
+    setFontSize(30);
     setSpeed(50);
     
-    // Force a remount by changing the key
     setResetKey(prev => prev + 1);
   };
 
   const handleExit = useCallback(async () => {
-    // First cleanup the animation
-    cleanup();
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     
-    // Then handle fullscreen exit and navigation
     if (document.fullscreenElement) {
       try {
         await document.exitFullscreen();
-        // Wait for the next frame to ensure fullscreen exit is complete
         requestAnimationFrame(() => {
           navigate('/');
         });
@@ -377,7 +403,7 @@ const MatrixTest = () => {
     } else {
       navigate('/');
     }
-  }, [navigate, cleanup]);
+  }, [navigate]);
 
   return (
     <TestContainer $backgroundColor={backgroundColor}>
@@ -406,39 +432,31 @@ const MatrixTest = () => {
               and I show you how deep the rabbit-hole goes."
             </Description>
 
-            <Section>
+            <ColorSection>
               <h3>Text Color</h3>
               <ColorGrid>
                 {textColors.map(color => (
                   <ColorButton
                     key={color.value}
                     $color={color.value}
-                    $textColor={color.value === '#ffffff' ? '#000000' : undefined}
-                    $isSelected={textColor === color.value}
                     onClick={() => setTextColor(color.value)}
-                  >
-                    {color.name}
-                  </ColorButton>
+                  />
                 ))}
               </ColorGrid>
-            </Section>
+            </ColorSection>
 
-            <Section>
+            <ColorSection>
               <h3>Background Color</h3>
               <ColorGrid>
                 {backgroundColors.map(color => (
                   <ColorButton
                     key={color.value}
                     $color={color.value}
-                    $textColor="#ffffff"
-                    $isSelected={backgroundColor === color.value}
                     onClick={() => setBackgroundColor(color.value)}
-                  >
-                    {color.name}
-                  </ColorButton>
+                  />
                 ))}
               </ColorGrid>
-            </Section>
+            </ColorSection>
 
             <Section>
               <h3>Text Size</h3>
@@ -446,7 +464,7 @@ const MatrixTest = () => {
               <Slider
                 type="range"
                 min="10"
-                max="40"
+                max="60"
                 value={fontSize}
                 onChange={(e) => setFontSize(Number(e.target.value))}
               />
