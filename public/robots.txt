@@ -1,2 +1,13 @@
+# https://display-test.app robots.txt
 User-agent: *
-Disallow:
+Allow: /
+
+# Allow all test pages
+Allow: /test/
+Allow: /privacy-policy
+
+# Sitemap location
+Sitemap: https://display-test.app/sitemap.xml
+
+# Crawl-delay to be nice to search engines
+Crawl-delay: 1
