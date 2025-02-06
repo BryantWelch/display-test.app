@@ -194,11 +194,16 @@ const DropdownItem = styled(Link)`
   }
 `;
 
-const ExternalDropdownItem = styled(DropdownItem)`
+const ExternalDropdownItem = styled.a`
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
   white-space: normal;
 
   svg {
@@ -213,6 +218,10 @@ const ExternalDropdownItem = styled(DropdownItem)`
     margin-bottom: 0.25rem;
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 `;
 
