@@ -39,12 +39,12 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
 `;
 
 const TestGrid = styled.div`
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 2rem 4rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
