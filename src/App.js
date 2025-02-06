@@ -24,6 +24,10 @@ const AppContainer = styled.div`
   flex-direction: column;
 `;
 
+const MainContent = styled.main`
+  padding-top: 4rem;
+`;
+
 const App = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
@@ -31,22 +35,24 @@ const App = () => {
   return (
     <AppContainer>
       <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/test/dead-pixel" element={<DeadPixelTest />} />
-          <Route path="/test/uniformity" element={<UniformityTest />} />
-          <Route path="/test/text-clarity" element={<TextClarityTest />} />
-          <Route path="/test/color-gradient" element={<ColorGradientTest />} />
-          <Route path="/test/response-time" element={<ResponseTimeTest />} />
-          <Route path="/test/color-distance" element={<ColorDistanceTest />} />
-          <Route path="/test/test-patterns" element={<TestPatternsTest />} />
-          <Route path="/test/gamma" element={<GammaTest />} />
-          <Route path="/test/viewing-angle" element={<ViewingAngleTest />} />
-          <Route path="/test/brightness" element={<BrightnessTest />} />
-          <Route path="/test/contrast" element={<ContrastTest />} />
-          <Route path="/test/matrix" element={<MatrixTest />} />
-        </Routes>
+        <MainContent>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/test/dead-pixel" element={<DeadPixelTest />} />
+            <Route path="/test/uniformity" element={<UniformityTest />} />
+            <Route path="/test/text-clarity" element={<TextClarityTest />} />
+            <Route path="/test/color-gradient" element={<ColorGradientTest />} />
+            <Route path="/test/response-time" element={<ResponseTimeTest />} />
+            <Route path="/test/color-distance" element={<ColorDistanceTest />} />
+            <Route path="/test/test-patterns" element={<TestPatternsTest />} />
+            <Route path="/test/gamma" element={<GammaTest />} />
+            <Route path="/test/viewing-angle" element={<ViewingAngleTest />} />
+            <Route path="/test/brightness" element={<BrightnessTest />} />
+            <Route path="/test/contrast" element={<ContrastTest />} />
+            <Route path="/test/matrix" element={<MatrixTest />} />
+          </Routes>
+        </MainContent>
       </Layout>
       {isHomePage && <Footer />}
     </AppContainer>
