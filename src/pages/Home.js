@@ -5,9 +5,11 @@ import Header from '../components/Header';
 
 const HomeContainer = styled.div`
   display: grid;
-  grid-template-columns: minmax(160px, 1fr) minmax(auto, 1200px) minmax(160px, 1fr);
+  grid-template-columns: 160px minmax(auto, 1200px) 160px;
   gap: 2rem;
   padding: 2rem;
+  margin: 0 auto;
+  max-width: 1520px;
 
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
