@@ -128,12 +128,14 @@ const DropdownItem = styled.a`
 const ExternalDropdownItem = styled(DropdownItem)`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 1rem;
 
   svg {
-    width: 12px;
-    height: 12px;
-    opacity: 0.7;
+    width: 24px;
+    height: 24px;
+    opacity: 0.8;
+    flex-shrink: 0;
   }
 `;
 
@@ -292,12 +294,32 @@ const Navbar = () => {
             </svg>
           </DropdownButton>
           <DropdownContent show={showDiscsDropdown}>
-            <ExternalDropdownItem 
-              href="#"
+          <ExternalDropdownItem 
+              href="https://amzn.to/3CuY9zI"
               target="_blank"
               rel="noopener noreferrer"
             >
-              PLACEHOLDER
+              Digital Video Essentials HD Basics
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://amzn.to/4hKeOOB"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Disney WOW Calibration Disc
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+          <ExternalDropdownItem
+              href="https://amzn.to/42J18Pp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Spears & Munsil HD Benchmark and Calibration Disc
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -320,12 +342,42 @@ const Navbar = () => {
             </svg>
           </DropdownButton>
           <DropdownContent show={showHardwareDropdown}>
-            <ExternalDropdownItem 
-              href="#"
+          <ExternalDropdownItem 
+              href="https://amzn.to/4jJwPyh"
               target="_blank"
               rel="noopener noreferrer"
             >
-              PLACEHOLDER
+              Calibrite Display 123 Colorimeter
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://amzn.to/414WKJi"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Calibrite Display Pro HL
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://amzn.to/4hLjvHI"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Data Color SpyderX Pro
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://amzn.to/4jLTgCY"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              X-Rite i1Basic Pro 3
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -348,12 +400,42 @@ const Navbar = () => {
             </svg>
           </DropdownButton>
           <DropdownContent show={showSoftwareDropdown}>
-            <ExternalDropdownItem 
-              href="#"
+          <ExternalDropdownItem 
+              href="https://windowsreport.com/software/colorjinn-calibrize/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              PLACEHOLDER
+              Calibrize
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://store.portrait.com/consumer-software.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Calman Software
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://displaycal.net/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              DisplayCAL
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </ExternalDropdownItem>
+            <ExternalDropdownItem 
+              href="https://quickgamma.de/indexen.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              QuickGamma
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 3h-6m6 0l-9 9m9-9v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
