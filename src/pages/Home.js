@@ -4,21 +4,22 @@ import FullscreenLink from '../components/FullscreenLink';
 import Header from '../components/Header';
 
 const HomeContainer = styled.div`
-  width: 100%;
   max-width: 1520px;
   margin: 0 auto;
   padding: 2rem;
+
+  @media (max-width: 1200px) {
+    padding: 1rem;
+  }
 `;
 
-const GridLayout = styled.div`
+const MainGrid = styled.div`
   display: grid;
   grid-template-columns: 160px minmax(auto, 1200px) 160px;
   gap: 2rem;
-  margin: 0 auto;
 
   @media (max-width: 1200px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 `;
 
@@ -39,15 +40,20 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  width: 100%;
 `;
 
 const TestGrid = styled.div`
-  width: 100%;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const StyledFullscreenLink = styled(FullscreenLink)`
@@ -144,7 +150,7 @@ const Home = () => {
 
   return (
     <HomeContainer>
-      <GridLayout>
+      <MainGrid>
         <AdContainer id="left-ad">
           {/* Left Ad Space - Will be populated by AdSense */}
         </AdContainer>
@@ -166,7 +172,7 @@ const Home = () => {
         <AdContainer id="right-ad">
           {/* Right Ad Space - Will be populated by AdSense */}
         </AdContainer>
-      </GridLayout>
+      </MainGrid>
     </HomeContainer>
   );
 };
