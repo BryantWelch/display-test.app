@@ -71,7 +71,7 @@ The build artifacts will be stored in the `build/` directory.
 - Disable any auto-brightness or dynamic contrast features
 
 ### Keyboard Controls
-- `F11`: Toggle fullscreen mode
+- `F11`: Exit current test
 - `Esc`: Exit current test
 - `Space`: Pause/Resume animations (where applicable)
 - Arrow keys: Adjust values in certain tests
@@ -127,12 +127,6 @@ node scripts/generate-pattern-index.js
 ```
 This script should be run whenever new patterns are added to the `src/assets/patterns` directory.
 
-### Development Best Practices
-- Use the provided ESLint configuration for code consistency
-- Follow React hooks best practices for component development
-- Ensure all tests are responsive and work in fullscreen mode
-- Test changes across different browsers before submitting PRs
-
 ### Code Organization
 - `/src/pages/tests/` - Individual test components
 - `/src/components/` - Reusable UI components
@@ -153,14 +147,14 @@ A: While web-based tests can't match specialized hardware, they provide a good i
 A: Basic calibration is recommended for most tests, but some tests specifically help identify calibration issues.
 
 **Q: How often should I test my display?**
-A: Regular testing (monthly) helps track display degradation and identify issues early.
+A: Regular testing helps track display degradation and identify issues early.
 
 ### Technical Questions
 **Q: Why do some patterns look different in different browsers?**
 A: Browser rendering engines handle color and animation differently. Use Chrome for most consistent results.
 
 **Q: Does screen recording work with these tests?**
-A: Screen recording may affect test performance. It's recommended to run tests without recording.
+A: Screen recording may affect test performance and has not been properly tested. 
 
 ## Tech Stack
 
