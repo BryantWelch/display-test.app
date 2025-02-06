@@ -207,13 +207,12 @@ const ContrastTest = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [gridSize, setGridSize] = useState(8);
 
-  const initializeTest = () => {
-    // Add initialization logic here if needed
-  };
-
   useEffect(() => {
+    const initializeTest = () => {
+      // Add any initialization logic here if needed
+    };
     initializeTest();
-  }, [initializeTest]);
+  }, []);
 
   useEffect(() => {
     const handleFullScreenChange = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
@@ -213,7 +213,7 @@ const DeadPixelTest = () => {
   const [isAutoChanging, setIsAutoChanging] = useState(false);
   const autoChangeRef = useRef(null);
 
-  const colors = [
+  const colors = useMemo(() => [
     { name: 'White', value: '#FFFFFF' },
     { name: 'Black', value: '#000000' },
     { name: 'Red', value: '#FF0000' },
@@ -223,13 +223,12 @@ const DeadPixelTest = () => {
     { name: 'Magenta', value: '#FF00FF' },
     { name: 'Cyan', value: '#00FFFF' },
     { name: 'Gray', value: '#808080' }
-  ];
-
-  const initializeTest = useCallback(() => {
-    // Add any initialization logic here if needed
-  }, []);
+  ], []);
 
   useEffect(() => {
+    const initializeTest = () => {
+      // Add any initialization logic here if needed
+    };
     initializeTest();
   }, []);
 
@@ -262,7 +261,7 @@ const DeadPixelTest = () => {
         }
       };
     }
-  }, [isAutoChanging, backgroundColor]);
+  }, [isAutoChanging, backgroundColor, colors]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {

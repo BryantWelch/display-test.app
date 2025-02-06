@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -17,6 +17,12 @@ const NavContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 `;
 
 const Logo = styled(Link)`
@@ -28,6 +34,10 @@ const Logo = styled(Link)`
 const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const DropdownButton = styled.button`
@@ -42,6 +52,11 @@ const DropdownButton = styled.button`
   gap: 0.5rem;
   transition: all 0.2s;
   border-radius: 6px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 
   &:hover {
     color: var(--primary);
@@ -68,6 +83,19 @@ const DropdownContent = styled.div`
   visibility: ${props => props.show ? 'visible' : 'hidden'};
   transform: translateY(${props => props.show ? '0' : '-10px'});
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+
+  @media (max-width: 768px) {
+    position: relative;
+    width: 100%;
+    top: 0;
+    box-shadow: none;
+    background-color: rgba(15, 23, 42, 0.5);
+    
+    &:before {
+      display: none;
+    }
+  }
 
   &:before {
     content: '';
@@ -136,18 +164,60 @@ const Navbar = () => {
   const [showDiscsDropdown, setShowDiscsDropdown] = useState(false);
   const [showHardwareDropdown, setShowHardwareDropdown] = useState(false);
   const [showSoftwareDropdown, setShowSoftwareDropdown] = useState(false);
+  const navRef = useRef(null);
+
+  const closeAllDropdowns = () => {
+    setShowTestsDropdown(false);
+    setShowToolsDropdown(false);
+    setShowDiscsDropdown(false);
+    setShowHardwareDropdown(false);
+    setShowSoftwareDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (navRef.current && !navRef.current.contains(event.target)) {
+        closeAllDropdowns();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
+  const handleDropdownClick = (setter, currentValue) => {
+    // Close all other dropdowns
+    closeAllDropdowns();
+    // Toggle the clicked dropdown
+    setter(!currentValue);
+  };
+
+  const handleDropdownHover = (setter, value) => {
+    // Only use hover on non-mobile
+    if (window.innerWidth > 768) {
+      setter(value);
+    }
+  };
 
   return (
     <Nav>
-      <NavContainer>
+      <NavContainer ref={navRef}>
         <Logo to="/">Display Test</Logo>
         
         {/* Tests Dropdown */}
         <DropdownContainer 
-          onMouseEnter={() => setShowTestsDropdown(true)}
-          onMouseLeave={() => setShowTestsDropdown(false)}
+          onMouseEnter={() => handleDropdownHover(setShowTestsDropdown, true)}
+          onMouseLeave={() => handleDropdownHover(setShowTestsDropdown, false)}
         >
-          <DropdownButton show={showTestsDropdown}>
+          <DropdownButton 
+            show={showTestsDropdown}
+            onClick={() => handleDropdownClick(setShowTestsDropdown, showTestsDropdown)}
+          >
             Tests
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -171,10 +241,13 @@ const Navbar = () => {
 
         {/* Other Tools Dropdown */}
         <DropdownContainer 
-          onMouseEnter={() => setShowToolsDropdown(true)}
-          onMouseLeave={() => setShowToolsDropdown(false)}
+          onMouseEnter={() => handleDropdownHover(setShowToolsDropdown, true)}
+          onMouseLeave={() => handleDropdownHover(setShowToolsDropdown, false)}
         >
-          <DropdownButton show={showToolsDropdown}>
+          <DropdownButton 
+            show={showToolsDropdown}
+            onClick={() => handleDropdownClick(setShowToolsDropdown, showToolsDropdown)}
+          >
             Other Tools
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -206,10 +279,13 @@ const Navbar = () => {
 
         {/* Calibration Discs */}
         <DropdownContainer 
-          onMouseEnter={() => setShowDiscsDropdown(true)}
-          onMouseLeave={() => setShowDiscsDropdown(false)}
+          onMouseEnter={() => handleDropdownHover(setShowDiscsDropdown, true)}
+          onMouseLeave={() => handleDropdownHover(setShowDiscsDropdown, false)}
         >
-          <DropdownButton show={showDiscsDropdown}>
+          <DropdownButton 
+            show={showDiscsDropdown}
+            onClick={() => handleDropdownClick(setShowDiscsDropdown, showDiscsDropdown)}
+          >
             Calibration Discs
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -231,10 +307,13 @@ const Navbar = () => {
 
         {/* Calibration Hardware */}
         <DropdownContainer 
-          onMouseEnter={() => setShowHardwareDropdown(true)}
-          onMouseLeave={() => setShowHardwareDropdown(false)}
+          onMouseEnter={() => handleDropdownHover(setShowHardwareDropdown, true)}
+          onMouseLeave={() => handleDropdownHover(setShowHardwareDropdown, false)}
         >
-          <DropdownButton show={showHardwareDropdown}>
+          <DropdownButton 
+            show={showHardwareDropdown}
+            onClick={() => handleDropdownClick(setShowHardwareDropdown, showHardwareDropdown)}
+          >
             Calibration Hardware
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -256,10 +335,13 @@ const Navbar = () => {
 
         {/* Calibration Software */}
         <DropdownContainer 
-          onMouseEnter={() => setShowSoftwareDropdown(true)}
-          onMouseLeave={() => setShowSoftwareDropdown(false)}
+          onMouseEnter={() => handleDropdownHover(setShowSoftwareDropdown, true)}
+          onMouseLeave={() => handleDropdownHover(setShowSoftwareDropdown, false)}
         >
-          <DropdownButton show={showSoftwareDropdown}>
+          <DropdownButton 
+            show={showSoftwareDropdown}
+            onClick={() => handleDropdownClick(setShowSoftwareDropdown, showSoftwareDropdown)}
+          >
             Calibration Software
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

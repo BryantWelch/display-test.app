@@ -3,7 +3,36 @@ import styled from 'styled-components';
 import FullscreenLink from '../components/FullscreenLink';
 import Header from '../components/Header';
 
-const HomeContainer = styled.div``;
+const HomeContainer = styled.div`
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(auto, 1200px) minmax(160px, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+`;
+
+const AdContainer = styled.div`
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 5rem;
+
+  @media (max-width: 1200px) {
+    display: none;
+  }
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
 
 const TestGrid = styled.div`
   max-width: 1200px;
@@ -108,17 +137,27 @@ const Home = () => {
 
   return (
     <HomeContainer>
-      <Header />
-      <TestGrid>
-        {tests.map((test) => (
-          <StyledFullscreenLink
-            key={test.path}
-            to={test.path}
-            title={test.title}
-            description={test.description}
-          />
-        ))}
-      </TestGrid>
+      <AdContainer id="left-ad">
+        {/* Left Ad Space - Will be populated by AdSense */}
+      </AdContainer>
+      
+      <ContentContainer>
+        <Header />
+        <TestGrid>
+          {tests.map((test) => (
+            <StyledFullscreenLink
+              key={test.path}
+              to={test.path}
+              title={test.title}
+              description={test.description}
+            />
+          ))}
+        </TestGrid>
+      </ContentContainer>
+
+      <AdContainer id="right-ad">
+        {/* Right Ad Space - Will be populated by AdSense */}
+      </AdContainer>
     </HomeContainer>
   );
 };

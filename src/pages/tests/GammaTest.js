@@ -306,7 +306,7 @@ const GammaTest = () => {
 
   useEffect(() => {
     initializeTest();
-  }, []);
+  }, [initializeTest]);
 
   useEffect(() => {
     const handleFullScreenChange = () => {
@@ -355,12 +355,12 @@ const GammaTest = () => {
     }));
   };
 
-  const gammaValues = {
+  const gammaValues = useMemo(() => ({
     1.8: calculateGammaSteps(1.8),
     2.0: calculateGammaSteps(2.0),
     2.2: calculateGammaSteps(2.2),
     2.4: calculateGammaSteps(2.4)
-  };
+  }), []);
 
   const handleReset = () => {
     setBoxSize(100);
@@ -368,19 +368,11 @@ const GammaTest = () => {
     setShowValues(true);
   };
 
-  const graySteps = useMemo(() => {
-    const steps = [];
-    for (let i = 0; i <= 255; i += 17) { 
-      steps.push(i);
-    }
-    return steps;
-  }, []);
-
   const renderGraySteps = useCallback(() => {
     return (
       <GrayStepContainer>
         {Object.entries(gammaValues)
-          .sort(([a], [b]) => parseFloat(a) - parseFloat(b))  
+          .sort(([a], [b]) => parseFloat(a) - parseFloat(b))
           .map(([gamma, steps]) => (
           <StepRow key={gamma}>
             <RowLabel value={backgroundColor === 'white' ? 0 : 255}>

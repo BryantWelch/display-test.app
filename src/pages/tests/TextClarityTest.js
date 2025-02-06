@@ -348,11 +348,10 @@ const TextClarityTest = () => {
   const [lineHeight, setLineHeight] = useState(1.5);
   const [letterSpacing, setLetterSpacing] = useState(0);
 
-  const initializeTest = useCallback(() => {
-    // Add any initialization logic here if needed
-  }, []);
-
   useEffect(() => {
+    const initializeTest = () => {
+      // Add any initialization logic here if needed
+    };
     initializeTest();
   }, []);
 

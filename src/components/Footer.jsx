@@ -119,25 +119,6 @@ const Copyright = styled.div`
   position: relative;
 `;
 
-const LegalLinks = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
-  
-  a {
-    color: var(--text-light);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-    font-size: 0.9rem;
-    
-    &:hover {
-      opacity: 1;
-    }
-  }
-`;
-
 const KofiButton = styled.div`
   position: absolute;
   bottom: 1rem;

@@ -193,13 +193,12 @@ const BrightnessTest = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [windowSize, setWindowSize] = useState(15);
 
-  const initializeTest = () => {
-    // Add initialization logic here if needed
-  };
-
   useEffect(() => {
+    const initializeTest = () => {
+      // Add any initialization logic here if needed
+    };
     initializeTest();
-  }, [initializeTest]);
+  }, []);
 
   useEffect(() => {
     const handleFullScreenChange = () => {
