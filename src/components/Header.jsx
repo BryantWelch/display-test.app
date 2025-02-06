@@ -3,6 +3,10 @@ import styled, { keyframes } from 'styled-components';
 import tvLogo from '../assets/tv.svg';
 
 const HeaderContainer = styled.header`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 4rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -11,7 +15,6 @@ const HeaderContainer = styled.header`
 const TitleContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 2rem;
   margin-bottom: 1.5rem;
 `;

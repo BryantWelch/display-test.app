@@ -4,6 +4,9 @@ import FullscreenLink from '../components/FullscreenLink';
 import Header from '../components/Header';
 
 const HomeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 1520px;
   margin: 0 auto;
   padding: 2rem;
@@ -13,30 +16,9 @@ const HomeContainer = styled.div`
   }
 `;
 
-const MainGrid = styled.div`
-  display: grid;
-  grid-template-columns: 160px minmax(auto, 1200px) 160px;
-  gap: 2rem;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const AdContainer = styled.div`
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  position: sticky;
-  top: 5rem;
-
-  @media (max-width: 1200px) {
-    display: none;
-  }
-`;
-
-const ContentContainer = styled.div`
+const MainContent = styled.div`
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -46,6 +28,7 @@ const TestGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  width: 100%;
   
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 1fr);
@@ -150,29 +133,19 @@ const Home = () => {
 
   return (
     <HomeContainer>
-      <MainGrid>
-        <AdContainer id="left-ad">
-          {/* Left Ad Space - Will be populated by AdSense */}
-        </AdContainer>
-        
-        <ContentContainer>
-          <Header />
-          <TestGrid>
-            {tests.map((test) => (
-              <StyledFullscreenLink
-                key={test.path}
-                to={test.path}
-                title={test.title}
-                description={test.description}
-              />
-            ))}
-          </TestGrid>
-        </ContentContainer>
-
-        <AdContainer id="right-ad">
-          {/* Right Ad Space - Will be populated by AdSense */}
-        </AdContainer>
-      </MainGrid>
+      <MainContent>
+        <Header />
+        <TestGrid>
+          {tests.map((test) => (
+            <StyledFullscreenLink
+              key={test.path}
+              to={test.path}
+              title={test.title}
+              description={test.description}
+            />
+          ))}
+        </TestGrid>
+      </MainContent>
     </HomeContainer>
   );
 };
