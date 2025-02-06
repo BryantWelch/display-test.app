@@ -2,6 +2,7 @@
   "name": "display-test-app",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://display-test.app",
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
     "react": "^19.0.0",
@@ -13,10 +14,12 @@
     "styled-components": "^6.1.14"
   },
   "scripts": {
-    "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+    "start": "react-scripts start",
     "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "lint": "eslint src/**/*.{js,jsx}",
     "lint:fix": "eslint src/**/*.{js,jsx} --fix"
   },
@@ -39,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "gh-pages": "^4.0.0"
   }
 }
