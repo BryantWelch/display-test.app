@@ -31,3 +31,6 @@ yarn-error.log*
 
 # Optional eslint cache
 .eslintcache
+
+# Documentation
+PRD.md
