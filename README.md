@@ -134,9 +134,6 @@ This script should be run whenever new patterns are added to the `src/assets/pat
 - `/src/assets/` - Static assets and test patterns
 - `/src/store/` - Redux store configuration and slices
 
-## Roadmap
-[Coming soon!]
-
 ## FAQ
 
 ### General Questions
@@ -177,6 +174,12 @@ A: Screen recording may affect test performance and has not been properly tested
 - react-router-dom: ^6.22.0
 - styled-components: ^6.1.14
 
+## 💖 Support
+
+If you find this project helpful, consider supporting its development:
+
+[![Buy Me a Coffee](https://storage.ko-fi.com/cdn/kofi5.png)](https://ko-fi.com/V7V01A0SJC)
+
 ## Contributing
 
 1. Fork the repository
@@ -188,9 +191,3 @@ A: Screen recording may affect test performance and has not been properly tested
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Inspired by various display testing tools
-- Built with modern web technologies
-- Designed for display enthusiasts and professionals
