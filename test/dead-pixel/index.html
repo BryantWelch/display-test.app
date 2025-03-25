@@ -3,28 +3,33 @@
 <head>
   <meta charset="utf-8">
   <title>Dead Pixel Test - Display Test App</title>
-  <meta name="description" content="Check your monitor for dead or stuck pixels with our free online dead pixel test tool. Identify and potentially fix pixel defects on your display.">
+  <meta name="description" content="Find dead or stuck pixels on your monitor with our free online dead pixel test. Easily identify screen defects with full-screen color tests.">
   <link rel="canonical" href="https://display-test.app/test/dead-pixel">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://display-test.app/test/dead-pixel">
   <meta property="og:title" content="Dead Pixel Test - Display Test App">
-  <meta property="og:description" content="Check your monitor for dead or stuck pixels with our free online dead pixel test tool. Identify and potentially fix pixel defects on your display.">
+  <meta property="og:description" content="Find dead or stuck pixels on your monitor with our free online dead pixel test. Easily identify screen defects with full-screen color tests.">
   <meta property="og:image" content="https://display-test.app/logo512.png">
   
-  <!-- Redirect to the SPA after Google has indexed the content -->
-  <meta http-equiv="refresh" content="0;url=/">
+  <!-- JavaScript redirect for browsers, but allows search engines to index content -->
+  <script>
+    // Check if this is a search engine or a real user
+    if (!/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent)) {
+      window.location.href = '/#/test/dead-pixel';
+    }
+  </script>
 </head>
 <body>
   <h1>Dead Pixel Test</h1>
-  <p>Our dead pixel test helps you identify dead, stuck, or hot pixels on your display.</p>
+  <p>Our dead pixel test helps you identify defective pixels on your display.</p>
   <p>This test allows you to:</p>
   <ul>
-    <li>Display solid colors to identify pixel defects</li>
-    <li>Cycle through different colors to check for stuck pixels</li>
-    <li>Potentially unstick pixels through rapid color changes</li>
+    <li>Find dead or stuck pixels</li>
+    <li>Identify screen defects</li>
+    <li>Test with different background colors</li>
   </ul>
-  <p>Redirecting to <a href="/">Display Test App</a>...</p>
+  <p>If you are not redirected automatically, please click <a href="/#/test/dead-pixel">here</a> to access the Dead Pixel Test.</p>
 </body>
 </html>
