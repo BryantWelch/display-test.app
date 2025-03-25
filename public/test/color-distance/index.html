@@ -13,8 +13,13 @@
   <meta property="og:description" content="Evaluate your monitor's color accuracy with our free online color distance test. Check color differentiation and identify similar color rendering issues.">
   <meta property="og:image" content="https://display-test.app/logo512.png">
   
-  <!-- Redirect to the SPA after Google has indexed the content -->
-  <meta http-equiv="refresh" content="0;url=/">
+  <!-- JavaScript redirect for browsers, but allows search engines to index content -->
+  <script>
+    // Check if this is a search engine or a real user
+    if (!/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent)) {
+      window.location.href = '/#/test/color-distance';
+    }
+  </script>
 </head>
 <body>
   <h1>Color Distance Test</h1>
@@ -25,6 +30,6 @@
     <li>Identify issues with similar color rendering</li>
     <li>Assess color accuracy and precision</li>
   </ul>
-  <p>Redirecting to <a href="/">Display Test App</a>...</p>
+  <p>If you are not redirected automatically, please click <a href="/#/test/color-distance">here</a> to access the Color Distance Test.</p>
 </body>
 </html>

@@ -3,28 +3,33 @@
 <head>
   <meta charset="utf-8">
   <title>Gamma Test - Display Test App</title>
-  <meta name="description" content="Check your monitor's gamma calibration with our free online gamma test tool. Verify and adjust gamma settings for optimal image quality.">
+  <meta name="description" content="Calibrate your monitor's gamma settings with our free online gamma test. Ensure proper brightness levels and accurate color reproduction.">
   <link rel="canonical" href="https://display-test.app/test/gamma">
   
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://display-test.app/test/gamma">
   <meta property="og:title" content="Gamma Test - Display Test App">
-  <meta property="og:description" content="Check your monitor's gamma calibration with our free online gamma test tool. Verify and adjust gamma settings for optimal image quality.">
+  <meta property="og:description" content="Calibrate your monitor's gamma settings with our free online gamma test. Ensure proper brightness levels and accurate color reproduction.">
   <meta property="og:image" content="https://display-test.app/logo512.png">
   
-  <!-- Redirect to the SPA after Google has indexed the content -->
-  <meta http-equiv="refresh" content="0;url=/">
+  <!-- JavaScript redirect for browsers, but allows search engines to index content -->
+  <script>
+    // Check if this is a search engine or a real user
+    if (!/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent)) {
+      window.location.href = '/#/test/gamma';
+    }
+  </script>
 </head>
 <body>
   <h1>Gamma Test</h1>
-  <p>Our gamma test helps you evaluate and calibrate your display's gamma settings.</p>
+  <p>Our gamma test helps you calibrate your display's gamma settings for optimal image quality.</p>
   <p>This test allows you to:</p>
   <ul>
-    <li>Check current gamma calibration</li>
-    <li>Verify proper contrast and brightness settings</li>
-    <li>Adjust gamma for optimal image quality</li>
+    <li>Check your monitor's gamma calibration</li>
+    <li>Adjust gamma settings for accurate display</li>
+    <li>Ensure proper brightness levels</li>
   </ul>
-  <p>Redirecting to <a href="/">Display Test App</a>...</p>
+  <p>If you are not redirected automatically, please click <a href="/#/test/gamma">here</a> to access the Gamma Test.</p>
 </body>
 </html>
