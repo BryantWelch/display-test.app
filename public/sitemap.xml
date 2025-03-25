@@ -2,85 +2,85 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://display-test.app</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/brightness</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/color-distance</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/color-gradient</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/contrast</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/dead-pixel</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/gamma</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/matrix</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/response-time</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/test-patterns</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/text-clarity</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/uniformity</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/test/viewing-angle</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://display-test.app/privacy</loc>
-    <lastmod>2024-02-04</lastmod>
+    <lastmod>2025-03-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
