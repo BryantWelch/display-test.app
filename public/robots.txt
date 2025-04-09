@@ -2,9 +2,20 @@
 User-agent: *
 Allow: /
 
-# Allow all test pages
-Allow: /test/
-Allow: /privacy-policy
+# Explicitly allow all test pages to ensure they're properly crawled
+Allow: /test/brightness
+Allow: /test/color-distance
+Allow: /test/color-gradient
+Allow: /test/contrast
+Allow: /test/dead-pixel
+Allow: /test/gamma
+Allow: /test/matrix
+Allow: /test/response-time
+Allow: /test/test-patterns
+Allow: /test/text-clarity
+Allow: /test/uniformity
+Allow: /test/viewing-angle
+Allow: /privacy
 
 # Sitemap location
 Sitemap: https://display-test.app/sitemap.xml
