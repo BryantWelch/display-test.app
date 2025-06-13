@@ -1,32 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Display Test</title>
-    <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      // Modified to prevent redirect loops
-      
-      // Check if we're already in a redirect loop
-      if (window.location.search && window.location.search.indexOf('?/') === 0) {
-        // We're already in a redirect, go to homepage instead of creating a loop
-        window.location.href = '/';
-      } else {
-        var pathSegmentsToKeep = 0;
-
-        var l = window.location;
-        l.replace(
-          l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-          l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-          l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-          l.hash
-        );
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page Not Found - Display Test</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        max-width: 650px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        text-align: center;
+        line-height: 1.6;
+        color: #333;
       }
-    </script>
+      h1 {
+        margin-top: 0;
+        color: #222;
+      }
+      a {
+        color: #0070f3;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
+    <h1>Page Not Found</h1>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <p>You might have followed an outdated link or typed the address incorrectly.</p>
+    <p><a href="/">Go back to the homepage</a> to explore our display testing tools.</p>
   </body>
 </html>

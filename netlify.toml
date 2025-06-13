@@ -1,0 +1,75 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+# Redirect all routes to index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Specific redirects for SEO
+[[redirects]]
+  from = "/test/brightness"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/color-distance"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/color-gradient"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/contrast"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/dead-pixel"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/gamma"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/matrix"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/response-time"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/test-patterns"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/text-clarity"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/uniformity"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/test/viewing-angle"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/index.html"
+  status = 200
