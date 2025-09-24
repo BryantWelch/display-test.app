@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
+import { useAutoFade } from '../../hooks/useAutoFade';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -53,6 +54,8 @@ const ControlPanel = styled.div`
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   z-index: 1000;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -176,6 +179,8 @@ const ExitButton = styled.button`
   gap: 0.5rem;
   transition: all 0.2s ease;
   z-index: 1000;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -217,6 +222,7 @@ const CategorySelect = styled(PatternSelect)`
 const TestPatternsTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
+  const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [selectedPattern, setSelectedPattern] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -380,7 +386,7 @@ const TestPatternsTest = () => {
 
   return (
     <TestContainer>
-      <ExitButton onClick={handleExit}>
+      <ExitButton onClick={handleExit} $isVisible={isVisible}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
@@ -397,7 +403,7 @@ const TestPatternsTest = () => {
 
       {isLoading && <LoadingOverlay>Loading pattern...</LoadingOverlay>}
       
-      <ControlPanel $isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized} $isVisible={isVisible}>
         <PanelHeader $isMinimized={isMinimized}>
           <h2>Test Patterns Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>

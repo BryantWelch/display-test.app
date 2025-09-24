@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { useAutoFade } from '../../hooks/useAutoFade';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -99,6 +100,8 @@ const ControlPanel = styled.div`
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   z-index: 1000;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -181,6 +184,8 @@ const ExitButton = styled.button`
   gap: 0.5rem;
   transition: all 0.2s ease;
   z-index: 1000;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -296,6 +301,7 @@ const ResetButton = styled.button`
 const GammaTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
+  const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [boxSize, setBoxSize] = useState(100);
   const [backgroundColor, setBackgroundColor] = useState('#808080');
   const [showValues, setShowValues] = useState(true);
@@ -400,7 +406,7 @@ const GammaTest = () => {
 
   return (
     <TestContainer>
-      <ExitButton onClick={handleExit}>
+      <ExitButton onClick={handleExit} $isVisible={isVisible}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
@@ -411,7 +417,7 @@ const GammaTest = () => {
         {renderGraySteps()}
       </TestArea>
 
-      <ControlPanel $isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized} $isVisible={isVisible}>
         <PanelHeader $isMinimized={isMinimized}>
           <h2>Gamma Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>

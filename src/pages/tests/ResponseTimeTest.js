@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import testPatternImage from '../../assets/test-pattern.svg';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
+import { useAutoFade } from '../../hooks/useAutoFade';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -34,6 +35,8 @@ const ControlPanel = styled.div`
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   z-index: 1000;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -116,6 +119,8 @@ const ExitButton = styled.button`
   gap: 0.5rem;
   transition: all 0.2s ease;
   z-index: 1000;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
 
   &:hover {
     background: rgba(0, 0, 0, 0.9);
@@ -345,6 +350,7 @@ const Select = styled.select`
 const ResponseTimeTest = () => {
   const navigate = useNavigate();
   const [isMinimized, setIsMinimized] = useState(false);
+  const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [testType, setTestType] = useState('moving-block');
   const [speed, setSpeed] = useState(35);
   const [blockSize, setBlockSize] = useState(100);
@@ -472,7 +478,7 @@ const ResponseTimeTest = () => {
 
   return (
     <TestContainer>
-      <ExitButton onClick={handleExit}>
+      <ExitButton onClick={handleExit} $isVisible={isVisible}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M15 19l-7-7 7-7" />
         </svg>
@@ -483,7 +489,7 @@ const ResponseTimeTest = () => {
         {renderTest()}
       </TestArea>
 
-      <ControlPanel $isMinimized={isMinimized}>
+      <ControlPanel $isMinimized={isMinimized} $isVisible={isVisible}>
         <PanelHeader $isMinimized={isMinimized}>
           <h2>Response Time Controls</h2>
           <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
