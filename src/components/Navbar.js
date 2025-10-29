@@ -417,7 +417,7 @@ const Navbar = () => {
             </DropdownButton>
             <DropdownContent show={showDiscsDropdown}>
             <ExternalDropdownItem 
-                href="https://amzn.to/3CuY9zI"
+                href="https://amzn.to/49qsgGm"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -427,7 +427,7 @@ const Navbar = () => {
                 </svg>
               </ExternalDropdownItem>
               <ExternalDropdownItem 
-                href="https://amzn.to/4hKeOOB"
+                href="https://amzn.to/4nugIFo"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -437,7 +437,7 @@ const Navbar = () => {
                 </svg>
               </ExternalDropdownItem>
             <ExternalDropdownItem
-                href="https://amzn.to/42J18Pp"
+                href="https://amzn.to/4oB33gK"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -465,7 +465,7 @@ const Navbar = () => {
             </DropdownButton>
             <DropdownContent show={showHardwareDropdown}>
             <ExternalDropdownItem 
-                href="https://amzn.to/4jJwPyh"
+                href="https://amzn.to/47sfXqr"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -475,7 +475,7 @@ const Navbar = () => {
                 </svg>
               </ExternalDropdownItem>
               <ExternalDropdownItem 
-                href="https://amzn.to/414WKJi"
+                href="https://amzn.to/43DioFx"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -485,7 +485,7 @@ const Navbar = () => {
                 </svg>
               </ExternalDropdownItem>
               <ExternalDropdownItem 
-                href="https://amzn.to/4hLjvHI"
+                href="https://amzn.to/4nuMKkS"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -495,7 +495,7 @@ const Navbar = () => {
                 </svg>
               </ExternalDropdownItem>
               <ExternalDropdownItem 
-                href="https://amzn.to/4jLTgCY"
+                href="https://amzn.to/4qwoph5"
                 target="_blank"
                 rel="noopener noreferrer"
               >
