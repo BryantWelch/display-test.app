@@ -246,7 +246,9 @@ const Footer = () => {
             MIT License
           </ExternalLink>
           {' • '}
-          <InternalLink to="/privacy">Privacy Policy</InternalLink>
+          <InternalLink to="/about">About</InternalLink>
+          {' • '}
+          <InternalLink to="/privacy">Privacy</InternalLink>
         </div>
       </Copyright>
 

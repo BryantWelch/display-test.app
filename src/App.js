@@ -5,6 +5,19 @@ import Layout from './components/Layout';
 import Footer from './components/Footer';
 import SEO from './components/SEO';
 import Home from './pages/Home';
+import About from './pages/About';
+import DeadPixelInfo from './pages/DeadPixelInfo';
+import UniformityInfo from './pages/UniformityInfo';
+import TextClarityInfo from './pages/TextClarityInfo';
+import ColorGradientInfo from './pages/ColorGradientInfo';
+import ResponseTimeInfo from './pages/ResponseTimeInfo';
+import ColorDistanceInfo from './pages/ColorDistanceInfo';
+import GammaInfo from './pages/GammaInfo';
+import TestPatternsInfo from './pages/TestPatternsInfo';
+import ViewingAngleInfo from './pages/ViewingAngleInfo';
+import BrightnessInfo from './pages/BrightnessInfo';
+import MatrixInfo from './pages/MatrixInfo';
+import ContrastInfo from './pages/ContrastInfo';
 import DeadPixelTest from './pages/tests/DeadPixelTest';
 import UniformityTest from './pages/tests/UniformityTest';
 import TextClarityTest from './pages/tests/TextClarityTest';
@@ -34,6 +47,58 @@ const seoData = {
   '/': {
     title: 'Display Test - Free Monitor Testing Tools',
     description: 'Free professional display testing suite for LCD, LED, OLED, and gaming monitors. Tools include brightness calibration, contrast ratio measurement, dead pixel detection, color accuracy testing, response time analysis, screen uniformity check, gamma calibration, and viewing angle assessment.'
+  },
+  '/about': {
+    title: 'About - Display Test App',
+    description: 'Learn what the Display Test App is, who it is for, and how to contribute or report issues via the open source GitHub repository.'
+  },
+  '/dead-pixel': {
+    title: 'Dead Pixel Test Guide - Display Test',
+    description: 'Learn how to run a proper dead pixel test on your monitor or laptop display, interpret the results, and decide what to do if you find dead, stuck, or hot pixels.'
+  },
+  '/uniformity': {
+    title: 'Uniformity Test Guide - Display Test',
+    description: 'Learn how to check your monitor for brightness and color uniformity issues, spot backlight bleed and clouding, and decide when a panel defect is worth returning or replacing.'
+  },
+  '/text-clarity': {
+    title: 'Text Clarity Test Guide - Display Test',
+    description: 'Learn how to evaluate text rendering quality on your monitor, tune ClearType or font smoothing, and choose comfortable font sizes and spacing for long reading sessions.'
+  },
+  '/color-gradient': {
+    title: 'Color Gradient Test Guide - Display Test',
+    description: 'Learn how to check your display for color banding and evaluate how smoothly it renders gradients in different colors and directions.'
+  },
+  '/response-time': {
+    title: 'Response Time Test Guide - Display Test',
+    description: 'Learn how to evaluate your monitor\'s motion clarity, ghosting, and overshoot using moving blocks and pursuit text patterns.'
+  },
+  '/color-distance': {
+    title: 'Color Distance Test Guide - Display Test',
+    description: 'Learn how to evaluate your display\'s ability to show subtle color differences and choose color combinations that remain distinct and readable.'
+  },
+  '/gamma': {
+    title: 'Gamma Test Guide - Display Test',
+    description: 'Learn how to evaluate your monitor\'s effective gamma response and adjust settings so midtones, shadows, and highlights look properly balanced.'
+  },
+  '/test-patterns': {
+    title: 'Test Patterns Guide - Display Test',
+    description: 'Learn how to use professional test patterns to evaluate sharpness, geometry, scaling, overscan, clipping, and other core display characteristics.'
+  },
+  '/viewing-angle': {
+    title: 'Viewing Angle Test Guide - Display Test',
+    description: 'Learn how to evaluate your display\'s viewing angles, check for brightness and color shifts, and compare performance between different panel types.'
+  },
+  '/brightness': {
+    title: 'Brightness Test Guide - Display Test',
+    description: 'Learn how to measure your display\'s brightness behavior at different window sizes and choose comfortable settings for your environment.'
+  },
+  '/contrast': {
+    title: 'Contrast Test Guide - Display Test',
+    description: 'Learn how to test contrast with adjustable checkerboard patterns and evaluate black and white separation at different pattern sizes.'
+  },
+  '/matrix': {
+    title: 'Matrix Test - Display Test',
+    description: 'Enjoy a customizable Matrix-style digital rain effect with adjustable colors, speeds, and text sizes. A fun homage to classic falling code.'
   },
   '/privacy': {
     title: 'Privacy Policy - Display Test App',
@@ -92,6 +157,7 @@ const seoData = {
 const App = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const isTestRoute = location.pathname.startsWith('/test/');
   const currentSEO = seoData[location.pathname] || seoData['/'];
 
   return (
@@ -101,7 +167,20 @@ const App = () => {
         <MainContent>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/dead-pixel" element={<DeadPixelInfo />} />
+            <Route path="/uniformity" element={<UniformityInfo />} />
+            <Route path="/text-clarity" element={<TextClarityInfo />} />
+            <Route path="/color-gradient" element={<ColorGradientInfo />} />
+            <Route path="/response-time" element={<ResponseTimeInfo />} />
+            <Route path="/color-distance" element={<ColorDistanceInfo />} />
+            <Route path="/gamma" element={<GammaInfo />} />
+            <Route path="/test-patterns" element={<TestPatternsInfo />} />
+            <Route path="/viewing-angle" element={<ViewingAngleInfo />} />
+            <Route path="/brightness" element={<BrightnessInfo />} />
+            <Route path="/matrix" element={<MatrixInfo />} />
+            <Route path="/contrast" element={<ContrastInfo />} />
             <Route path="/test/dead-pixel" element={<DeadPixelTest />} />
             <Route path="/test/uniformity" element={<UniformityTest />} />
             <Route path="/test/text-clarity" element={<TextClarityTest />} />
@@ -117,7 +196,7 @@ const App = () => {
           </Routes>
         </MainContent>
       </Layout>
-      {isHomePage && <Footer />}
+      {!isTestRoute && <Footer />}
     </AppContainer>
   );
 };

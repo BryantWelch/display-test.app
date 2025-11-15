@@ -23,6 +23,14 @@ const FullscreenLink = ({ to, title, description, className }) => {
 
   const handleClick = async (e) => {
     e.preventDefault();
+
+    const shouldFullscreen = to.startsWith('/test/');
+
+    if (!shouldFullscreen) {
+      navigate(to);
+      return;
+    }
+
     try {
       await document.documentElement.requestFullscreen();
       navigate(to);

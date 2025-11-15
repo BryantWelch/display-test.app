@@ -130,7 +130,7 @@ const Header = () => {
         <Title>Professional Display Testing</Title>
       </TitleContainer>
       <Subtitle>
-        Comprehensive tools to evaluate and optimize your display's performance
+        Free, browser-based tools to test brightness, contrast, motion clarity, and more on any monitor or TV.
       </Subtitle>
     </HeaderContainer>
   );

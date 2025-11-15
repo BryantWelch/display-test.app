@@ -72,62 +72,62 @@ const Home = () => {
     {
       title: 'Dead Pixel Test',
       description: 'Check your display for dead or stuck pixels using various solid color backgrounds. Cycle through colors manually or automatically to identify display defects.',
-      path: '/test/dead-pixel'
+      path: '/dead-pixel'
     },
     {
       title: 'Uniformity Test',
       description: 'Test screen uniformity with solid color backgrounds and adjustable grid patterns. Identify backlight bleed and color consistency issues across your entire display.',
-      path: '/test/uniformity'
+      path: '/uniformity'
     },
     {
       title: 'Text Clarity Test',
       description: 'Check your display for text readability with adjustable font sizes, styles, and background colors. Fine-tune letter spacing and line height to evaluate text rendering quality.',
-      path: '/test/text-clarity'
+      path: '/text-clarity'
     },
     {
       title: 'Color Gradient Test',
       description: 'Examine your display for color banding with customizable RGB gradients and number of steps. Test your display\'s color smoothness with adjustable gradient patterns.',
-      path: '/test/color-gradient'
+      path: '/color-gradient'
     },
     {
       title: 'Response Time Test',
       description: 'Evaluate your display\'s motion clarity using moving objects at different speeds and directions. Test for ghosting and blur with customizable animation controls.',
-      path: '/test/response-time'
+      path: '/response-time'
     },
     {
       title: 'Color Distance Test',
       description: 'Test your display\'s ability to accurately reproduce similar colors while maintaining their distinction by adjusting the RGB/HEX values of the foreground and background colors.',
-      path: '/test/color-distance'
+      path: '/color-distance'
     },
     {
       title: 'Gamma Test',
       description: 'Check your display\'s gamma calibration across standard values from 1.8 to 2.4. Compare grayscale steps to evaluate gamma accuracy and gray-scale rendering.',
-      path: '/test/gamma'
+      path: '/gamma'
     },
     {
       title: 'Test Patterns',
       description: 'Analyze display performance with essential calibration and alignment patterns. Switch between different test patterns to check various display characteristics.',
-      path: '/test/test-patterns'
+      path: '/test-patterns'
     },
     {
       title: 'Viewing Angle Test',
       description: 'Test viewing angles using a contrasting pattern and color shifts at different positions. Evaluate your display from multiple viewing positions with visual indicators.',
-      path: '/test/viewing-angle'
+      path: '/viewing-angle'
     },
     {
       title: 'Brightness Test',
       description: 'Measure brightness levels using adjustable white windows from 5% to 100%. Test screen luminance with variable-sized patterns against a black background.',
-      path: '/test/brightness'
+      path: '/brightness'
     },
     {
       title: 'Contrast Test',
       description: 'Test contrast with adjustable checkerboard patterns from 2x2 to 50x50 grids. Evaluate black and white level separation with customizable pattern sizes.',
-      path: '/test/contrast'
+      path: '/contrast'
     },
     {
       title: 'Matrix Test',
       description: 'Create Matrix-style digital rain with adjustable text colors, sizes, and animation speeds. Customize the classic effect with various background options. How deep does the rabbit hole go?',
-      path: '/test/matrix'
+      path: '/matrix'
     }
   ];
 
