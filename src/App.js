@@ -156,7 +156,6 @@ const seoData = {
 
 const App = () => {
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
   const isTestRoute = location.pathname.startsWith('/test/');
   const currentSEO = seoData[location.pathname] || seoData['/'];
 
