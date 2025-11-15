@@ -10,6 +10,14 @@ const HeaderContainer = styled.header`
   padding: 4rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 3rem 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 2.5rem 1.25rem 2rem;
+  }
 `;
 
 const TitleContainer = styled.div`
@@ -17,6 +25,12 @@ const TitleContainer = styled.div`
   align-items: center;
   gap: 2rem;
   margin-bottom: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
 `;
 
 const colorShift = keyframes`
@@ -56,6 +70,14 @@ const Logo = styled.img`
       animation: ${colorShift} 2s linear infinite, ${pulse} 2s ease-in-out infinite;
     }
   }
+
+  @media (max-width: 768px) {
+    width: 96px;
+  }
+
+  @media (max-width: 480px) {
+    width: 80px;
+  }
 `;
 
 const Title = styled.h1`
@@ -64,6 +86,14 @@ const Title = styled.h1`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.1rem;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -71,6 +101,15 @@ const Subtitle = styled.p`
   color: var(--secondary);
   max-width: 600px;
   margin: 0 auto;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.05rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const Header = () => {

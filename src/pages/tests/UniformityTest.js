@@ -22,6 +22,7 @@ const ExitButton = styled.button`
   position: fixed;
   top: 1.5rem;
   left: 1.5rem;
+
   background: rgba(0, 0, 0, 0.8);
   color: white;
   border: none;
@@ -49,6 +50,21 @@ const ExitButton = styled.button`
   svg {
     width: 20px;
     height: 20px;
+  }
+
+  @media (max-width: 768px) {
+    top: 1.25rem;
+    left: 1.25rem;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.95rem;
+    border-radius: 0.4rem;
   }
 `;
 
@@ -84,6 +100,24 @@ const ControlPanel = styled.div`
   }
   &::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    width: min(360px, 90vw);
+    right: 1.25rem;
+    left: auto;
+    bottom: 1.25rem;
+    top: 5.25rem;
+    padding: ${props => props.$isMinimized ? '1rem' : '1.5rem'};
+  }
+
+  @media (max-width: 480px) {
+    width: 92vw;
+    right: 4vw;
+    left: 4vw;
+    bottom: 0.75rem;
+    padding: ${props => props.$isMinimized ? '0.9rem' : '1.25rem'};
+    border-radius: 0.6rem;
   }
 `;
 
@@ -141,6 +175,16 @@ const Description = styled.p`
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0 0 1.5rem 0;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.88rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 const Section = styled.div`
@@ -158,11 +202,20 @@ const Section = styled.div`
   &:last-child {
     margin-bottom: 0;
   }
+
+  @media (max-width: 768px) {
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
 `;
 
 const ResetButton = styled.button`
   width: 100%;
   padding: 1rem;
+
   background: #4169e1;
   color: white;
   border: none;
@@ -174,6 +227,16 @@ const ResetButton = styled.button`
 
   &:hover {
     background: #3658c5;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    padding: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.98rem;
+    padding: 0.85rem;
   }
 `;
 

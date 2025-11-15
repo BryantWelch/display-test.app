@@ -14,6 +14,14 @@ const HomeContainer = styled.div`
   @media (max-width: 1200px) {
     padding: 1rem;
   }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem 1rem 2rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1.25rem 0.75rem 2rem;
+  }
 `;
 
 const MainContent = styled.div`
@@ -64,6 +72,30 @@ const StyledFullscreenLink = styled(FullscreenLink)`
     color: var(--secondary);
     line-height: 1.6;
     font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+
+    h2 {
+      font-size: 1.35rem;
+    }
+
+    p {
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.25rem 1rem;
+
+    h2 {
+      font-size: 1.2rem;
+    }
+
+    p {
+      font-size: 0.92rem;
+    }
   }
 `;
 

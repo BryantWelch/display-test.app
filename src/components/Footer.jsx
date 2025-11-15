@@ -9,6 +9,14 @@ const FooterContainer = styled.footer`
   margin-top: auto;
   text-align: center;
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 2.25rem 0 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 2rem 0 1.25rem;
+  }
 `;
 
 const FooterContent = styled.div`
@@ -22,7 +30,7 @@ const FooterContent = styled.div`
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
     text-align: center;
   }
 `;
@@ -36,6 +44,16 @@ const FooterSection = styled.div`
     background: linear-gradient(to right, #fff, #60a5fa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    
+    @media (max-width: 768px) {
+      font-size: 1.05rem;
+      margin-bottom: 0.9rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1rem;
+      margin-bottom: 0.8rem;
+    }
   }
 `;
 
@@ -47,6 +65,27 @@ const FooterLinks = styled.ul`
 
   li {
     margin-bottom: 0.75rem;
+
+    a {
+      font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      margin-bottom: 0.5rem;
+
+      a {
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      margin-bottom: 0.4rem;
+
+      a {
+        font-size: 0.92rem;
+      }
+      margin-bottom: 0.45rem;
+    }
   }
 `;
 
