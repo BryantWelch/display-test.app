@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import { loadColorDistanceTest } from '../testRouteLoader';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -145,6 +146,10 @@ const InlineLink = styled(Link)`
 
 const ColorDistanceInfo = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    loadColorDistanceTest();
+  }, []);
 
   const handleStartTest = async () => {
     try {
