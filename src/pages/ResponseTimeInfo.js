@@ -158,15 +158,15 @@ const ResponseTimeInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Response Time Test</Title>
       <Subtitle>
         This guide helps you evaluate how quickly your display's pixels change, which affects motion
         clarity, ghosting, and overall responsiveness—especially important for gaming.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start response time test

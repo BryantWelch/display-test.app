@@ -158,16 +158,16 @@ const ColorGradientInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Color Gradient Test</Title>
       <Subtitle>
         Use this test to examine how smoothly your display renders gradients and to spot color banding
         or uneven transitions. It is especially useful when evaluating HDR modes, color profiles, or
         GPU scaling settings.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start color gradient test

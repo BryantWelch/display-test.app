@@ -158,15 +158,15 @@ const GammaInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Gamma Test</Title>
       <Subtitle>
         This guide helps you understand and evaluate your display's gamma response so midtones, shadows,
         and highlights look balanced and natural.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start gamma test

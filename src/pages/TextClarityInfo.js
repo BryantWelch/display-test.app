@@ -158,15 +158,15 @@ const TextClarityInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Text Clarity Test</Title>
       <Subtitle>
         This guide helps you evaluate how clearly text appears on your display so you can reduce eye
         strain and choose settings that make long reading or work sessions more comfortable.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start text clarity test

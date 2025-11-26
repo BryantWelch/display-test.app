@@ -158,15 +158,15 @@ const ViewingAngleInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Viewing Angle Test</Title>
       <Subtitle>
         This guide helps you evaluate how your display's colors and brightness change when viewed from
         different positions—a key factor for shared screens and TV-style setups.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start viewing angle test

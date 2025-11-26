@@ -163,14 +163,14 @@ const MatrixInfo = () => {
         This playful tool fills your screen with customizable Matrix-style digital rain—great for showing
         off your display or setting a sci-fi mood.
       </Subtitle>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Subtitle>
         This one isn't a serious calibration pattern—it's an homage to falling code, green phosphor
         monitors, and the question: &quot;How deep does the rabbit hole go?&quot;
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Enter the Matrix

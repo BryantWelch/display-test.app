@@ -158,15 +158,15 @@ const ColorDistanceInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Color Distance Test</Title>
       <Subtitle>
         This guide helps you understand how well your display can distinguish between very similar colors,
         which is important for photo editing, design work, and choosing accessible color schemes.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start color distance test

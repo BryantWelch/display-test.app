@@ -158,17 +158,16 @@ const TestPatternsInfo = () => {
 
   return (
     <PageContainer>
-      <AdSlot
-        slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
-      />
       <Title>Test Patterns</Title>
       <Subtitle>
         Use this collection of professional test patterns to check sharpness, geometry, scaling,
         overscan, and other core aspects of your display. Patterns are automatically matched to your
         screen resolution.
       </Subtitle>
-
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <StartTestButton type="button" onClick={handleStartTest}>
         Start test patterns
         <ArrowIcon>
