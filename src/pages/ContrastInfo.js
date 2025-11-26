@@ -256,7 +256,10 @@ const ContrastInfo = () => {
 
           <h3>Related tests</h3>
           <p>
-            Combine this contrast test with the brightness, gamma, and test patterns tools in{' '}
+            Combine this contrast test with the{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>,{' '}
+            <InlineLink to="/gamma">gamma</InlineLink>, and{' '}
+            <InlineLink to="/test-patterns">test patterns</InlineLink> tools in{' '}
             <InlineLink to="/">Display Test</InlineLink> to dial in picture settings that work well for
             your environment.
           </p>

@@ -287,9 +287,13 @@ const UniformityInfo = () => {
 
           <h3>Run additional checks</h3>
           <p>
-            After verifying uniformity, you can use the other tools in{' '}
-            <InlineLink to="/">Display Test</InlineLink> to check for dead pixels, measure brightness and
-            contrast, and fine‑tune text clarity.
+            After verifying{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink>, you can use the other tools in{' '}
+            <InlineLink to="/">Display Test</InlineLink> to check for{' '}
+            <InlineLink to="/dead-pixel">dead pixels</InlineLink>, measure{' '}
+            <InlineLink to="/brightness">brightness</InlineLink> and{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>, and fine‑tune{' '}
+            <InlineLink to="/text-clarity">text clarity</InlineLink>.
           </p>
 
           <h3>Disclaimer</h3>

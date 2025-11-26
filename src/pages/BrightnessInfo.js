@@ -260,7 +260,11 @@ const BrightnessInfo = () => {
 
           <h3>Related checks</h3>
           <p>
-            After brightness, use the contrast, uniformity, and gamma tests in{' '}
+            After{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>, use the{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>,{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink>, and{' '}
+            <InlineLink to="/gamma">gamma</InlineLink> tests in{' '}
             <InlineLink to="/">Display Test</InlineLink> to get a fuller picture of how your display
             behaves in different conditions.
           </p>

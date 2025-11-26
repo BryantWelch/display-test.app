@@ -271,8 +271,11 @@ const ResponseTimeInfo = () => {
 
           <h3>Combine with other tests</h3>
           <p>
-            For a full picture of gaming or video performance, pair this with the gamma, brightness,
-            contrast, and viewing angle tests in{' '}
+            For a full picture of gaming or video performance, pair this with the{' '}
+            <InlineLink to="/gamma">gamma</InlineLink>,{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>,{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>, and{' '}
+            <InlineLink to="/viewing-angle">viewing angle</InlineLink> tests in{' '}
             <InlineLink to="/">Display Test</InlineLink>.
           </p>
 

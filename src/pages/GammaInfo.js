@@ -263,7 +263,10 @@ const GammaInfo = () => {
           <h3>Combine with other tests</h3>
           <p>
             Gamma interacts with brightness, contrast, and color. After running this test, you may want to
-            revisit the brightness, contrast, and color gradient tests in{' '}
+            revisit the{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>,{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>, and{' '}
+            <InlineLink to="/color-gradient">color gradient</InlineLink> tests in{' '}
             <InlineLink to="/">Display Test</InlineLink> to confirm everything looks balanced.
           </p>
 

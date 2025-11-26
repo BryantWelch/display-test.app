@@ -262,7 +262,10 @@ const ViewingAngleInfo = () => {
 
           <h3>Combine with other tests</h3>
           <p>
-            After checking viewing angles, you can use the uniformity, gamma, and color distance tests in{' '}
+            After checking viewing angles, you can use the{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink>,{' '}
+            <InlineLink to="/gamma">gamma</InlineLink>, and{' '}
+            <InlineLink to="/color-distance">color distance</InlineLink> tests in{' '}
             <InlineLink to="/">Display Test</InlineLink> to see how your panel behaves from your preferred
             seating positions.
           </p>

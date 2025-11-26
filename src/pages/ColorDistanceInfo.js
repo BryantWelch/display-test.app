@@ -259,8 +259,10 @@ const ColorDistanceInfo = () => {
 
           <h3>Combine with other tools</h3>
           <p>
-            For a more complete evaluation, pair this test with the color gradient, gamma, and uniformity
-            tests in{' '}
+            For a more complete evaluation, pair this test with the{' '}
+            <InlineLink to="/color-gradient">color gradient</InlineLink>,{' '}
+            <InlineLink to="/gamma">gamma</InlineLink>, and{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink> tests in{' '}
             <InlineLink to="/">Display Test</InlineLink>. Together they give a good overview of how your
             panel handles color detail.
           </p>

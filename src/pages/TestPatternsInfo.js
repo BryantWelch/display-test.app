@@ -260,7 +260,11 @@ const TestPatternsInfo = () => {
 
           <h3>Related tools</h3>
           <p>
-            Combine these patterns with the brightness, contrast, uniformity, and gamma tests in{' '}
+            Combine these patterns with the{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>,{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>,{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink>, and{' '}
+            <InlineLink to="/gamma">gamma</InlineLink> tests in{' '}
             <InlineLink to="/">Display Test</InlineLink> to fine-tune your setup and confirm the changes
             you make.
           </p>

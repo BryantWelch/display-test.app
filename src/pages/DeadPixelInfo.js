@@ -299,8 +299,11 @@ const DeadPixelInfo = () => {
           <h3>Run other useful tests</h3>
           <p>
             After checking for pixel defects, you can use the other tools in{' '}
-            <InlineLink to="/">Display Test</InlineLink> to verify brightness, contrast, text clarity,
-            and overall panel uniformity.
+            <InlineLink to="/">Display Test</InlineLink> to verify{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>,{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>,{' '}
+            <InlineLink to="/text-clarity">text clarity</InlineLink>, and overall panel{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink>.
           </p>
 
           <h3>Disclaimer</h3>

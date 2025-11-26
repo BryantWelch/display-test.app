@@ -263,23 +263,25 @@ const ColorGradientInfo = () => {
         </div>
 
         <SidebarCard>
-          <h2>Related checks</h2>
-          <p>
-            Banding often shows up in dark movie scenes, skies, or subtle shadows. After using this test,
-            try watching content you know well and see if gradients look smoother.
-          </p>
-          <p>
-            You can also combine this with the gamma and uniformity tests in{' '}
-            <InlineLink to="/">Display Test</InlineLink> to get a fuller picture of your panel&apos;s
-            performance.
-          </p>
-
           <h3>When to worry</h3>
           <ul>
             <li>Harsh bands that remain obvious in everyday content.</li>
             <li>Large areas of a gradient collapsing into just a few tones.</li>
             <li>Banding that appears after enabling a specific display mode or GPU feature.</li>
           </ul>
+
+          <h3>Related checks</h3>
+          <p>
+            Banding often shows up in dark movie scenes, skies, or subtle shadows. After using this test,
+            try watching content you know well and see if gradients look smoother.
+          </p>
+          <p>
+            You can also combine this with the{' '}
+            <InlineLink to="/gamma">gamma</InlineLink> and{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink> tests in{' '}
+            <InlineLink to="/">Display Test</InlineLink> to get a fuller picture of your panel&apos;s
+            performance.
+          </p>
 
           <h3>Disclaimer</h3>
           <p>

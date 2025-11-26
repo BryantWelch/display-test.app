@@ -262,9 +262,13 @@ const TextClarityInfo = () => {
 
           <h3>Try other tests</h3>
           <p>
-            After checking text clarity, you can use the other tools in{' '}
-            <InlineLink to="/">Display Test</InlineLink> to verify gamma, brightness, contrast, and overall
-            panel uniformity.
+            After checking{' '}
+            <InlineLink to="/text-clarity">text clarity</InlineLink>, you can use the other tools in{' '}
+            <InlineLink to="/">Display Test</InlineLink> to verify{' '}
+            <InlineLink to="/gamma">gamma</InlineLink>,{' '}
+            <InlineLink to="/brightness">brightness</InlineLink>,{' '}
+            <InlineLink to="/contrast">contrast</InlineLink>, and overall panel{' '}
+            <InlineLink to="/uniformity">uniformity</InlineLink>.
           </p>
 
           <h3>Disclaimer</h3>
