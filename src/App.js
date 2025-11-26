@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Layout from './components/Layout';
@@ -18,20 +18,18 @@ import ViewingAngleInfo from './pages/ViewingAngleInfo';
 import BrightnessInfo from './pages/BrightnessInfo';
 import MatrixInfo from './pages/MatrixInfo';
 import ContrastInfo from './pages/ContrastInfo';
-import {
-  loadDeadPixelTest,
-  loadUniformityTest,
-  loadTextClarityTest,
-  loadColorGradientTest,
-  loadResponseTimeTest,
-  loadColorDistanceTest,
-  loadTestPatternsTest,
-  loadGammaTest,
-  loadViewingAngleTest,
-  loadBrightnessTest,
-  loadContrastTest,
-  loadMatrixTest
-} from './testRouteLoader';
+import DeadPixelTest from './pages/tests/DeadPixelTest';
+import UniformityTest from './pages/tests/UniformityTest';
+import TextClarityTest from './pages/tests/TextClarityTest';
+import ColorGradientTest from './pages/tests/ColorGradientTest';
+import ResponseTimeTest from './pages/tests/ResponseTimeTest';
+import ColorDistanceTest from './pages/tests/ColorDistanceTest';
+import TestPatternsTest from './pages/tests/TestPatternsTest';
+import GammaTest from './pages/tests/GammaTest';
+import ViewingAngleTest from './pages/tests/ViewingAngleTest';
+import BrightnessTest from './pages/tests/BrightnessTest';
+import ContrastTest from './pages/tests/ContrastTest';
+import MatrixTest from './pages/tests/MatrixTest';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const AppContainer = styled.div`
@@ -156,20 +154,6 @@ const seoData = {
   }
 };
 
-// Lazily loaded test routes so their bundles can be prefetched from info pages
-const DeadPixelTest = React.lazy(loadDeadPixelTest);
-const UniformityTest = React.lazy(loadUniformityTest);
-const TextClarityTest = React.lazy(loadTextClarityTest);
-const ColorGradientTest = React.lazy(loadColorGradientTest);
-const ResponseTimeTest = React.lazy(loadResponseTimeTest);
-const ColorDistanceTest = React.lazy(loadColorDistanceTest);
-const TestPatternsTest = React.lazy(loadTestPatternsTest);
-const GammaTest = React.lazy(loadGammaTest);
-const ViewingAngleTest = React.lazy(loadViewingAngleTest);
-const BrightnessTest = React.lazy(loadBrightnessTest);
-const ContrastTest = React.lazy(loadContrastTest);
-const MatrixTest = React.lazy(loadMatrixTest);
-
 const App = () => {
   const location = useLocation();
   const isTestRoute = location.pathname.startsWith('/test/');
@@ -180,8 +164,7 @@ const App = () => {
       <SEO {...currentSEO} />
       <Layout>
         <MainContent>
-          <Suspense fallback={null}>
-            <Routes>
+          <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -210,7 +193,6 @@ const App = () => {
               <Route path="/test/contrast" element={<ContrastTest />} />
               <Route path="/test/matrix" element={<MatrixTest />} />
             </Routes>
-          </Suspense>
         </MainContent>
       </Layout>
       {!isTestRoute && <Footer />}

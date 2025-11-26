@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
-import { loadMatrixTest } from '../testRouteLoader';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,10 +145,6 @@ const InlineLink = styled(Link)`
 
 const MatrixInfo = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadMatrixTest();
-  }, []);
 
   const handleStartTest = async () => {
     try {
