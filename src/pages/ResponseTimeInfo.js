@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,10 +158,14 @@ const ResponseTimeInfo = () => {
 
   return (
     <PageContainer>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <Title>Response Time Test</Title>
       <Subtitle>
-        Use this test to evaluate motion clarity, ghosting, and overshoot on your display. Moving blocks
-        and pursuit text help reveal how quickly pixels transition between dark and bright states.
+        This guide helps you evaluate how quickly your display's pixels change, which affects motion
+        clarity, ghosting, and overall responsiveness—especially important for gaming.
       </Subtitle>
 
       <StartTestButton type="button" onClick={handleStartTest}>
@@ -276,8 +281,16 @@ const ResponseTimeInfo = () => {
             This tool provides a visual indication of motion clarity and response behavior. It does not
             replace manufacturer specifications or laboratory-grade measurements.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

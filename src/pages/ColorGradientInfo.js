@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,6 +158,10 @@ const ColorGradientInfo = () => {
 
   return (
     <PageContainer>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <Title>Color Gradient Test</Title>
       <Subtitle>
         Use this test to examine how smoothly your display renders gradients and to spot color banding
@@ -281,8 +286,16 @@ const ColorGradientInfo = () => {
             This tool helps you visually evaluate gradient rendering and color banding. It does not
             replace professional calibration hardware or manufacturer diagnostics.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

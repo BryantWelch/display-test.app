@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,10 +158,14 @@ const ContrastInfo = () => {
 
   return (
     <PageContainer>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <Title>Contrast Test</Title>
       <Subtitle>
-        Use this test to evaluate how well your display separates dark and bright areas using a
-        high-contrast checkerboard pattern at different scales.
+        This guide explains how to use the contrast checkerboard patterns to see how well your display
+        distinguishes between dark and light areas at different sizes.
       </Subtitle>
 
       <StartTestButton type="button" onClick={handleStartTest}>
@@ -261,8 +266,16 @@ const ContrastInfo = () => {
             This is a visual check and not a replacement for calibrated contrast measurements. For
             professional evaluation, use a meter and calibration software.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

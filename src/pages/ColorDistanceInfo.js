@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,10 +158,14 @@ const ColorDistanceInfo = () => {
 
   return (
     <PageContainer>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <Title>Color Distance Test</Title>
       <Subtitle>
-        Use this test to explore how small color differences appear on your display. Adjust background
-        and foreground values to see when two colors still feel distinct versus when they start to blend.
+        This guide helps you understand how well your display can distinguish between very similar colors,
+        which is important for photo editing, design work, and choosing accessible color schemes.
       </Subtitle>
 
       <StartTestButton type="button" onClick={handleStartTest}>
@@ -265,8 +270,16 @@ const ColorDistanceInfo = () => {
             This tool provides a visual, subjective way to explore color differences. It does not replace
             professional calibration equipment or formal color difference metrics like Delta E.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

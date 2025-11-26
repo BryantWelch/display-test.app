@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,11 +158,14 @@ const TextClarityInfo = () => {
 
   return (
     <PageContainer>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <Title>Text Clarity Test</Title>
       <Subtitle>
-        Use this test to evaluate how clearly your display renders text at different sizes, fonts, and
-        contrast levels. It is especially helpful for tuning ClearType, font smoothing, and scaling
-        settings on laptops and high-DPI monitors.
+        This guide helps you evaluate how clearly text appears on your display so you can reduce eye
+        strain and choose settings that make long reading or work sessions more comfortable.
       </Subtitle>
 
       <StartTestButton type="button" onClick={handleStartTest}>
@@ -269,8 +273,16 @@ const TextClarityInfo = () => {
             replace professional eye care or medical advice. Consult an eye care professional if you
             experience persistent discomfort while using screens.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

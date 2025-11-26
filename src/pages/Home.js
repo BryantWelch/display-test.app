@@ -170,7 +170,7 @@ const Home = () => {
         <Header />
         <AdSlot
           slot="3936769799" // home_top_banner
-          style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '1.5rem' }}
+          style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '1.5rem' }}
         />
         <TestGrid>
           {tests.map((test) => (
@@ -184,7 +184,7 @@ const Home = () => {
         </TestGrid>
         <AdSlot
           slot="7385060214" // home_below_grid
-          style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '2rem' }}
+          style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2rem' }}
         />
       </MainContent>
     </HomeContainer>

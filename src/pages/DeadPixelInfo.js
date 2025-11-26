@@ -167,7 +167,7 @@ const DeadPixelInfo = () => {
       </Subtitle>
       <AdSlot
         slot="3936769799" // home_top_banner reused for info page top banner
-        style={{ display: 'block', width: '100%', minHeight: '90px', marginBottom: '2rem' }}
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
       />
 
       <StartTestButton type="button" onClick={handleStartTest}>
@@ -317,7 +317,7 @@ const DeadPixelInfo = () => {
       </ContentGrid>
       <AdSlot
         slot="7385060214" // home_below_grid reused as bottom banner for info page
-        style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '2.5rem' }}
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
       />
     </PageContainer>
   );

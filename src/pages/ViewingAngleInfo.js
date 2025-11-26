@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,11 +158,14 @@ const ViewingAngleInfo = () => {
 
   return (
     <PageContainer>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
       <Title>Viewing Angle Test</Title>
       <Subtitle>
-        Use this test to see how your display&apos;s brightness and color change when you move off-center.
-        It&apos;s especially useful for comparing IPS, VA, and TN panels or checking TV viewing for multiple
-        seats.
+        This guide helps you evaluate how your display's colors and brightness change when viewed from
+        different positions—a key factor for shared screens and TV-style setups.
       </Subtitle>
 
       <StartTestButton type="button" onClick={handleStartTest}>
@@ -269,8 +273,16 @@ const ViewingAngleInfo = () => {
             formal measurement. Always consider your typical usage distance and room lighting when judging
             results.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

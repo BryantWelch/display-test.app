@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -159,10 +160,14 @@ const UniformityInfo = () => {
     <PageContainer>
       <Title>Uniformity Test</Title>
       <Subtitle>
-        Use this test to check how evenly your display shows brightness and color from edge to edge.
-        It is especially useful for spotting backlight bleed, clouding, or color shifts on large
-        LCD and OLED panels.
+        Use this guide to evaluate how evenly your display distributes brightness and color across the
+        screen. It helps you spot backlight bleed, clouding, and other uniformity issues that might be
+        distracting during everyday use.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start uniformity test
@@ -293,8 +298,16 @@ const UniformityInfo = () => {
             professional calibration or manufacturer diagnostics. Always follow your device vendor&apos;s
             recommendations when requesting service or replacement.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };

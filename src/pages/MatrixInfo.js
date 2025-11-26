@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -157,9 +158,17 @@ const MatrixInfo = () => {
 
   return (
     <PageContainer>
-      <Title>Matrix Test (Just for Fun)</Title>
+      <Title>Matrix Test</Title>
       <Subtitle>
-        This one isn&apos;t a serious calibration pattern—it&apos;s an homage to falling code, green phosphor
+        This playful tool fills your screen with customizable Matrix-style digital rain—great for showing
+        off your display or setting a sci-fi mood.
+      </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginBottom: '2rem' }}
+      />
+      <Subtitle>
+        This one isn't a serious calibration pattern—it's an homage to falling code, green phosphor
         monitors, and the question: &quot;How deep does the rabbit hole go?&quot;
       </Subtitle>
 
@@ -178,7 +187,7 @@ const MatrixInfo = () => {
           <Section>
             <h2>Blue pill or red pill?</h2>
             <p>
-              Strictly speaking, this isn&apos;t a display test. It&apos;s a toy inspired by the classic &quot;digital
+              Strictly speaking, this isn't a display test. It's a toy inspired by the classic &quot;digital
               rain&quot; effect: streams of characters falling down the screen, like a terminal that forgot how
               to stop printing debug logs.
             </p>
@@ -206,7 +215,7 @@ const MatrixInfo = () => {
           <Section>
             <h2>Things you might notice</h2>
             <p>
-              While this isn&apos;t meant as a strict diagnostic, it can still highlight some behavior:
+              While this isn't meant as a strict diagnostic, it can still highlight some behavior:
             </p>
             <ul>
               <li>How clear small, high-contrast text looks in motion.</li>
@@ -214,7 +223,7 @@ const MatrixInfo = () => {
               <li>How evenly the background appears across the screen.</li>
             </ul>
             <p>
-              But mostly, it&apos;s about enjoying the aesthetic—no lab coat required.
+              But mostly, it's about enjoying the aesthetic—no lab coat required.
             </p>
           </Section>
         </div>
@@ -223,7 +232,7 @@ const MatrixInfo = () => {
           <h2>For fans of the movie</h2>
           <p>
             This effect is a nod to a certain trilogy about choices, reality, and a lot of green code. No
-            spoilers here, but if you feel an urge to whisper &quot;There is no spoon&quot;, that&apos;s normal.
+            spoilers here, but if you feel an urge to whisper &quot;There is no spoon&quot;, that's normal.
           </p>
 
           <h3>Ideas for using it</h3>
@@ -238,8 +247,16 @@ const MatrixInfo = () => {
             This &quot;test&quot; is purely for entertainment. For serious calibration, use the other tools in{' '}
             <InlineLink to="/">Display Test</InlineLink>—or take the red pill and buy a colorimeter.
           </p>
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };
