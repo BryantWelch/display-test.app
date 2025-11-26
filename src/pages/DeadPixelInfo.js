@@ -310,10 +310,6 @@ const DeadPixelInfo = () => {
             service or replacement.
           </p>
           <AdSlot
-            slot="5445292586" // disclaimer_box
-            style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '1rem' }}
-          />
-          <AdSlot
             slot="6371361443" // sidebar_info_page
             style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
           />
