@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AdSlot from '../components/AdSlot';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -164,6 +165,10 @@ const DeadPixelInfo = () => {
         before a return window closes, after a new purchase, or whenever you notice something that
         doesn&apos;t look quite right.
       </Subtitle>
+      <AdSlot
+        slot="3936769799" // home_top_banner reused for info page top banner
+        style={{ display: 'block', width: '100%', minHeight: '90px', marginBottom: '2rem' }}
+      />
 
       <StartTestButton type="button" onClick={handleStartTest}>
         Start dead pixel test
@@ -304,6 +309,14 @@ const DeadPixelInfo = () => {
             manufacturer diagnostics. Always follow your device vendor&apos;s guidelines when requesting
             service or replacement.
           </p>
+          <AdSlot
+            slot="5445292586" // disclaimer_box
+            style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '1rem' }}
+          />
+          <AdSlot
+            slot="6371361443" // sidebar_info_page
+            style={{ display: 'block', width: '100%', minHeight: '250px', marginTop: '1.5rem' }}
+          />
         </SidebarCard>
       </ContentGrid>
     </PageContainer>

@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import FullscreenLink from '../components/FullscreenLink';
 import Header from '../components/Header';
+import AdSlot from '../components/AdSlot';
 
 const HomeContainer = styled.div`
   display: flex;
@@ -167,6 +168,10 @@ const Home = () => {
     <HomeContainer>
       <MainContent>
         <Header />
+        <AdSlot
+          slot="3936769799" // home_top_banner
+          style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '1.5rem' }}
+        />
         <TestGrid>
           {tests.map((test) => (
             <StyledFullscreenLink
@@ -177,6 +182,10 @@ const Home = () => {
             />
           ))}
         </TestGrid>
+        <AdSlot
+          slot="7385060214" // home_below_grid
+          style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '2rem' }}
+        />
       </MainContent>
     </HomeContainer>
   );
