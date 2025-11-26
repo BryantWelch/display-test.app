@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import AdSlot from './AdSlot';
 
 const FooterContainer = styled.footer`
   background: linear-gradient(to right, var(--primary-dark), var(--primary));
@@ -274,11 +273,6 @@ const Footer = () => {
           </FooterLinks>
         </FooterSection>
       </FooterContent>
-      
-      <AdSlot
-        slot="3745198105" // footer_banner
-        style={{ display: 'block', width: '100%', maxWidth: '1200px', margin: '2rem auto 0', minHeight: '90px' }}
-      />
 
       <Copyright>
         <div>

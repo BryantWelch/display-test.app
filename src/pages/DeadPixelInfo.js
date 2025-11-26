@@ -315,6 +315,10 @@ const DeadPixelInfo = () => {
           />
         </SidebarCard>
       </ContentGrid>
+      <AdSlot
+        slot="7385060214" // home_below_grid reused as bottom banner for info page
+        style={{ display: 'block', width: '100%', minHeight: '90px', marginTop: '2.5rem' }}
+      />
     </PageContainer>
   );
 };
