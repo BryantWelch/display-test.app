@@ -5,8 +5,11 @@ const SEO = ({ title, description, canonical }) => {
   const location = useLocation();
 
   useEffect(() => {
-    // Set canonical URL
-    const canonicalUrl = canonical || `https://display-test.app${location.pathname}`;
+    // Set canonical URL - normalize by removing trailing slashes
+    const normalizedPath = location.pathname.endsWith('/') && location.pathname !== '/' 
+      ? location.pathname.slice(0, -1) 
+      : location.pathname;
+    const canonicalUrl = canonical || `https://display-test.app${normalizedPath}`;
     
     // Remove existing canonical link if any
     const existingCanonical = document.querySelector('link[rel="canonical"]');
