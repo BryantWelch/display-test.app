@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const TestPatternsInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What are monitor test patterns?',
+      answer: 'Test patterns are standardized images designed to evaluate specific display characteristics like sharpness, geometry, convergence, and scaling. They help identify issues such as overscan, aspect ratio problems, pixel mapping errors, and focus problems that may not be visible in normal content.'
+    },
+    {
+      question: 'Why should I use test patterns?',
+      answer: 'Test patterns reveal display issues that normal content might hide. They help you verify that your monitor is displaying the full image without cropping (overscan), that pixels are properly aligned, that geometry is correct without distortion, and that scaling is working properly at your chosen resolution.'
+    },
+    {
+      question: 'What is overscan and how do I check for it?',
+      answer: 'Overscan occurs when your display crops the edges of the image, cutting off content. Use test patterns with border markers or numbers in the corners. If you can\'t see all four corners or edge markers, overscan is active. Disable it in your monitor or TV settings (often called "Just Scan" or "Screen Fit").'
+    },
+    {
+      question: 'How do I test monitor sharpness?',
+      answer: 'Use patterns with fine lines, text, or checkerboards. Sharp displays will show crisp, clear lines without blur or color fringing. If lines appear fuzzy or have colored edges, check that you\'re using the native resolution and that sharpness settings aren\'t over-enhanced.'
+    },
+    {
+      question: 'What should I look for in geometry test patterns?',
+      answer: 'Geometry patterns (grids, circles, squares) should appear perfectly straight and symmetrical. Look for bowing, pincushion/barrel distortion, or trapezoid effects. Modern digital monitors rarely have geometry issues, but some TVs and projectors may need geometry adjustment in their settings.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const TestPatternsInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Test Patterns</Title>
       <Subtitle>
         Use this collection of professional test patterns to check sharpness, geometry, scaling,

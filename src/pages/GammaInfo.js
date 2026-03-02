@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const GammaInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is gamma in monitors?',
+      answer: 'Gamma defines the relationship between a pixel\'s numerical value and its actual luminance on screen. It controls how midtones are displayed - affecting whether images look too dark, too bright, or properly balanced. Standard gamma values range from 1.8 to 2.4, with 2.2 being the most common for Windows and web content.'
+    },
+    {
+      question: 'What gamma setting should I use?',
+      answer: 'For general use and Windows, gamma 2.2 is standard. Mac users traditionally used 1.8 but now also use 2.2. For HDR content, gamma 2.4 provides deeper blacks. For bright rooms, slightly lower gamma (2.0-2.2) can help, while dark rooms may benefit from 2.2-2.4 for better shadow detail.'
+    },
+    {
+      question: 'How do I test my monitor\'s gamma?',
+      answer: 'Use our gamma test which displays grayscale patterns at different gamma values (1.8 to 2.4). The pattern that blends most smoothly with the background indicates your monitor\'s current gamma. You can then adjust your monitor or graphics card settings to match your target gamma.'
+    },
+    {
+      question: 'What happens if gamma is too high or too low?',
+      answer: 'If gamma is too high (e.g., 2.6), images appear too dark with crushed shadows and overly bright highlights. If gamma is too low (e.g., 1.6), images look washed out with weak contrast and grayish blacks. Proper gamma ensures balanced midtones and natural-looking images.'
+    },
+    {
+      question: 'Can I adjust gamma on my monitor?',
+      answer: 'Yes, through several methods: your monitor\'s OSD menu (often called "Gamma" or "Picture Mode"), graphics card control panel (NVIDIA/AMD settings), or Windows/Mac color calibration tools. Professional users may use hardware calibration devices for precise gamma adjustment.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const GammaInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Gamma Test</Title>
       <Subtitle>
         This guide helps you understand and evaluate your display's gamma response so midtones, shadows,

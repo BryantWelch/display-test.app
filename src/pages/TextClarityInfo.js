@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const TextClarityInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'How do I test text clarity on my monitor?',
+      answer: 'Use our text clarity test to display sample text at various font sizes, styles, and spacing. Adjust the settings to find what looks sharpest and most comfortable on your display. The test works in fullscreen mode and lets you switch between different fonts and color schemes.'
+    },
+    {
+      question: 'What causes blurry text on monitors?',
+      answer: 'Blurry text can be caused by incorrect scaling settings, non-native resolution, poor ClearType or font smoothing configuration, or low pixel density. Using your monitor at its native resolution and adjusting ClearType settings usually improves text clarity significantly.'
+    },
+    {
+      question: 'What is the best font size for reading on a monitor?',
+      answer: 'The ideal font size depends on your screen size, resolution, and viewing distance. Generally, 12-16pt fonts work well for most users. Use our test to find a size where you can read comfortably without squinting or leaning forward.'
+    },
+    {
+      question: 'Should I use light or dark mode for better text clarity?',
+      answer: 'Both can be clear depending on your environment. In bright rooms, dark text on light backgrounds (light mode) typically reduces eye strain. In dim environments, light text on dark backgrounds (dark mode) is often more comfortable. Test both to see what works best for you.'
+    },
+    {
+      question: 'How does ClearType affect text clarity?',
+      answer: 'ClearType is a Windows font smoothing technology that uses subpixel rendering to make text appear sharper on LCD screens. Running the ClearType tuner and then using our text clarity test can help you find the optimal settings for your specific monitor.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const TextClarityInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Text Clarity Test</Title>
       <Subtitle>
         This guide helps you evaluate how clearly text appears on your display so you can reduce eye

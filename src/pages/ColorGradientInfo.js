@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const ColorGradientInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is color banding?',
+      answer: 'Color banding appears as visible steps or bands in what should be smooth color gradients. Instead of a seamless transition from one color to another, you see distinct stripes or layers. It\'s most noticeable in skies, shadows, and other areas with subtle color changes.'
+    },
+    {
+      question: 'What causes color banding on monitors?',
+      answer: 'Color banding is typically caused by limited bit depth (8-bit vs 10-bit panels), poor dithering, compression in video files, or incorrect color settings. Some monitors also exhibit more banding due to their panel technology or processing.'
+    },
+    {
+      question: 'How do I test for color banding?',
+      answer: 'Use our color gradient test which displays smooth RGB gradients across your screen. Adjust the number of gradient steps to see how well your monitor handles subtle color transitions. True 10-bit displays will show smoother gradients with less visible banding.'
+    },
+    {
+      question: 'Can color banding be fixed?',
+      answer: 'Some banding can be reduced by enabling dithering in your graphics card settings, using 10-bit color output if your monitor supports it, or adjusting gamma and color profiles. However, hardware limitations of 8-bit panels will always show some banding in extreme gradients.'
+    },
+    {
+      question: 'Is color banding worse on certain panel types?',
+      answer: 'Color banding severity depends more on bit depth than panel type. An 8-bit IPS panel will show similar banding to an 8-bit VA panel. However, 10-bit panels (or 8-bit+FRC) handle gradients much better. Professional monitors often use true 10-bit panels to minimize banding.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const ColorGradientInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Color Gradient Test</Title>
       <Subtitle>
         Use this test to examine how smoothly your display renders gradients and to spot color banding

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const ResponseTimeInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is monitor response time?',
+      answer: 'Response time measures how quickly a pixel can change from one color to another, typically measured in milliseconds (ms). Faster response times (1ms-5ms) result in clearer motion and less ghosting, while slower response times (10ms+) can cause blur and trailing in fast-moving content.'
+    },
+    {
+      question: 'What is ghosting on a monitor?',
+      answer: 'Ghosting is a visual artifact where a faint trail or "ghost" image follows moving objects on screen. It\'s caused by slow pixel response times where pixels don\'t transition quickly enough, leaving remnants of previous frames visible. This is most noticeable in fast-paced games or scrolling text.'
+    },
+    {
+      question: 'How do I test my monitor\'s response time?',
+      answer: 'Use our response time test which displays moving objects at various speeds and directions. Watch for motion blur, ghosting trails, or overshoot (inverse ghosting). The clearer the moving objects appear, the better your monitor\'s response time performance.'
+    },
+    {
+      question: 'What is overshoot or inverse ghosting?',
+      answer: 'Overshoot (inverse ghosting) occurs when a monitor\'s overdrive setting is too aggressive, causing pixels to overshoot their target color before settling. This creates a bright or dark halo around moving objects. Adjusting your monitor\'s overdrive/response time setting can reduce this.'
+    },
+    {
+      question: 'What response time is good for gaming?',
+      answer: 'For competitive gaming, 1ms-5ms response times are ideal. Casual gaming is fine with 5ms-8ms. Response times above 10ms may show noticeable ghosting in fast-paced games. However, advertised response times (often gray-to-gray) don\'t always reflect real-world performance across all color transitions.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const ResponseTimeInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Response Time Test</Title>
       <Subtitle>
         This guide helps you evaluate how quickly your display's pixels change, which affects motion

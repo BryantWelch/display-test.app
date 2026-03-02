@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const ContrastInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is contrast ratio on a monitor?',
+      answer: 'Contrast ratio is the difference between the brightest white and darkest black a display can produce, expressed as a ratio (e.g., 1000:1). Higher contrast ratios mean deeper blacks and brighter whites, resulting in more vivid images with better depth. Native contrast ratios range from 700:1 (TN) to 3000:1 (VA) to infinite (OLED).'
+    },
+    {
+      question: 'What is a good contrast ratio?',
+      answer: 'For LCD monitors: 1000:1 is good, 3000:1+ is excellent (typical of VA panels). IPS panels usually offer 1000-1200:1, TN panels 700-1000:1. OLED displays have infinite contrast since they can turn pixels completely off. For HDR content, higher contrast ratios (3000:1+) provide better visual impact.'
+    },
+    {
+      question: 'How do I test my monitor\'s contrast?',
+      answer: 'Use our contrast test which displays checkerboard patterns from 2x2 to 50x50 grids. You should be able to distinguish individual black and white squares. If patterns blend together or blacks look gray, your contrast may be too low or brightness/gamma settings need adjustment.'
+    },
+    {
+      question: 'What is the difference between static and dynamic contrast?',
+      answer: 'Static (native) contrast is the ratio measured with fixed backlight settings - the true measure of panel quality. Dynamic contrast adjusts backlight brightness based on content, achieving inflated numbers (like 1,000,000:1) that don\'t reflect real-world performance. Always look at static contrast ratios.'
+    },
+    {
+      question: 'Can I improve my monitor\'s contrast ratio?',
+      answer: 'You can optimize contrast by adjusting brightness and contrast settings in your monitor\'s OSD, ensuring proper gamma (2.2), and using the monitor in a dark room. However, native contrast is limited by panel technology - you can\'t turn an IPS panel into a VA panel through settings alone.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const ContrastInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Contrast Test</Title>
       <Subtitle>
         This guide explains how to use the contrast checkerboard patterns to see how well your display

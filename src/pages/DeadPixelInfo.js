@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const DeadPixelInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is a dead pixel?',
+      answer: 'A dead pixel is a pixel that remains black at all times because it receives no power. Dead pixels appear as small black dots on your screen and are most visible against white or bright backgrounds. Unlike stuck pixels, dead pixels cannot be fixed.'
+    },
+    {
+      question: 'What is the difference between a dead pixel and a stuck pixel?',
+      answer: 'A dead pixel stays black and receives no power, while a stuck pixel is always on and displays a single color (red, green, blue, or white). Stuck pixels may sometimes be fixable using pixel-fixing software or pressure techniques, but dead pixels are permanent hardware failures.'
+    },
+    {
+      question: 'How do I check for dead pixels on my monitor?',
+      answer: 'Use our dead pixel test which displays solid colors (white, black, red, green, blue) in fullscreen. Look closely at your entire screen with each color displayed. Dead pixels will appear as black dots, while stuck pixels will show as colored dots that don\'t match the background.'
+    },
+    {
+      question: 'How many dead pixels are acceptable on a new monitor?',
+      answer: 'Most manufacturers allow a certain number of dead pixels under warranty (often 3-5 for standard monitors). However, many retailers offer better return policies. Check your monitor within the return window - even one dead pixel in a central location can be distracting.'
+    },
+    {
+      question: 'Can dead pixels spread or get worse over time?',
+      answer: 'Dead pixels themselves don\'t spread, as each pixel operates independently. However, if you notice dead pixels appearing over time, it could indicate a manufacturing defect or panel degradation. Document any new dead pixels and contact the manufacturer if still under warranty.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -159,6 +183,7 @@ const DeadPixelInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Dead Pixel Test</Title>
       <Subtitle>
         Use this test to quickly check your monitor or laptop display for dead, stuck, or hot pixels

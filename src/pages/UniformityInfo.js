@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const UniformityInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is screen uniformity?',
+      answer: 'Screen uniformity refers to how evenly brightness and color are distributed across your entire display. A monitor with good uniformity shows consistent brightness and color from edge to edge, while poor uniformity results in visible variations, patches, or tinting in different areas.'
+    },
+    {
+      question: 'What is backlight bleed?',
+      answer: 'Backlight bleed occurs when light from the monitor\'s backlight leaks around the edges of the screen, creating bright spots or glowing areas, especially visible on dark backgrounds. It\'s most common on LCD monitors and is typically more noticeable in dark rooms.'
+    },
+    {
+      question: 'How do I test my monitor for uniformity issues?',
+      answer: 'Use our uniformity test which displays solid colors (especially gray and black) in fullscreen. Look for areas that appear brighter, darker, or have different color tints. Test in a dark room for best results. The grid pattern option helps identify specific problem areas.'
+    },
+    {
+      question: 'Is some backlight bleed normal?',
+      answer: 'Some minor backlight bleed is common on LCD monitors, especially at the corners. However, excessive bleed that\'s visible during normal use (not just on pure black screens in dark rooms) may warrant a return or replacement, especially on new monitors within the return period.'
+    },
+    {
+      question: 'What causes clouding on monitors?',
+      answer: 'Clouding appears as uneven patches or clouds of lighter areas on dark backgrounds. It\'s caused by uneven pressure on the LCD panel, often from the panel frame or manufacturing defects. Unlike backlight bleed which is at edges, clouding typically appears in the center areas.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const UniformityInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Uniformity Test</Title>
       <Subtitle>
         Use this guide to evaluate how evenly your display distributes brightness and color across the

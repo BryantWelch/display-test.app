@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const BrightnessInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is monitor brightness measured in?',
+      answer: 'Monitor brightness is measured in nits (cd/m²), which stands for candelas per square meter. Typical office monitors range from 250-350 nits, while HDR monitors can reach 400-1000+ nits. Higher nit values mean the display can get brighter, which is useful for bright rooms or HDR content.'
+    },
+    {
+      question: 'What brightness level should I use for my monitor?',
+      answer: 'Optimal brightness depends on your environment. In bright rooms, 200-300 nits works well. In dim rooms, 100-150 nits reduces eye strain. Match your monitor brightness to your ambient lighting - the screen shouldn\'t be significantly brighter or darker than your surroundings.'
+    },
+    {
+      question: 'How do I test my monitor\'s brightness?',
+      answer: 'Use our brightness test which displays white windows of varying sizes (5% to 100%) on a black background. This reveals whether your monitor maintains consistent brightness across different window sizes - some monitors dim with larger white areas (ABL - Auto Brightness Limiting).'
+    },
+    {
+      question: 'What is ABL (Auto Brightness Limiting)?',
+      answer: 'ABL is a feature on some monitors (especially OLED) that reduces brightness when displaying large bright areas to prevent overheating and extend panel life. You\'ll notice the screen dims when showing mostly white content. This is normal for OLED displays but less common on LCD monitors.'
+    },
+    {
+      question: 'Can high brightness damage my eyes?',
+      answer: 'While brightness itself doesn\'t permanently damage eyes, excessive brightness causes eye strain, fatigue, and headaches. Use brightness levels comfortable for your environment. The 20-20-20 rule helps: every 20 minutes, look at something 20 feet away for 20 seconds.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const BrightnessInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Brightness Test</Title>
       <Subtitle>
         Use this test to check your display's peak brightness and how evenly it can light different areas

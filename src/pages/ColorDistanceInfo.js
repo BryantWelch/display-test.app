@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const ColorDistanceInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What is color distance in displays?',
+      answer: 'Color distance refers to how distinguishable two similar colors are from each other on your display. Monitors with good color accuracy can show subtle differences between nearly identical colors, which is crucial for photo editing, design work, and ensuring UI elements remain distinct.'
+    },
+    {
+      question: 'Why is color accuracy important?',
+      answer: 'Color accuracy ensures that colors displayed on your monitor match their true values. This is critical for photographers, designers, and video editors who need to see accurate colors for professional work. Poor color accuracy can result in prints or final products that look different from what you saw on screen.'
+    },
+    {
+      question: 'How do I test my monitor\'s color accuracy?',
+      answer: 'Use our color distance test which lets you adjust RGB/HEX values to create very similar foreground and background colors. If you can still distinguish between them, your monitor has good color separation. Professional calibration with a colorimeter provides the most accurate assessment.'
+    },
+    {
+      question: 'What is Delta E in color accuracy?',
+      answer: 'Delta E (ΔE) measures the difference between two colors. A Delta E of less than 1 is imperceptible to the human eye, 1-2 is excellent for professional work, 2-4 is good for general use, and above 4 shows visible color differences. Lower Delta E values indicate better color accuracy.'
+    },
+    {
+      question: 'Can I improve my monitor\'s color accuracy?',
+      answer: 'Yes, through calibration. Use your monitor\'s built-in color modes, adjust RGB levels, or use professional calibration hardware (colorimeter). Many monitors also benefit from warming up for 30 minutes before calibration. However, hardware limitations of cheaper panels may prevent perfect accuracy.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const ColorDistanceInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Color Distance Test</Title>
       <Subtitle>
         This guide helps you understand how well your display can distinguish between very similar colors,

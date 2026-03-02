@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Layout from './components/Layout';
 import Footer from './components/Footer';
 import SEO from './components/SEO';
+import StructuredData from './components/StructuredData';
 import Home from './pages/Home';
 import About from './pages/About';
 import DeadPixelInfo from './pages/DeadPixelInfo';
@@ -53,48 +54,48 @@ const seoData = {
     description: 'Learn what the Display Test App is, who it is for, and how to contribute or report issues via the open source GitHub repository.'
   },
   '/dead-pixel': {
-    title: 'Dead Pixel Test Guide - Display Test',
-    description: 'Learn how to run a proper dead pixel test on your monitor or laptop display, interpret the results, and decide what to do if you find dead, stuck, or hot pixels.'
+    title: 'Dead Pixel Checker - Find Stuck Pixels in 30 Seconds | Free Tool',
+    description: 'Find dead pixels instantly. Free checker for LCD, OLED & gaming monitors. Cycle through colors to identify stuck, dead, or hot pixels. Works on all devices - no download needed.'
   },
   '/uniformity': {
-    title: 'Uniformity Test Guide - Display Test',
-    description: 'Learn how to check your monitor for brightness and color uniformity issues, spot backlight bleed and clouding, and decide when a panel defect is worth returning or replacing.'
+    title: 'Screen Uniformity Test - Check Backlight Bleed & Color Consistency | Free Tool',
+    description: 'Test your monitor for backlight bleed, IPS glow, and color uniformity issues. Free tool with adjustable grid patterns. Identify panel defects before your return window expires.'
   },
   '/text-clarity': {
-    title: 'Text Clarity Test Guide - Display Test',
-    description: 'Learn how to evaluate text rendering quality on your monitor, tune ClearType or font smoothing, and choose comfortable font sizes and spacing for long reading sessions.'
+    title: 'Text Clarity Test - Evaluate Font Sharpness & Readability | Free Tool',
+    description: 'Test text sharpness and readability on your monitor. Adjust font sizes, spacing, and styles to reduce eye strain. Perfect for finding optimal ClearType settings. 100% free, no signup.'
   },
   '/color-gradient': {
-    title: 'Color Gradient Test Guide - Display Test',
-    description: 'Learn how to check your display for color banding and evaluate how smoothly it renders gradients in different colors and directions.'
+    title: 'Color Banding Test - Check Gradient Smoothness | Free Tool',
+    description: 'Detect color banding on your display with customizable RGB gradients. Test how smoothly your monitor renders color transitions. Essential for photo/video editing.'
   },
   '/response-time': {
-    title: 'Response Time Test Guide - Display Test',
-    description: 'Learn how to evaluate your monitor\'s motion clarity, ghosting, and overshoot using moving blocks and pursuit text patterns.'
+    title: 'Response Time Test - Check Motion Blur & Ghosting | Free Tool',
+    description: 'Evaluate your monitor\'s motion clarity and response time. Test for ghosting, blur, and overshoot with moving patterns. Critical for gaming and fast-paced content.'
   },
   '/color-distance': {
-    title: 'Color Distance Test Guide - Display Test',
-    description: 'Learn how to evaluate your display\'s ability to show subtle color differences and choose color combinations that remain distinct and readable.'
+    title: 'Color Accuracy Test - Check Subtle Color Distinction | Free Tool',
+    description: 'Test your display\'s ability to show subtle color differences. Adjust RGB/HEX values to evaluate color accuracy. Essential for designers and photo editors.'
   },
   '/gamma': {
-    title: 'Gamma Test Guide - Display Test',
-    description: 'Learn how to evaluate your monitor\'s effective gamma response and adjust settings so midtones, shadows, and highlights look properly balanced.'
+    title: 'Gamma Calibration Test - Check Display Gamma 1.8 to 2.4 | Free Tool',
+    description: 'Test your monitor\'s gamma calibration across standard values. Evaluate grayscale rendering and midtone accuracy. Find optimal gamma settings for your viewing environment.'
   },
   '/test-patterns': {
-    title: 'Test Patterns Guide - Display Test',
-    description: 'Learn how to use professional test patterns to evaluate sharpness, geometry, scaling, overscan, clipping, and other core display characteristics.'
+    title: 'Professional Test Patterns - Check Sharpness & Geometry | Free Tool',
+    description: 'Analyze display performance with professional calibration patterns. Test sharpness, geometry, scaling, and overscan. Industry-standard patterns for monitor evaluation.'
   },
   '/viewing-angle': {
-    title: 'Viewing Angle Test Guide - Display Test',
-    description: 'Learn how to evaluate your display\'s viewing angles, check for brightness and color shifts, and compare performance between different panel types.'
+    title: 'Viewing Angle Test - Check Color Shift & IPS Glow | Free Tool',
+    description: 'Test your monitor\'s viewing angles for gaming and movies. Check for color shift, brightness changes, and IPS glow. Compare IPS, VA, and TN panel performance.'
   },
   '/brightness': {
-    title: 'Brightness Test Guide - Display Test',
-    description: 'Learn how to measure your display\'s brightness behavior at different window sizes and choose comfortable settings for your environment.'
+    title: 'Brightness Test - Measure Display Luminance | Free Tool',
+    description: 'Measure your monitor\'s brightness levels with adjustable white windows (5% to 100%). Test screen luminance and find comfortable settings for your environment.'
   },
   '/contrast': {
-    title: 'Contrast Test Guide - Display Test',
-    description: 'Learn how to test contrast with adjustable checkerboard patterns and evaluate black and white separation at different pattern sizes.'
+    title: 'Contrast Ratio Test - Check Black & White Levels | Free Tool',
+    description: 'Test contrast with adjustable checkerboard patterns (2x2 to 50x50). Evaluate black and white level separation. Essential for HDR and movie viewing.'
   },
   '/matrix': {
     title: 'Matrix Test - Display Test',
@@ -105,47 +106,47 @@ const seoData = {
     description: 'Display Test App\'s privacy policy explains how we handle information when you use our display testing application. We are committed to protecting your privacy.'
   },
   '/test/dead-pixel': {
-    title: 'Dead Pixel Test - Display Test',
+    title: 'Dead Pixel Test - Check for Stuck Pixels | Fullscreen Mode',
     description: 'Check your display for dead or stuck pixels using various solid color backgrounds. Cycle through colors manually or automatically to identify display defects.'
   },
   '/test/uniformity': {
-    title: 'Uniformity Test - Display Test',
+    title: 'Uniformity Test - Check Backlight Bleed | Fullscreen Mode',
     description: 'Test screen uniformity with solid color backgrounds and adjustable grid patterns. Identify backlight bleed and color consistency issues across your entire display.'
   },
   '/test/text-clarity': {
-    title: 'Text Clarity Test - Display Test',
+    title: 'Text Clarity Test - Evaluate Font Sharpness | Fullscreen Mode',
     description: 'Check your display for text readability with adjustable font sizes, styles, and background colors. Fine-tune letter spacing and line height to evaluate text rendering quality.'
   },
   '/test/color-gradient': {
-    title: 'Color Gradient Test - Display Test',
+    title: 'Color Gradient Test - Detect Banding | Fullscreen Mode',
     description: 'Examine your display for color banding with customizable RGB gradients and number of steps. Test your display\'s color smoothness with adjustable gradient patterns.'
   },
   '/test/response-time': {
-    title: 'Response Time Test - Display Test',
+    title: 'Response Time Test - Check Motion Blur | Fullscreen Mode',
     description: 'Evaluate your display\'s motion clarity using moving objects at different speeds and directions. Test for ghosting and blur with customizable animation controls.'
   },
   '/test/color-distance': {
-    title: 'Color Distance Test - Display Test',
+    title: 'Color Distance Test - Check Color Accuracy | Fullscreen Mode',
     description: 'Test your display\'s ability to accurately reproduce similar colors while maintaining their distinction by adjusting the RGB/HEX values of the foreground and background colors.'
   },
   '/test/test-patterns': {
-    title: 'Test Patterns - Display Test',
+    title: 'Test Patterns - Professional Calibration | Fullscreen Mode',
     description: 'Analyze display performance with essential calibration and alignment patterns. Switch between different test patterns to check various display characteristics.'
   },
   '/test/gamma': {
-    title: 'Gamma Test - Display Test',
+    title: 'Gamma Test - Check Calibration | Fullscreen Mode',
     description: 'Check your display\'s gamma calibration across standard values from 1.8 to 2.4. Compare grayscale steps to evaluate gamma accuracy and gray-scale rendering.'
   },
   '/test/viewing-angle': {
-    title: 'Viewing Angle Test - Display Test',
+    title: 'Viewing Angle Test - Check Color Shift | Fullscreen Mode',
     description: 'Test viewing angles using a contrasting pattern and color shifts at different positions. Evaluate your display from multiple viewing positions with visual indicators.'
   },
   '/test/brightness': {
-    title: 'Brightness Test - Display Test',
+    title: 'Brightness Test - Measure Luminance | Fullscreen Mode',
     description: 'Measure brightness levels using adjustable white windows from 5% to 100%. Test screen luminance with variable-sized patterns against a black background.'
   },
   '/test/contrast': {
-    title: 'Contrast Test - Display Test',
+    title: 'Contrast Test - Check Black Levels | Fullscreen Mode',
     description: 'Test contrast with adjustable checkerboard patterns from 2x2 to 50x50 grids. Evaluate black and white level separation with customizable pattern sizes.'
   },
   '/test/matrix': {
@@ -162,6 +163,10 @@ const App = () => {
   return (
     <AppContainer>
       <SEO {...currentSEO} />
+      <StructuredData 
+        type={location.pathname === '/' ? 'SoftwareApplication' : 'WebPage'} 
+        data={currentSEO} 
+      />
       <Layout>
         <MainContent>
           <Routes>

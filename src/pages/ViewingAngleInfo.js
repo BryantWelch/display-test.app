@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import FAQSchema from '../components/FAQSchema';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -146,6 +147,29 @@ const InlineLink = styled(Link)`
 const ViewingAngleInfo = () => {
   const navigate = useNavigate();
 
+  const faqs = [
+    {
+      question: 'What are viewing angles on a monitor?',
+      answer: 'Viewing angles refer to how well a display maintains color accuracy, brightness, and contrast when viewed from different positions rather than straight-on. Monitors with good viewing angles show consistent image quality even when viewed from the side or at an angle.'
+    },
+    {
+      question: 'How do I test my monitor\'s viewing angles?',
+      answer: 'Use our viewing angle test which displays circular gradient patterns across your screen. Move your head or body left, right, up, and down while observing how the colors and brightness change. Good viewing angles will show minimal color shift and brightness loss.'
+    },
+    {
+      question: 'What is IPS glow and how does it relate to viewing angles?',
+      answer: 'IPS glow is a characteristic of IPS panels where dark areas appear to glow or look milky when viewed at extreme angles. While IPS panels generally have excellent viewing angles for color accuracy, they can exhibit this glow effect, especially in dark scenes.'
+    },
+    {
+      question: 'Which panel type has the best viewing angles?',
+      answer: 'IPS (In-Plane Switching) panels typically have the best viewing angles, maintaining color accuracy up to 178 degrees. VA panels have moderate viewing angles with some color shift. TN panels have the narrowest viewing angles with significant color and brightness changes when viewed off-center.'
+    },
+    {
+      question: 'Do viewing angles matter for gaming monitors?',
+      answer: 'For solo gaming where you sit centered, viewing angles are less critical. However, for couch gaming, multiplayer sessions with multiple viewers, or large curved displays, good viewing angles ensure everyone sees consistent colors and brightness regardless of their position.'
+    }
+  ];
+
   const handleStartTest = async () => {
     try {
       await document.documentElement.requestFullscreen();
@@ -158,6 +182,7 @@ const ViewingAngleInfo = () => {
 
   return (
     <PageContainer>
+      <FAQSchema faqs={faqs} />
       <Title>Viewing Angle Test</Title>
       <Subtitle>
         This guide helps you evaluate how your display's colors and brightness change when viewed from
