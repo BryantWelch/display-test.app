@@ -2,7 +2,9 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import AffiliateProducts from '../components/AffiliateProducts';
 import FAQSchema from '../components/FAQSchema';
+import { pageAffiliates } from '../data/affiliateProducts';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -273,6 +275,8 @@ const TestPatternsInfo = () => {
               consoles is preserved.
             </p>
           </Section>
+
+          <AffiliateProducts {...pageAffiliates.testPatterns} />
         </div>
 
         <SidebarCard>

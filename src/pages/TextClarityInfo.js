@@ -2,7 +2,9 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import AffiliateProducts from '../components/AffiliateProducts';
 import FAQSchema from '../components/FAQSchema';
+import { pageAffiliates } from '../data/affiliateProducts';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -274,6 +276,8 @@ const TextClarityInfo = () => {
               After making changes, rerun this test to confirm that text looks better and is easier to read.
             </p>
           </Section>
+
+          <AffiliateProducts {...pageAffiliates.textClarity} />
         </div>
 
         <SidebarCard>

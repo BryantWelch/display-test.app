@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
+import AffiliateProducts from '../components/AffiliateProducts';
+import { pageAffiliates } from '../data/affiliateProducts';
 
 const PageContainer = styled.div`
   max-width: 960px;
@@ -226,6 +228,8 @@ const MatrixInfo = () => {
               But mostly, it's about enjoying the aesthetic—no lab coat required.
             </p>
           </Section>
+
+          <AffiliateProducts {...pageAffiliates.matrix} />
         </div>
 
         <SidebarCard>
