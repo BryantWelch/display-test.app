@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useAutoFade } from '../../hooks/useAutoFade';
+import { getInfoRouteFromTestPath } from '../../utils/testRoutes';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -282,6 +283,8 @@ const ExitButton = styled.button`
 
 const ColorGradientTest = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const exitPath = getInfoRouteFromTestPath(pathname);
   const [steps, setSteps] = useState(32);
   const [selectedColor, setSelectedColor] = useState('white');
   const [isMinimized, setIsMinimized] = useState(false);
@@ -301,7 +304,7 @@ const ColorGradientTest = () => {
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
-        navigate('/');
+        navigate(exitPath);
       }
     };
 
@@ -309,7 +312,7 @@ const ColorGradientTest = () => {
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -317,16 +320,16 @@ const ColorGradientTest = () => {
         await document.exitFullscreen();
         // Wait for the next frame to ensure fullscreen exit is complete
         requestAnimationFrame(() => {
-          navigate('/');
+          navigate(exitPath);
         });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate('/');
+        navigate(exitPath);
       }
     } else {
-      navigate('/');
+      navigate(exitPath);
     }
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const handleReset = () => {
     setSteps(32);

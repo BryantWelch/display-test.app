@@ -32,6 +32,7 @@ import BrightnessTest from './pages/tests/BrightnessTest';
 import ContrastTest from './pages/tests/ContrastTest';
 import MatrixTest from './pages/tests/MatrixTest';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import { getInfoRouteFromTestPath } from './utils/testRoutes';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -159,14 +160,23 @@ const App = () => {
   const location = useLocation();
   const isTestRoute = location.pathname.startsWith('/test/');
   const currentSEO = seoData[location.pathname] || seoData['/'];
+  const seoProps = isTestRoute
+    ? {
+        ...currentSEO,
+        noindex: true,
+        canonical: `https://display-test.app${getInfoRouteFromTestPath(location.pathname)}`,
+      }
+    : currentSEO;
 
   return (
     <AppContainer>
-      <SEO {...currentSEO} />
-      <StructuredData 
-        type={location.pathname === '/' ? 'SoftwareApplication' : 'WebPage'} 
-        data={currentSEO} 
-      />
+      <SEO {...seoProps} />
+      {!isTestRoute && (
+        <StructuredData
+          type={location.pathname === '/' ? 'SoftwareApplication' : 'WebPage'}
+          data={currentSEO}
+        />
+      )}
       <Layout>
         <MainContent>
           <Routes>

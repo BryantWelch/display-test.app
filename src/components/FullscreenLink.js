@@ -1,9 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-const TestCard = styled.div`
+const TestCard = styled(Link)`
   cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: inherit;
 `;
 
 const TestTitle = styled.h2`
@@ -18,35 +21,11 @@ const TestDescription = styled.p`
   font-size: 1rem;
 `;
 
-const FullscreenLink = ({ to, title, description, className }) => {
-  const navigate = useNavigate();
-
-  const handleClick = async (e) => {
-    e.preventDefault();
-
-    const shouldFullscreen = to.startsWith('/test/');
-
-    if (!shouldFullscreen) {
-      navigate(to);
-      return;
-    }
-
-    try {
-      await document.documentElement.requestFullscreen();
-      navigate(to);
-    } catch (err) {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      // Navigate anyway if fullscreen fails
-      navigate(to);
-    }
-  };
-
-  return (
-    <TestCard onClick={handleClick} className={className}>
-      <TestTitle>{title}</TestTitle>
-      <TestDescription>{description}</TestDescription>
-    </TestCard>
-  );
-};
+const FullscreenLink = ({ to, title, description, className }) => (
+  <TestCard to={to} className={className}>
+    <TestTitle>{title}</TestTitle>
+    <TestDescription>{description}</TestDescription>
+  </TestCard>
+);
 
 export default FullscreenLink;

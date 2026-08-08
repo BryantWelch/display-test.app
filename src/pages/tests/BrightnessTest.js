@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useAutoFade } from '../../hooks/useAutoFade';
+import { getInfoRouteFromTestPath } from '../../utils/testRoutes';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -264,6 +265,8 @@ const Slider = styled.input`
 
 const BrightnessTest = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const exitPath = getInfoRouteFromTestPath(pathname);
   const [isMinimized, setIsMinimized] = useState(false);
   const [windowSize, setWindowSize] = useState(15);
   const { isVisible } = useAutoFade(5000, 2000, isMinimized);
@@ -278,7 +281,7 @@ const BrightnessTest = () => {
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
-        navigate('/');
+        navigate(exitPath);
       }
     };
 
@@ -286,7 +289,7 @@ const BrightnessTest = () => {
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -294,16 +297,16 @@ const BrightnessTest = () => {
         await document.exitFullscreen();
         // Wait for the next frame to ensure fullscreen exit is complete
         requestAnimationFrame(() => {
-          navigate('/');
+          navigate(exitPath);
         });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate('/');
+        navigate(exitPath);
       }
     } else {
-      navigate('/');
+      navigate(exitPath);
     }
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const handleReset = () => {
     setWindowSize(15);

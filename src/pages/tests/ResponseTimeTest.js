@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import testPatternImage from '../../assets/test-pattern.svg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { useAutoFade } from '../../hooks/useAutoFade';
+import { getInfoRouteFromTestPath } from '../../utils/testRoutes';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -408,6 +409,8 @@ const Select = styled.select`
 
 const ResponseTimeTest = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const exitPath = getInfoRouteFromTestPath(pathname);
   const [isMinimized, setIsMinimized] = useState(false);
   const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [testType, setTestType] = useState('moving-block');
@@ -446,7 +449,7 @@ const ResponseTimeTest = () => {
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
-        navigate('/');
+        navigate(exitPath);
       }
     };
 
@@ -454,7 +457,7 @@ const ResponseTimeTest = () => {
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const handleExit = useCallback(async () => {
     // First cleanup the animation
@@ -466,16 +469,16 @@ const ResponseTimeTest = () => {
         await document.exitFullscreen();
         // Wait for the next frame to ensure fullscreen exit is complete
         requestAnimationFrame(() => {
-          navigate('/');
+          navigate(exitPath);
         });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate('/');
+        navigate(exitPath);
       }
     } else {
-      navigate('/');
+      navigate(exitPath);
     }
-  }, [navigate, cleanup]);
+  }, [navigate, exitPath, cleanup]);
 
   const handleReset = useCallback(() => {
     setTestType('moving-block');

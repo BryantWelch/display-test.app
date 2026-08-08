@@ -2,23 +2,8 @@
 User-agent: *
 Allow: /
 
-# Explicitly allow all test pages to ensure they're properly crawled
-Allow: /test/brightness
-Allow: /test/color-distance
-Allow: /test/color-gradient
-Allow: /test/contrast
-Allow: /test/dead-pixel
-Allow: /test/gamma
-Allow: /test/matrix
-Allow: /test/response-time
-Allow: /test/test-patterns
-Allow: /test/text-clarity
-Allow: /test/uniformity
-Allow: /test/viewing-angle
-Allow: /privacy
+# Fullscreen /test/* utilities are noindex in-app; info pages are the ranking URLs.
+# Do not Disallow /test/ — crawlers need to see the noindex tag.
 
 # Sitemap location
 Sitemap: https://display-test.app/sitemap.xml
-
-# Crawl-delay to be nice to search engines
-Crawl-delay: 1

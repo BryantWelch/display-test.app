@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
 import AffiliateProducts from '../components/AffiliateProducts';
-import FAQSchema from '../components/FAQSchema';
+import FAQSection from '../components/FAQSection';
 import { pageAffiliates } from '../data/affiliateProducts';
 
 const PageContainer = styled.div`
@@ -184,7 +184,6 @@ const TextClarityInfo = () => {
 
   return (
     <PageContainer>
-      <FAQSchema faqs={faqs} />
       <Title>Text Clarity Test</Title>
       <Subtitle>
         This guide helps you evaluate how clearly text appears on your display so you can reduce eye
@@ -312,6 +311,7 @@ const TextClarityInfo = () => {
           />
         </SidebarCard>
       </ContentGrid>
+      <FAQSection faqs={faqs} />
       <AdSlot
         slot="7385060214" // home_below_grid reused as bottom banner for info page
         style={{ display: 'block', width: '100%', minHeight: '70px', marginTop: '2.5rem' }}

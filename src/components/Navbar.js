@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Nav = styled.nav`
@@ -225,27 +225,6 @@ const ExternalDropdownItem = styled.a`
   }
 `;
 
-const FullscreenNavLink = ({ to, children }) => {
-  const navigate = useNavigate();
-
-  const handleClick = async (e) => {
-    e.preventDefault();
-    try {
-      await document.documentElement.requestFullscreen();
-      navigate(to);
-    } catch (err) {
-      console.log(`Error attempting to enable fullscreen: ${err.message}`);
-      navigate(to);
-    }
-  };
-
-  return (
-    <DropdownItem onClick={handleClick}>
-      {children}
-    </DropdownItem>
-  );
-};
-
 const Navbar = () => {
   const [showTestsDropdown, setShowTestsDropdown] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
@@ -348,18 +327,18 @@ const Navbar = () => {
               </svg>
             </DropdownButton>
             <DropdownContent show={showTestsDropdown}>
-              <FullscreenNavLink to="/test/dead-pixel">Dead Pixel</FullscreenNavLink>
-              <FullscreenNavLink to="/test/uniformity">Uniformity</FullscreenNavLink>
-              <FullscreenNavLink to="/test/text-clarity">Text Clarity</FullscreenNavLink>
-              <FullscreenNavLink to="/test/color-gradient">Color Gradient</FullscreenNavLink>
-              <FullscreenNavLink to="/test/color-distance">Color Distance</FullscreenNavLink>
-              <FullscreenNavLink to="/test/response-time">Response Time</FullscreenNavLink>
-              <FullscreenNavLink to="/test/gamma">Gamma</FullscreenNavLink>
-              <FullscreenNavLink to="/test/test-patterns">Test Patterns</FullscreenNavLink>
-              <FullscreenNavLink to="/test/viewing-angle">Viewing Angle</FullscreenNavLink>
-              <FullscreenNavLink to="/test/brightness">Brightness</FullscreenNavLink>
-              <FullscreenNavLink to="/test/contrast">Contrast</FullscreenNavLink>
-              <FullscreenNavLink to="/test/matrix">Matrix</FullscreenNavLink>
+              <DropdownItem to="/dead-pixel">Dead Pixel</DropdownItem>
+              <DropdownItem to="/uniformity">Uniformity</DropdownItem>
+              <DropdownItem to="/text-clarity">Text Clarity</DropdownItem>
+              <DropdownItem to="/color-gradient">Color Gradient</DropdownItem>
+              <DropdownItem to="/color-distance">Color Distance</DropdownItem>
+              <DropdownItem to="/response-time">Response Time</DropdownItem>
+              <DropdownItem to="/gamma">Gamma</DropdownItem>
+              <DropdownItem to="/test-patterns">Test Patterns</DropdownItem>
+              <DropdownItem to="/viewing-angle">Viewing Angle</DropdownItem>
+              <DropdownItem to="/brightness">Brightness</DropdownItem>
+              <DropdownItem to="/contrast">Contrast</DropdownItem>
+              <DropdownItem to="/matrix">Matrix</DropdownItem>
             </DropdownContent>
           </DropdownContainer>
 

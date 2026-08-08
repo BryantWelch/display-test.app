@@ -6,8 +6,8 @@ const StructuredData = ({ type = 'WebPage', data = {} }) => {
 
   useEffect(() => {
     const updateStructuredData = () => {
-      // Remove existing structured data
-      const existingScript = document.querySelector('script[type="application/ld+json"]');
+      // Only remove this component's schema — leave FAQ and other typed scripts alone
+      const existingScript = document.querySelector('script[data-schema-type="primary"]');
       if (existingScript) {
         existingScript.remove();
       }
@@ -54,9 +54,9 @@ const StructuredData = ({ type = 'WebPage', data = {} }) => {
         };
       }
 
-      // Add the script to the document
       const script = document.createElement('script');
       script.type = 'application/ld+json';
+      script.setAttribute('data-schema-type', 'primary');
       script.text = JSON.stringify(structuredData);
       document.head.appendChild(script);
     };
@@ -69,7 +69,7 @@ const StructuredData = ({ type = 'WebPage', data = {} }) => {
     }
 
     return () => {
-      const scriptToRemove = document.querySelector('script[type="application/ld+json"]');
+      const scriptToRemove = document.querySelector('script[data-schema-type="primary"]');
       if (scriptToRemove) {
         scriptToRemove.remove();
       }

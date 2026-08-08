@@ -1,25 +1,35 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const SEO = ({ title, description, canonical }) => {
+const setMetaBySelector = (selector, attr, value) => {
+  if (!value) return;
+  let el = document.querySelector(selector);
+  if (!el) {
+    el = document.createElement('meta');
+    if (selector.includes('property=')) {
+      const match = selector.match(/property="([^"]+)"/);
+      if (match) el.setAttribute('property', match[1]);
+    } else if (selector.includes('name=')) {
+      const match = selector.match(/name="([^"]+)"/);
+      if (match) el.setAttribute('name', match[1]);
+    }
+    document.head.appendChild(el);
+  }
+  el.setAttribute(attr, value);
+};
+
+const SEO = ({ title, description, canonical, noindex = false }) => {
   const location = useLocation();
 
   useEffect(() => {
-    // Defer non-critical DOM updates to avoid blocking interactions
     const updateSEO = () => {
-      // Set canonical URL - normalize by removing trailing slashes
-      const normalizedPath = location.pathname.endsWith('/') && location.pathname !== '/' 
-        ? location.pathname.slice(0, -1) 
-        : location.pathname;
+      const normalizedPath =
+        location.pathname.endsWith('/') && location.pathname !== '/'
+          ? location.pathname.slice(0, -1)
+          : location.pathname;
       const canonicalUrl = canonical || `https://display-test.app${normalizedPath}`;
-      
-      // Batch DOM queries
-      const existingCanonical = document.querySelector('link[rel="canonical"]');
-      const metaDescription = document.querySelector('meta[name="description"]');
-      const ogUrl = document.querySelector('meta[property="og:url"]');
-      const twitterUrl = document.querySelector('meta[name="twitter:url"]');
 
-      // Update canonical
+      const existingCanonical = document.querySelector('link[rel="canonical"]');
       if (existingCanonical) {
         existingCanonical.href = canonicalUrl;
       } else {
@@ -29,37 +39,34 @@ const SEO = ({ title, description, canonical }) => {
         document.head.appendChild(link);
       }
 
-      // Update title (synchronous - needed for browser tab)
       if (title) {
         document.title = title;
       }
 
-      // Update meta description
-      if (description) {
-        if (metaDescription) {
-          metaDescription.content = description;
-        } else {
-          const meta = document.createElement('meta');
-          meta.name = 'description';
-          meta.content = description;
-          document.head.appendChild(meta);
-        }
-      }
+      setMetaBySelector('meta[name="description"]', 'content', description);
+      setMetaBySelector('meta[property="og:url"]', 'content', canonicalUrl);
+      setMetaBySelector('meta[property="og:title"]', 'content', title);
+      setMetaBySelector('meta[property="og:description"]', 'content', description);
+      setMetaBySelector('meta[name="twitter:url"]', 'content', canonicalUrl);
+      setMetaBySelector('meta[name="twitter:title"]', 'content', title);
+      setMetaBySelector('meta[name="twitter:description"]', 'content', description);
 
-      // Update social URLs
-      if (ogUrl) ogUrl.content = canonicalUrl;
-      if (twitterUrl) twitterUrl.content = canonicalUrl;
+      const robotsMeta = document.querySelector('meta[name="robots"]');
+      if (noindex) {
+        setMetaBySelector('meta[name="robots"]', 'content', 'noindex, follow');
+      } else if (robotsMeta) {
+        robotsMeta.remove();
+      }
     };
 
-    // Use requestIdleCallback for non-critical updates, fallback to setTimeout
     if ('requestIdleCallback' in window) {
       requestIdleCallback(updateSEO);
     } else {
       setTimeout(updateSEO, 0);
     }
-  }, [location.pathname, title, description, canonical]);
+  }, [location.pathname, title, description, canonical, noindex]);
 
-  return null; // This component doesn't render anything
+  return null;
 };
 
 export default SEO;

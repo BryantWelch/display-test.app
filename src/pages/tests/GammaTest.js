@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAutoFade } from '../../hooks/useAutoFade';
+import { getInfoRouteFromTestPath } from '../../utils/testRoutes';
 
 const TestContainer = styled.div`
   position: fixed;
@@ -369,6 +370,8 @@ const ResetButton = styled.button`
 
 const GammaTest = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const exitPath = getInfoRouteFromTestPath(pathname);
   const [isMinimized, setIsMinimized] = useState(false);
   const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [boxSize, setBoxSize] = useState(100);
@@ -386,7 +389,7 @@ const GammaTest = () => {
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
-        navigate('/');
+        navigate(exitPath);
       }
     };
 
@@ -394,7 +397,7 @@ const GammaTest = () => {
     return () => {
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
     };
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const handleExit = useCallback(async () => {
     if (document.fullscreenElement) {
@@ -402,16 +405,16 @@ const GammaTest = () => {
         await document.exitFullscreen();
         // Wait for the next frame to ensure fullscreen exit is complete
         requestAnimationFrame(() => {
-          navigate('/');
+          navigate(exitPath);
         });
       } catch (err) {
         console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate('/');
+        navigate(exitPath);
       }
     } else {
-      navigate('/');
+      navigate(exitPath);
     }
-  }, [navigate]);
+  }, [navigate, exitPath]);
 
   const backgroundColors = {
     'white': '#FFFFFF',
