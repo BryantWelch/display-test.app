@@ -1,23 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
-import { useAutoFade } from '../../hooks/useAutoFade';
-import { getInfoRouteFromTestPath } from '../../utils/testRoutes';
-
-const TestContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${props => props.$backgroundColor};
-  overflow: hidden;
-  font-family: monospace;
-`;
+import TestShell, { Section, Label } from '../../components/TestShell';
 
 const MatrixCanvas = styled.canvas`
   position: absolute;
@@ -25,213 +8,6 @@ const MatrixCanvas = styled.canvas`
   left: 0;
   width: 100%;
   height: 100%;
-`;
-
-const ControlPanel = styled.div`
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  width: 400px;
-  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
-  color: #333;
-  transition: all 0.3s ease;
-  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
-  backdrop-filter: blur(10px);
-  max-height: calc(100vh - 4rem);
-  overflow-y: auto;
-  z-index: 1000;
-  opacity: ${props => props.$isVisible ? 1 : 0};
-  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
-
-  /* Custom scrollbar */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  @media (max-width: 768px) {
-    width: min(360px, 90vw);
-    right: 1.25rem;
-    left: auto;
-    bottom: 1.25rem;
-    top: 5.25rem;
-    padding: ${props => props.$isMinimized ? '1rem' : '1.5rem'};
-  }
-
-  @media (max-width: 480px) {
-    width: 92vw;
-    right: 4vw;
-    left: 4vw;
-    bottom: 0.75rem;
-    padding: ${props => props.$isMinimized ? '0.9rem' : '1.25rem'};
-    border-radius: 0.6rem;
-  }
-`;
-
-const PanelHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
-
-  h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-`;
-
-const MinimizeButton = styled.button`
-  background: #4169e1;
-  border: none;
-  color: white;
-  font-size: 1.75rem;
-  cursor: pointer;
-  width: 2.5rem;
-  height: 2.5rem;
-  line-height: 1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  padding: 0;
-  
-  &:hover {
-    background: #3658c5;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-`;
-
-const ExitButton = styled.button`
-  position: fixed;
-  top: 1.5rem;
-  left: 1.5rem;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-  z-index: 1000;
-  opacity: ${props => props.$isVisible ? 1 : 0};
-  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.9);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  @media (max-width: 768px) {
-    top: 1.25rem;
-    left: 1.25rem;
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    top: 1rem;
-    left: 1rem;
-    padding: 0.5rem 0.9rem;
-    font-size: 0.95rem;
-    border-radius: 0.4rem;
-  }
-`;
-
-const Description = styled.p`
-  color: #666;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0 0 1.5rem 0;
-
-  @media (max-width: 768px) {
-    font-size: 0.9rem;
-    margin-bottom: 1.25rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.88rem;
-    margin-bottom: 1rem;
-  }
-`;
-
-const Section = styled.div`
-  margin-bottom: 1.5rem;
-
-  h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  @media (max-width: 768px) {
-    margin-bottom: 1.25rem;
-  }
-
-  @media (max-width: 480px) {
-    margin-bottom: 1rem;
-  }
-`;
-
-const Label = styled.div`
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-
-  @media (max-width: 768px) {
-    font-size: 0.85rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.83rem;
-  }
 `;
 
 const Slider = styled.input`
@@ -270,39 +46,7 @@ const ColorSection = styled.div`
   }
 `;
 
-const ResetButton = styled.button`
-  width: 100%;
-  padding: 1rem;
-  background: #4169e1;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 1.1rem;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #3658c5;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    padding: 0.9rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.98rem;
-    padding: 0.85rem;
-  }
-`;
-
 const MatrixTest = () => {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const exitPath = getInfoRouteFromTestPath(pathname);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [textColor, setTextColor] = useState('#00ff00');
   const [backgroundColor, setBackgroundColor] = useState('#000000');
   const [fontSize, setFontSize] = useState(30);
@@ -359,7 +103,7 @@ const MatrixTest = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const columns = Math.floor(canvas.width / fontSize);
-    const drops = new Array(columns).fill(0).map(() => 
+    const drops = new Array(columns).fill(0).map(() =>
       Math.floor(Math.random() * -canvas.height / fontSize)
     );
 
@@ -381,7 +125,7 @@ const MatrixTest = () => {
           const text = chars[Math.floor(Math.random() * chars.length)];
           ctx.fillText(text, i * fontSize, drops[i] * fontSize);
         }
-        
+
         if (drops[i] * fontSize > canvas.height) {
           drops[i] = Math.random() > 0.975 ? 0 : -10;
         }
@@ -404,7 +148,7 @@ const MatrixTest = () => {
 
   useEffect(() => {
     initMatrix();
-    
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -431,19 +175,6 @@ const MatrixTest = () => {
     };
   }, [initMatrix]);
 
-  useEffect(() => {
-    const handleFullScreenChange = () => {
-      if (!document.fullscreenElement) {
-        navigate(exitPath);
-      }
-    };
-
-    document.addEventListener('fullscreenchange', handleFullScreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullScreenChange);
-    };
-  }, [navigate, exitPath]);
-
   const handleReset = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -451,122 +182,89 @@ const MatrixTest = () => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
-    
+
     setTextColor('#00ff00');
     setBackgroundColor('#000000');
     setFontSize(30);
     setSpeed(50);
-    
+
     setResetKey(prev => prev + 1);
   };
 
-  const handleExit = useCallback(async () => {
+  const cleanupAnimation = useCallback(() => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
-    
-    if (document.fullscreenElement) {
-      try {
-        await document.exitFullscreen();
-        requestAnimationFrame(() => {
-          navigate(exitPath);
-        });
-      } catch (err) {
-        console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate(exitPath);
-      }
-    } else {
-      navigate(exitPath);
-    }
-  }, [navigate, exitPath]);
+  }, []);
 
   return (
-    <TestContainer $backgroundColor={backgroundColor}>
-      <ExitButton onClick={handleExit} $isVisible={isVisible}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M15 19l-7-7 7-7" />
-        </svg>
-        Exit Test
-      </ExitButton>
+    <TestShell
+      title="Matrix Controls"
+      description={'"You take the blue pill — the story ends, you wake up in your bed and believe whatever you want to believe. You take the red pill — you stay in Wonderland, and I show you how deep the rabbit-hole goes."'}
+      onReset={handleReset}
+      onBeforeExit={cleanupAnimation}
+      style={{ backgroundColor, fontFamily: 'monospace' }}
+      controls={
+        <>
+          <ColorSection>
+            <h3>Text Color</h3>
+            <ColorGrid>
+              {textColors.map(color => (
+                <ColorButton
+                  key={color.value}
+                  type="button"
+                  $color={color.value}
+                  onClick={() => setTextColor(color.value)}
+                />
+              ))}
+            </ColorGrid>
+          </ColorSection>
 
+          <ColorSection>
+            <h3>Background Color</h3>
+            <ColorGrid>
+              {backgroundColors.map(color => (
+                <ColorButton
+                  key={color.value}
+                  type="button"
+                  $color={color.value}
+                  onClick={() => setBackgroundColor(color.value)}
+                />
+              ))}
+            </ColorGrid>
+          </ColorSection>
+
+          <Section>
+            <h3>Text Size</h3>
+            <Label>Size: {fontSize}px</Label>
+            <Slider
+              type="range"
+              min="10"
+              max="60"
+              value={fontSize}
+              onChange={(e) => setFontSize(Number(e.target.value))}
+            />
+          </Section>
+
+          <Section>
+            <h3>Speed</h3>
+            <Label>Speed: {speed}%</Label>
+            <Slider
+              type="range"
+              min="1"
+              max="100"
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+            />
+          </Section>
+        </>
+      }
+    >
       <MatrixCanvas key={resetKey} ref={canvasRef} />
-
-      <ControlPanel $isMinimized={isMinimized} $isVisible={isVisible}>
-        <PanelHeader $isMinimized={isMinimized}>
-          <h2>Matrix Controls</h2>
-          <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
-            {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
-          </MinimizeButton>
-        </PanelHeader>
-
-        {!isMinimized && (
-          <>
-            <Description>
-              "You take the blue pill — the story ends, you wake up in your bed and believe 
-              whatever you want to believe. You take the red pill — you stay in Wonderland, 
-              and I show you how deep the rabbit-hole goes."
-            </Description>
-
-            <ColorSection>
-              <h3>Text Color</h3>
-              <ColorGrid>
-                {textColors.map(color => (
-                  <ColorButton
-                    key={color.value}
-                    $color={color.value}
-                    onClick={() => setTextColor(color.value)}
-                  />
-                ))}
-              </ColorGrid>
-            </ColorSection>
-
-            <ColorSection>
-              <h3>Background Color</h3>
-              <ColorGrid>
-                {backgroundColors.map(color => (
-                  <ColorButton
-                    key={color.value}
-                    $color={color.value}
-                    onClick={() => setBackgroundColor(color.value)}
-                  />
-                ))}
-              </ColorGrid>
-            </ColorSection>
-
-            <Section>
-              <h3>Text Size</h3>
-              <Label>Size: {fontSize}px</Label>
-              <Slider
-                type="range"
-                min="10"
-                max="60"
-                value={fontSize}
-                onChange={(e) => setFontSize(Number(e.target.value))}
-              />
-            </Section>
-
-            <Section>
-              <h3>Speed</h3>
-              <Label>Speed: {speed}%</Label>
-              <Slider
-                type="range"
-                min="1"
-                max="100"
-                value={speed}
-                onChange={(e) => setSpeed(Number(e.target.value))}
-              />
-            </Section>
-
-            <Section>
-              <ResetButton onClick={handleReset}>Reset Settings</ResetButton>
-            </Section>
-          </>
-        )}
-      </ControlPanel>
-    </TestContainer>
+    </TestShell>
   );
 };
 

@@ -1,215 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
-import { useAutoFade } from '../../hooks/useAutoFade';
-import { getInfoRouteFromTestPath } from '../../utils/testRoutes';
-
-const TestContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-`;
-
-const ExitButton = styled.button`
-  position: fixed;
-  top: 1.5rem;
-  left: 1.5rem;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-  z-index: 1000;
-  opacity: ${props => props.$isVisible ? 1 : 0};
-  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.9);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  @media (max-width: 768px) {
-    top: 1.25rem;
-    left: 1.25rem;
-    padding: 0.6rem 1rem;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    top: 1rem;
-    left: 1rem;
-    padding: 0.5rem 0.9rem;
-    font-size: 0.95rem;
-    border-radius: 0.4rem;
-  }
-`;
-
-const ControlPanel = styled.div`
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  width: 400px;
-  padding: ${props => props.$isMinimized ? '1.25rem' : '2rem'};
-  color: #333;
-  transition: all 0.3s ease;
-  transform: translateY(${props => props.$isMinimized ? 'calc(100% - 4rem)' : '0'});
-  backdrop-filter: blur(10px);
-  max-height: calc(100vh - 4rem);
-  overflow-y: auto;
-  z-index: 1000;
-  opacity: ${props => props.$isVisible ? 1 : 0};
-  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
-
-  /* Custom scrollbar */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  @media (max-width: 768px) {
-    width: min(360px, 90vw);
-    right: 1.25rem;
-    left: auto;
-    bottom: 1.25rem;
-    top: 5.25rem;
-    padding: ${props => props.$isMinimized ? '1rem' : '1.5rem'};
-  }
-
-  @media (max-width: 480px) {
-    width: 92vw;
-    right: 4vw;
-    left: 4vw;
-    bottom: 0.75rem;
-    padding: ${props => props.$isMinimized ? '0.9rem' : '1.25rem'};
-    border-radius: 0.6rem;
-  }
-`;
-
-const PanelHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: ${props => props.$isMinimized ? '0' : '1.5rem'};
-  padding-bottom: ${props => props.$isMinimized ? '0' : '1rem'};
-  border-bottom: ${props => props.$isMinimized ? 'none' : '1px solid rgba(0, 0, 0, 0.1)'};
-
-  h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-`;
-
-const MinimizeButton = styled.button`
-  background: #4169e1;
-  border: none;
-  color: white;
-  font-size: 1.75rem;
-  cursor: pointer;
-  width: 2.5rem;
-  height: 2.5rem;
-  line-height: 1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  padding: 0;
-  
-  &:hover {
-    background: #3658c5;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-`;
-
-const Description = styled.p`
-  color: #666;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0 0 1.5rem 0;
-
-  @media (max-width: 768px) {
-    font-size: 0.9rem;
-    margin-bottom: 1.25rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.88rem;
-    margin-bottom: 1rem;
-  }
-`;
-
-const Section = styled.div`
-  margin-bottom: 1.5rem;
-
-  h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  @media (max-width: 768px) {
-    margin-bottom: 1.25rem;
-  }
-
-  @media (max-width: 480px) {
-    margin-bottom: 1rem;
-  }
-`;
+import TestShell, { Section, Description } from '../../components/TestShell';
 
 const ColorGrid = styled.div`
   display: grid;
@@ -221,41 +12,14 @@ const ColorGrid = styled.div`
 const ColorButton = styled.button`
   width: 100%;
   aspect-ratio: 1;
-  border: 2px solid ${props => props.$isSelected ? '#4169e1' : 'transparent'};
+  border: 2px solid ${(props) => (props.$isSelected ? '#4169e1' : 'transparent')};
   border-radius: 0.5rem;
   cursor: pointer;
-  background: ${props => props.color};
+  background: ${(props) => props.$color};
   transition: transform 0.2s;
 
   &:hover {
     transform: scale(1.05);
-  }
-`;
-
-const ResetButton = styled.button`
-  width: 100%;
-  padding: 1rem;
-  background: #4169e1;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 1.1rem;
-  margin-top: 1rem;
-  
-  &:hover {
-    background: #3658c5;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    padding: 0.9rem;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 0.98rem;
-    padding: 0.85rem;
   }
 `;
 
@@ -274,81 +38,47 @@ const Checkbox = styled.label`
 `;
 
 const DeadPixelTest = () => {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const exitPath = getInfoRouteFromTestPath(pathname);
-  const [isMinimized, setIsMinimized] = useState(false);
-  const { isVisible } = useAutoFade(5000, 2000, isMinimized);
   const [backgroundColor, setBackgroundColor] = useState('#808080');
   const [isAutoChanging, setIsAutoChanging] = useState(false);
   const autoChangeRef = useRef(null);
 
-  const colors = useMemo(() => [
-    { name: 'White', value: '#FFFFFF' },
-    { name: 'Black', value: '#000000' },
-    { name: 'Red', value: '#FF0000' },
-    { name: 'Green', value: '#00FF00' },
-    { name: 'Blue', value: '#0000FF' },
-    { name: 'Yellow', value: '#FFFF00' },
-    { name: 'Magenta', value: '#FF00FF' },
-    { name: 'Cyan', value: '#00FFFF' },
-    { name: 'Gray', value: '#808080' }
-  ], []);
+  const colors = useMemo(
+    () => [
+      { name: 'White', value: '#FFFFFF' },
+      { name: 'Black', value: '#000000' },
+      { name: 'Red', value: '#FF0000' },
+      { name: 'Green', value: '#00FF00' },
+      { name: 'Blue', value: '#0000FF' },
+      { name: 'Yellow', value: '#FFFF00' },
+      { name: 'Magenta', value: '#FF00FF' },
+      { name: 'Cyan', value: '#00FFFF' },
+      { name: 'Gray', value: '#808080' },
+    ],
+    []
+  );
 
   useEffect(() => {
-    const initializeTest = () => {
-      // Add any initialization logic here if needed
-    };
-    initializeTest();
-  }, []);
-
-  useEffect(() => {
-    const handleFullScreenChange = () => {
-      if (!document.fullscreenElement) {
-        navigate(exitPath);
+    if (!isAutoChanging) {
+      if (autoChangeRef.current) {
+        clearInterval(autoChangeRef.current);
       }
-    };
+      return undefined;
+    }
 
-    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    const colorValues = colors.map((color) => color.value);
+    let currentIndex = colorValues.indexOf(backgroundColor);
+
+    autoChangeRef.current = setInterval(() => {
+      currentIndex = (currentIndex + 1) % colorValues.length;
+      setBackgroundColor(colorValues[currentIndex]);
+    }, 2000);
+
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullScreenChange);
-    };
-  }, [navigate, exitPath]);
-
-  useEffect(() => {
-    if (isAutoChanging) {
-      const colorValues = colors.map(color => color.value);
-      let currentIndex = colorValues.indexOf(backgroundColor);
-
-      autoChangeRef.current = setInterval(() => {
-        currentIndex = (currentIndex + 1) % colorValues.length;
-        setBackgroundColor(colorValues[currentIndex]);
-      }, 2000);
-
-      return () => {
-        if (autoChangeRef.current) {
-          clearInterval(autoChangeRef.current);
-        }
-      };
-    }
-  }, [isAutoChanging, backgroundColor, colors]);
-
-  const handleExit = useCallback(async () => {
-    if (document.fullscreenElement) {
-      try {
-        await document.exitFullscreen();
-        // Wait for the next frame to ensure fullscreen exit is complete
-        requestAnimationFrame(() => {
-          navigate(exitPath);
-        });
-      } catch (err) {
-        console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate(exitPath);
+      if (autoChangeRef.current) {
+        clearInterval(autoChangeRef.current);
       }
-    } else {
-      navigate(exitPath);
-    }
-  }, [navigate, exitPath]);
+    };
+  }, [isAutoChanging, backgroundColor, colors]);
 
   const handleReset = () => {
     setBackgroundColor('#808080');
@@ -359,70 +89,47 @@ const DeadPixelTest = () => {
   };
 
   return (
-    <TestContainer style={{ backgroundColor: backgroundColor }}>
-      <ExitButton onClick={handleExit} $isVisible={isVisible}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M15 19l-7-7 7-7" />
-        </svg>
-        Exit Test
-      </ExitButton>
-
-      <ControlPanel $isMinimized={isMinimized} $isVisible={isVisible}>
-        <PanelHeader $isMinimized={isMinimized}>
-          <h2>Dead Pixel Controls</h2>
-          <MinimizeButton onClick={() => setIsMinimized(!isMinimized)}>
-            {isMinimized ? <IoChevronUp /> : <IoChevronDown />}
-          </MinimizeButton>
-        </PanelHeader>
-
-        {!isMinimized && (
-          <>
-            <Description>
-              Test your display for dead or stuck pixels by cycling through different colors. 
-              A dead pixel will appear black on all colors, while a stuck pixel will remain 
-              one color regardless of the background.
-            </Description>
-
-            <Section>
-              <h3>Background Color</h3>
-              <ColorGrid>
-                {colors.map((color, index) => (
-                  <ColorButton
-                    key={color.name}
-                    color={color.value}
-                    $isSelected={backgroundColor === color.value}
-                    onClick={() => setBackgroundColor(color.value)}
-                    title={color.name}
-                  />
-                ))}
-              </ColorGrid>
-            </Section>
-
-            <Section>
-              <h3>Auto Cycle</h3>
-              <Description>
-                Enable automatic cycling through all colors to help identify stuck or dead pixels.
-                Colors will change every 2 seconds.
-              </Description>
-              <Checkbox>
-                <input
-                  type="checkbox"
-                  checked={isAutoChanging}
-                  onChange={(e) => setIsAutoChanging(e.target.checked)}
+    <TestShell
+      title="Dead Pixel Controls"
+      description="Test your display for dead or stuck pixels by cycling through different colors. A dead pixel will appear black on all colors, while a stuck pixel will remain one color regardless of the background."
+      onReset={handleReset}
+      style={{ backgroundColor }}
+      controls={
+        <>
+          <Section>
+            <h3>Background Color</h3>
+            <ColorGrid>
+              {colors.map((color) => (
+                <ColorButton
+                  key={color.name}
+                  type="button"
+                  $color={color.value}
+                  $isSelected={backgroundColor === color.value}
+                  onClick={() => setBackgroundColor(color.value)}
+                  title={color.name}
                 />
-                Enable auto color change
-              </Checkbox>
-            </Section>
+              ))}
+            </ColorGrid>
+          </Section>
 
-            <Section>
-              <ResetButton onClick={handleReset}>
-                Reset settings
-              </ResetButton>
-            </Section>
-          </>
-        )}
-      </ControlPanel>
-    </TestContainer>
+          <Section>
+            <h3>Auto Cycle</h3>
+            <Description>
+              Enable automatic cycling through all colors to help identify stuck or dead pixels.
+              Colors will change every 2 seconds.
+            </Description>
+            <Checkbox>
+              <input
+                type="checkbox"
+                checked={isAutoChanging}
+                onChange={(e) => setIsAutoChanging(e.target.checked)}
+              />
+              Enable auto color change
+            </Checkbox>
+          </Section>
+        </>
+      }
+    />
   );
 };
 

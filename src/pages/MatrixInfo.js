@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { enterTestFullscreen } from '../utils/fullscreen';
 import styled from 'styled-components';
 import AdSlot from '../components/AdSlot';
 import AffiliateProducts from '../components/AffiliateProducts';
@@ -150,7 +151,7 @@ const MatrixInfo = () => {
 
   const handleStartTest = async () => {
     try {
-      await document.documentElement.requestFullscreen();
+      await enterTestFullscreen();
       navigate('/test/matrix');
     } catch (err) {
       console.log(`Error attempting to enable fullscreen: ${err.message}`);
