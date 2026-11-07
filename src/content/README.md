@@ -4,6 +4,13 @@ Every file in `tests/` and `guides/` is discovered automatically by `src/registr
 (`import.meta.glob`). There is no list to update: add a file and it appears in routes, the
 home page, the nav mega-menu, the footer, the sitemap, and the prerendered HTML.
 
+Files must use `export default { ... }`. On the client, the registry eagerly loads a stripped
+"meta" version of every file (built by `scripts/contentMetaPlugin.js`) and lazy-loads the full
+file per page. Stripped fields: top-level `faqs`; for tests `page.intro`, `page.sections`,
+`page.panelNotes`, `page.whenToReturn`, `page.tips`, `page.faqs`, `page.disclaimer`; for guides
+`intro`, `sections`, `faqs`. Anything read outside `InfoPage` / `GuidePage` (nav, cards, head
+tags, `TestShell`'s `lookFor`, `related`) must stay outside that list.
+
 Text fields support inline markup: `**bold**`, `*italic*`, `` `code` ``, `[label](/internal-path)`
 and `[label](https://external)`.
 

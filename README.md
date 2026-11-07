@@ -1,177 +1,68 @@
-# Display Test App
+# Display Test
 
-A modern, comprehensive display testing application designed to help users evaluate and diagnose various aspects of their displays. From dead pixels to response time, this tool provides a suite of tests to ensure your display is performing optimally. This is a client-side only application built with React, requiring no backend server.
+Free, browser-based monitor tests at [display-test.app](https://display-test.app): dead and stuck pixels, refresh rate, motion blur and ghosting, backlight bleed, black level and HDMI range, gamma, banding, chroma 4:4:4, HDR / wide gamut, text clarity, burn-in, and more — plus a guided **new monitor checkup** and guides for diagnosing common display problems.
+
+Everything runs client-side. Pages are prerendered to static HTML at build time for fast loads and SEO, then hydrate into a React single-page app.
 
 ![image](https://github.com/user-attachments/assets/7318370f-0e51-4939-b67a-477aa1d57a29)
 
-## Available Tests
+## What a browser can and can't measure
 
-- **Dead Pixel Test**: Cycle through color patterns to identify dead, stuck, or subpixel defects
-- **Uniformity Test**: Check screen uniformity and identify backlight bleeding or IPS glow
-- **Text Clarity Test**: Assess text clarity, sharpness, and font rendering across different sizes
-- **Color Gradient Test**: Evaluate smooth color transitions and check for color banding issues
-- **Response Time Test**: Measure display motion performance with customizable moving objects and text
-- **Color Distance Test**: Evaluate color accuracy and differentiation capabilities
-- **Test Patterns Test**: Comprehensive patterns for geometry, convergence, and resolution testing
-- **Gamma Test**: Verify gamma calibration and black level performance
-- **Viewing Angle Test**: Assess color and contrast shifts at different viewing angles
-- **Brightness Test**: Evaluate display brightness levels and consistency
-- **Contrast Test**: Measure contrast ratio and black level performance
-- **Matrix Test**: See how deep the rabbit hole goes with the iconic digital rain animation
+The tests draw exact pixel values at the display's physical resolution and use the browser frame clock, so they're good at finding visible defects, signal/settings problems (refresh rate, RGB range, chroma subsampling, overscan), and comparative patterns. They **cannot** measure nits, contrast ratio, Delta E, response time in ms, or input lag — that needs a colorimeter or photodiode. The site says so wherever it matters.
 
-## Features
-- Modern, clean user interface
-- Real-time adjustments
-- Fullscreen mode support
-- Cross-browser compatibility
-- Mobile-responsive design
+## Getting started
 
-## Getting Started
+Requires Node.js 20+ (CI uses 22).
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
+```bash
+npm install
+npm run dev       # http://localhost:3000
+npm run build     # client build + SSR build + prerender into dist/
+npm run preview   # serve dist/ at http://localhost:4173
+npm run lint
+```
 
-### Installation
+## How it's built
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/BryantWelch/display-test.app.git
-   cd display-test.app
-   ```
+- **Vite + React 19 + React Router 7 + styled-components 6.**
+- **Prerendering:** `npm run build` builds the client, builds `src/entry-server.jsx` for SSR, then `scripts/prerender.js` renders every route to `dist/<route>.html` with its head tags, styles, and JSON-LD, and writes `sitemap.xml` and `404.html`. Fullscreen `/test/*` routes get head tags only and render client-side.
+- **Registry:** every file in `src/content/tests/` and `src/content/guides/` is discovered automatically (`src/registry/`). One content file adds the info page, the fullscreen route, nav and home entries, the footer link, and the sitemap entry.
+- **Shared test kit:** `TestShell` (fullscreen chrome, shortcuts, in-test guidance, photosensitivity gate, checkup prompts), `testControls` (dark control kit), `PixelCanvas` (device-pixel-exact canvas), `frameTiming` and `displayInfo` utilities.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Adding a test
 
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+1. Create the fullscreen component in `src/pages/tests/` (wrap it in `TestShell`), and/or an inline tool in `src/tools/`.
+2. Add `src/content/tests/<slug>.js` following the schema in [`src/content/README.md`](src/content/README.md) — `src/content/tests/dead-pixel.js` is a complete example.
+3. Set `checkup: { step, question }` to include it in the new monitor checkup.
 
-The application will be available at http://localhost:3000
+## Project layout
 
-## Screenshots
+```
+src/
+  content/tests/    one data file per test (copy, SEO, FAQs, checkup step)
+  content/guides/   one data file per guide
+  pages/tests/      fullscreen test components
+  tools/            inline tools shown on info pages
+  components/       layout, InfoPage, TestShell, controls, ads, affiliates
+  registry/         auto-discovery, categories, route metadata
+  utils/ hooks/ lib/ styles/
+scripts/prerender.js
+```
 
-![image](https://github.com/user-attachments/assets/72d4ac9e-c1f4-4ee4-baae-832abd38f207)
+## Deployment
 
-## Usage Guide
+`netlify.toml` builds with `npm run build` and publishes `dist/`. Each route is a real `.html` file, so no SPA redirect is needed; `404.html` handles unknown paths. `/assets/*` is served with long-lived immutable caching.
 
-### General Tips
-- Run tests in a controlled lighting environment
-- Clean your display before testing
-- Use native resolution when possible
-- Disable any auto-brightness or dynamic contrast features
+## Support
 
-### Keyboard Controls
-- `F11`: Exit current test
-- `Esc`: Exit current test
-- `Space`: Pause/Resume animations (where applicable)
-- Arrow keys: Adjust values in certain tests
-
-## Technical Requirements
-
-### Display Settings
-- Recommended: Native resolution
-- Refresh Rate: Highest supported refresh rate
-- Color Depth: Highest supported color depth
-- Display scaling: 100%
-
-### Known Limitations
-- Web-based testing may not be as precise as hardware solutions
-- Results may vary based on browser and system performance
-- Some tests may be affected by display scaling settings
-
-## Troubleshooting
-
-### Common Issues
-1. **Test appears blurry**
-   - Ensure display scaling is set to 100%
-   - Use native resolution
-   - Disable browser zoom
-
-2. **Animation stuttering**
-   - Close other resource-intensive applications
-   - Disable browser extensions
-   - Enable hardware acceleration
-
-3. **Colors appear incorrect**
-   - Disable night light/blue light filters
-   - Check color profile settings
-   - Disable auto-brightness
-
-## Browser Compatibility
-
-Tested and supported in:
-- Chrome (latest)
-- Firefox (latest)
-- Edge (latest)
-- Safari (latest)
-
-## Development Workflow
-
-### Code Organization
-- `/src/pages/tests/` - Individual test components
-- `/src/components/` - Reusable UI components
-- `/src/styles/` - Global styles and theme configuration
-- `/src/assets/` - Static assets and test patterns
-- `/src/store/` - Redux store configuration and slices
-
-## Tech Stack
-
-### Frontend
-- React.js (v19)
-- Redux Toolkit for state management
-- React Router v6 for navigation
-- Styled-components for styling
-- Modern JavaScript (ES6+)
-
-### Development
-- Create React App
-- ESLint for code quality
-- Prettier for code formatting
-
-### Key Dependencies
-- @reduxjs/toolkit: ^2.5.1
-- react: ^19.0.0
-- react-dom: ^19.0.0
-- react-router-dom: ^6.22.0
-- styled-components: ^6.1.14
-
-## FAQ
-
-### General Questions
-**Q: How accurate are these tests?**
-A: While web-based tests can't match specialized hardware, they provide a good initial assessment of display performance.
-
-**Q: Should I calibrate my display first?**
-A: Basic calibration is recommended for most tests, but some tests specifically help identify calibration issues.
-
-**Q: How often should I test my display?**
-A: Regular testing helps track display degradation and identify issues early.
-
-### Technical Questions
-**Q: Why do some patterns look different in different browsers?**
-A: Browser rendering engines handle color and animation differently. Use Chrome for most consistent results.
-
-**Q: Does screen recording work with these tests?**
-A: Screen recording may affect test performance and has not been properly tested. 
-
-## 💖 Support
-
-If you find this project helpful, consider supporting its development:
+If you find this project helpful, consider supporting it:
 
 [![Buy Me a Coffee](https://storage.ko-fi.com/cdn/kofi5.png)](https://ko-fi.com/V7V01A0SJC)
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Issues and pull requests are welcome. Run `npm run lint` and `npm run build` before opening a PR — CI runs both.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).

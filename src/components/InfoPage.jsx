@@ -19,6 +19,7 @@ import {
   prefetchTest,
   testPath,
   tests,
+  useFullEntry,
 } from '../registry';
 import { getRouteMeta, SITE } from '../registry/routeMeta';
 
@@ -217,8 +218,9 @@ const SETUP_TIPS = [
   'Set browser zoom to 100%.',
 ];
 
-const InfoPage = ({ test }) => {
+const InfoPage = ({ test: entry }) => {
   const navigate = useNavigate();
+  const test = useFullEntry(entry);
   const { page } = test;
   const category = getCategory(test.category);
   const related = getRelatedTests(test);

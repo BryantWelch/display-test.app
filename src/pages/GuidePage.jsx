@@ -9,7 +9,7 @@ import JsonLd from '../components/JsonLd';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { Page, Eyebrow, H1, Lead, Meta, Prose, Card } from '../components/ui';
 import { Blocks, Inline } from '../lib/markup';
-import { getTest, guidePath, infoPath } from '../registry';
+import { getTest, guidePath, infoPath, useFullEntry } from '../registry';
 import { getRouteMeta, SITE } from '../registry/routeMeta';
 
 const Toc = styled.nav`
@@ -82,7 +82,8 @@ function Interactive({ guide }) {
   );
 }
 
-const GuidePage = ({ guide }) => {
+const GuidePage = ({ guide: entry }) => {
+  const guide = useFullEntry(entry, 'guide');
   const meta = getRouteMeta(guidePath(guide));
   const related = (guide.related || []).map(getTest).filter(Boolean);
   const sections = guide.sections || [];

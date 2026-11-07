@@ -1,415 +1,344 @@
-import React, { useState, useCallback } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import TestShell, { Section, Label } from '../../components/TestShell';
+import TestShell, {
+  Section,
+  Segmented,
+  Slider,
+  Select,
+  Toggle,
+  ColorInput,
+  Readout,
+  Button,
+  ButtonRow,
+  Hint,
+} from '../../components/TestShell';
 
-const ColorSquare = styled.div`
-  width: 35vh;
-  height: 35vh;
-  background: ${props => props.$foregroundColor};
-  transition: background-color 0.3s ease;
+const STEPS = [1, 2, 3, 4, 6, 8];
+const CHANNELS = ['r', 'g', 'b'];
+const CHANNEL_NAMES = { r: 'Red', g: 'Green', b: 'Blue' };
+
+const PRESETS = [
+  { value: 'mid-gray', label: 'Mid gray', bg: '#808080', fg: '#838383' },
+  { value: 'near-black', label: 'Near black', bg: '#000000', fg: '#030303' },
+  { value: 'near-white', label: 'Near white', bg: '#ffffff', fg: '#fcfcfc' },
+  { value: 'skin', label: 'Skin tones', bg: '#d9a384', fg: '#dca586' },
+  { value: 'sky', label: 'Sky blues', bg: '#7fb2e5', fg: '#7fb4e8' },
+  { value: 'shadow', label: 'Dark shadows', bg: '#141414', fg: '#171717' },
+];
+
+const DEFAULTS = { bg: '#808080', fg: '#838383' };
+
+const clamp = (v) => Math.min(255, Math.max(0, Math.round(v)));
+const toRgb = (hex) => ({
+  r: parseInt(hex.slice(1, 3), 16),
+  g: parseInt(hex.slice(3, 5), 16),
+  b: parseInt(hex.slice(5, 7), 16),
+});
+const toHex = ({ r, g, b }) => `#${[r, g, b].map((n) => clamp(n).toString(16).padStart(2, '0')).join('')}`;
+const signed = (n) => (n > 0 ? `+${n}` : String(n));
+const isLight = ({ r, g, b }) => 0.2126 * r + 0.7152 * g + 0.0722 * b > 128;
+
+const Stage = styled.div`
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
 `;
 
-const ColorControl = styled.div`
-  margin-bottom: 1rem;
+const Patch = styled.div`
+  width: min(40vmin, 420px);
+  aspect-ratio: 1;
+`;
 
-  .slider-container {
+const Staircase = styled.div`
+  display: grid;
+  grid-template-columns: repeat(${STEPS.length}, min(13vmin, 150px));
+  gap: min(4vmin, 40px);
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 24vmin);
+  }
+`;
+
+const Step = styled.figure`
+  margin: 0;
+  text-align: center;
+
+  div {
+    aspect-ratio: 1;
+  }
+
+  figcaption {
+    margin-top: 0.5rem;
+    font: 600 0.85rem/1.2 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+`;
+
+const ChannelRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 0.5rem;
+
+  > div:last-child {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
   }
 
-  input[type="range"] {
-    flex: 1;
-    margin: 0.5rem 0;
-    height: 6px;
-    -webkit-appearance: none;
-    background: ${props => {
-      if (props.$color === 'red') return 'linear-gradient(to right, #000, #f00)';
-      if (props.$color === 'green') return 'linear-gradient(to right, #000, #0f0)';
-      if (props.$color === 'blue') return 'linear-gradient(to right, #000, #00f)';
-      return '#e0e0e0';
-    }};
-    border-radius: 3px;
-
-    &::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      background: ${props => {
-        if (props.$color === 'red') return '#f00';
-        if (props.$color === 'green') return '#0f0';
-        if (props.$color === 'blue') return '#00f';
-        return '#4169e1';
-      }};
-      border: 2px solid white;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  input[type="number"] {
-    width: 60px;
-    padding: 0.25rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: #666;
-    -moz-appearance: textfield;
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: #4169e1;
-    }
+  ${Button} {
+    min-width: 44px;
+    padding: 0.4rem 0.5rem;
   }
 `;
 
-const HexInput = styled.input`
-  width: 120px;
-  padding: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 0.9rem;
-  color: #666;
-  margin-left: 1rem;
-
-  &:focus {
-    outline: none;
-    border-color: #4169e1;
+const shuffled = () => {
+  const a = [...STEPS];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-`;
-
-const ColorPreview = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  padding: 0.75rem;
-  background: #f5f5f5;
-  border-radius: 0.5rem;
-`;
-
-const ColorBox = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  background: ${props => props.$color};
-  border: 1px solid rgba(0, 0, 0, 0.1);
-`;
-
-const ColorCode = styled.div`
-  font-family: monospace;
-  font-size: 0.9rem;
-  color: #666;
-`;
+  return a;
+};
 
 const ColorDistanceTest = () => {
-  const [backgroundColor, setBackgroundColor] = useState({ r: 128, g: 128, b: 128, hex: '#808080' });
-  const [foregroundColor, setForegroundColor] = useState({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
+  const [mode, setMode] = useState('pair');
+  const [bg, setBg] = useState(DEFAULTS.bg);
+  const [fg, setFg] = useState(DEFAULTS.fg);
+  const [editing, setEditing] = useState('fg');
+  const [channel, setChannel] = useState('all');
+  const [direction, setDirection] = useState('lighter');
+  const [showLabels, setShowLabels] = useState(true);
+  const [order, setOrder] = useState(STEPS);
 
-  const rgbToHex = useCallback((r, g, b) => {
-    const toHex = (n) => {
-      const hex = Math.round(n).toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    };
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-  }, []);
+  const bgRgb = toRgb(bg);
+  const fgRgb = toRgb(fg);
+  const target = editing === 'fg' ? fgRgb : bgRgb;
+  const setTarget = editing === 'fg' ? setFg : setBg;
+  const labelColor = isLight(bgRgb) ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
 
-  const handleHexChange = useCallback((hex, isBackground) => {
-    // Handle paste events that might include the #
-    let cleanHex = hex.trim();
+  const setChannelValue = (c, v) => setTarget(toHex({ ...target, [c]: clamp(v) }));
+  const nudgeAll = (delta) =>
+    setFg((hex) => {
+      const c = toRgb(hex);
+      return toHex({ r: c.r + delta, g: c.g + delta, b: c.b + delta });
+    });
+  const swap = () => {
+    setBg(fg);
+    setFg(bg);
+  };
+  const applyPreset = (id) => {
+    const p = PRESETS.find((x) => x.value === id);
+    if (!p) return;
+    setBg(p.bg);
+    setFg(p.fg);
+  };
 
-    // If pasted value starts with #, remove it temporarily
-    if (cleanHex.startsWith('#')) {
-      cleanHex = cleanHex.substring(1);
-    }
+  const handleReset = () => {
+    setMode('pair');
+    setBg(DEFAULTS.bg);
+    setFg(DEFAULTS.fg);
+    setEditing('fg');
+    setChannel('all');
+    setDirection('lighter');
+    setShowLabels(true);
+    setOrder(STEPS);
+  };
 
-    // Remove any non-hex characters
-    cleanHex = cleanHex.replace(/[^0-9a-f]/gi, '');
+  const stepColor = (n) => {
+    const d = direction === 'lighter' ? n : -n;
+    const next = { ...bgRgb };
+    for (const c of channel === 'all' ? CHANNELS : [channel]) next[c] = clamp(bgRgb[c] + d);
+    const clipped = (channel === 'all' ? CHANNELS : [channel]).some((c) => next[c] !== bgRgb[c] + d);
+    return { hex: toHex(next), clipped };
+  };
 
-    // Limit to 6 characters
-    cleanHex = cleanHex.slice(0, 6);
+  const shortcuts = [
+    { key: 'm', label: 'Switch mode', action: () => setMode((m) => (m === 'pair' ? 'staircase' : 'pair')) },
+    { key: 's', label: 'Swap colors', action: swap },
+    { key: 'ArrowUp', label: 'Patch +1 (all channels)', action: () => nudgeAll(1) },
+    { key: 'ArrowDown', label: 'Patch −1 (all channels)', action: () => nudgeAll(-1) },
+    { key: 'l', label: 'Show / hide step labels', action: () => setShowLabels((v) => !v) },
+  ];
 
-    // Add the # back
-    cleanHex = '#' + cleanHex;
-
-    // Update the input value
-    if (isBackground) {
-      setBackgroundColor(prev => ({
-        ...prev,
-        hex: cleanHex
-      }));
-    } else {
-      setForegroundColor(prev => ({
-        ...prev,
-        hex: cleanHex
-      }));
-    }
-
-    // Only convert to RGB if we have a valid 6-digit hex
-    if (cleanHex.length === 7) {  // # plus 6 hex digits
-      const result = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex);
-      if (result) {
-        const rgb = {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
-        };
-        if (isBackground) {
-          setBackgroundColor(prev => ({
-            ...prev,
-            ...rgb
-          }));
-        } else {
-          setForegroundColor(prev => ({
-            ...prev,
-            ...rgb
-          }));
-        }
-      }
-    }
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setBackgroundColor({ r: 128, g: 128, b: 128, hex: '#808080' });
-    setForegroundColor({ r: 160, g: 160, b: 160, hex: '#a0a0a0' });
-  }, []);
-
-  const backgroundHex = rgbToHex(backgroundColor.r, backgroundColor.g, backgroundColor.b);
-  const foregroundHex = rgbToHex(foregroundColor.r, foregroundColor.g, foregroundColor.b);
+  const diff = CHANNELS.map((c) => `${c.toUpperCase()} ${signed(fgRgb[c] - bgRgb[c])}`).join(' · ');
 
   return (
     <TestShell
-      title="Color Distance Controls"
-      description="Assess your monitor's ability to display and distinguish between similar colors. Adjust the background and foreground colors to test how well your display can show subtle color differences. This helps identify your monitor's capability to represent fine color variations in images and graphics."
+      title="Color Distinction"
+      description="See how small a color difference you can spot on this display. This tests discrimination on your screen with your eyes and room lighting — not color accuracy, which needs a colorimeter."
       onReset={handleReset}
-      style={{ backgroundColor: backgroundHex }}
+      shortcuts={shortcuts}
+      style={{ background: bg }}
       controls={
         <>
           <Section>
-            <h3>Background Color</h3>
-            <ColorControl $color="red">
-              <Label>Red (R)</Label>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  value={backgroundColor.r}
-                  onChange={(e) => {
-                    const r = Number(e.target.value);
-                    const newColor = { ...backgroundColor, r };
-                    const hex = rgbToHex(r, newColor.g, newColor.b);
-                    setBackgroundColor({ ...newColor, hex });
-                  }}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="255"
-                  value={backgroundColor.r}
-                  onChange={(e) => {
-                    const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                    const newColor = { ...backgroundColor, r: value };
-                    const hex = rgbToHex(value, newColor.g, newColor.b);
-                    setBackgroundColor({ ...newColor, hex });
-                  }}
-                />
-              </div>
-            </ColorControl>
-            <ColorControl $color="green">
-              <Label>Green (G)</Label>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  value={backgroundColor.g}
-                  onChange={(e) => {
-                    const g = Number(e.target.value);
-                    const newColor = { ...backgroundColor, g };
-                    const hex = rgbToHex(newColor.r, g, newColor.b);
-                    setBackgroundColor({ ...newColor, hex });
-                  }}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="255"
-                  value={backgroundColor.g}
-                  onChange={(e) => {
-                    const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                    const newColor = { ...backgroundColor, g: value };
-                    const hex = rgbToHex(newColor.r, value, newColor.b);
-                    setBackgroundColor({ ...newColor, hex });
-                  }}
-                />
-              </div>
-            </ColorControl>
-            <ColorControl $color="blue">
-              <Label>Blue (B)</Label>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  value={backgroundColor.b}
-                  onChange={(e) => {
-                    const b = Number(e.target.value);
-                    const newColor = { ...backgroundColor, b };
-                    const hex = rgbToHex(newColor.r, newColor.g, b);
-                    setBackgroundColor({ ...newColor, hex });
-                  }}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="255"
-                  value={backgroundColor.b}
-                  onChange={(e) => {
-                    const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                    const newColor = { ...backgroundColor, b: value };
-                    const hex = rgbToHex(newColor.r, newColor.g, value);
-                    setBackgroundColor({ ...newColor, hex });
-                  }}
-                />
-              </div>
-            </ColorControl>
-            <ColorPreview>
-              <ColorBox $color={backgroundHex} />
-              <ColorCode>{backgroundHex.toUpperCase()}</ColorCode>
-              <HexInput
-                type="text"
-                value={backgroundColor.hex || backgroundHex.toUpperCase()}
-                onChange={(e) => handleHexChange(e.target.value, true)}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const pastedText = e.clipboardData.getData('text');
-                  handleHexChange(pastedText, true);
-                }}
-                maxLength={7}
-                placeholder="#000000"
-              />
-            </ColorPreview>
+            <h3>Mode</h3>
+            <Segmented
+              options={[
+                { value: 'pair', label: 'Two colors' },
+                { value: 'staircase', label: 'Staircase' },
+              ]}
+              value={mode}
+              onChange={setMode}
+              columns={2}
+            />
           </Section>
 
-          <Section>
-            <h3>Foreground Color</h3>
-            <ColorControl $color="red">
-              <Label>Red (R)</Label>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  value={foregroundColor.r}
-                  onChange={(e) => {
-                    const r = Number(e.target.value);
-                    const newColor = { ...foregroundColor, r };
-                    const hex = rgbToHex(r, newColor.g, newColor.b);
-                    setForegroundColor({ ...newColor, hex });
-                  }}
+          {mode === 'pair' ? (
+            <>
+              <Section>
+                <h3>Presets</h3>
+                <Select
+                  value={PRESETS.find((p) => p.bg === bg && p.fg === fg)?.value ?? 'custom'}
+                  onChange={applyPreset}
+                  options={[...PRESETS, { value: 'custom', label: 'Custom' }]}
                 />
-                <input
-                  type="number"
-                  min="0"
-                  max="255"
-                  value={foregroundColor.r}
-                  onChange={(e) => {
-                    const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                    const newColor = { ...foregroundColor, r: value };
-                    const hex = rgbToHex(value, newColor.g, newColor.b);
-                    setForegroundColor({ ...newColor, hex });
-                  }}
+              </Section>
+
+              <Section>
+                <h3>Colors</h3>
+                <ColorInput label="Background" value={bg} onChange={setBg} />
+                <ColorInput label="Patch" value={fg} onChange={setFg} />
+                <ButtonRow>
+                  <Button type="button" onClick={swap}>
+                    Swap patch / background
+                  </Button>
+                </ButtonRow>
+              </Section>
+
+              <Section>
+                <h3>Fine tune</h3>
+                <Segmented
+                  options={[
+                    { value: 'fg', label: 'Patch' },
+                    { value: 'bg', label: 'Background' },
+                  ]}
+                  value={editing}
+                  onChange={setEditing}
+                  columns={2}
                 />
-              </div>
-            </ColorControl>
-            <ColorControl $color="green">
-              <Label>Green (G)</Label>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  value={foregroundColor.g}
-                  onChange={(e) => {
-                    const g = Number(e.target.value);
-                    const newColor = { ...foregroundColor, g };
-                    const hex = rgbToHex(newColor.r, g, newColor.b);
-                    setForegroundColor({ ...newColor, hex });
-                  }}
+                {CHANNELS.map((c) => (
+                  <ChannelRow key={c}>
+                    <Slider
+                      label={CHANNEL_NAMES[c]}
+                      value={target[c]}
+                      min={0}
+                      max={255}
+                      onChange={(v) => setChannelValue(c, v)}
+                    />
+                    <div>
+                      <Button
+                        type="button"
+                        aria-label={`${CHANNEL_NAMES[c]} minus 1`}
+                        onClick={() => setChannelValue(c, target[c] - 1)}
+                      >
+                        −1
+                      </Button>
+                      <Button
+                        type="button"
+                        aria-label={`${CHANNEL_NAMES[c]} plus 1`}
+                        onClick={() => setChannelValue(c, target[c] + 1)}
+                      >
+                        +1
+                      </Button>
+                    </div>
+                  </ChannelRow>
+                ))}
+              </Section>
+
+              <Section>
+                <h3>Difference</h3>
+                <Readout
+                  items={[
+                    ['Background', bg.toUpperCase()],
+                    ['Patch', fg.toUpperCase()],
+                    ['Code values', diff],
+                  ]}
                 />
-                <input
-                  type="number"
-                  min="0"
-                  max="255"
-                  value={foregroundColor.g}
-                  onChange={(e) => {
-                    const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                    const newColor = { ...foregroundColor, g: value };
-                    const hex = rgbToHex(newColor.r, value, newColor.b);
-                    setForegroundColor({ ...newColor, hex });
-                  }}
+                <Hint>
+                  Differences are 8-bit code values sent to the display, not measured color. Lower the
+                  difference until the patch disappears.
+                </Hint>
+              </Section>
+            </>
+          ) : (
+            <>
+              <Section>
+                <h3>Base color</h3>
+                <ColorInput label="Background" value={bg} onChange={setBg} />
+                <Segmented
+                  label="Change"
+                  options={[
+                    { value: 'all', label: 'Gray' },
+                    { value: 'r', label: 'R' },
+                    { value: 'g', label: 'G' },
+                    { value: 'b', label: 'B' },
+                  ]}
+                  value={channel}
+                  onChange={setChannel}
+                  columns={4}
                 />
-              </div>
-            </ColorControl>
-            <ColorControl $color="blue">
-              <Label>Blue (B)</Label>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  min="0"
-                  max="255"
-                  value={foregroundColor.b}
-                  onChange={(e) => {
-                    const b = Number(e.target.value);
-                    const newColor = { ...foregroundColor, b };
-                    const hex = rgbToHex(newColor.r, newColor.g, b);
-                    setForegroundColor({ ...newColor, hex });
-                  }}
+                <Segmented
+                  label="Direction"
+                  options={[
+                    { value: 'lighter', label: 'Lighter' },
+                    { value: 'darker', label: 'Darker' },
+                  ]}
+                  value={direction}
+                  onChange={setDirection}
+                  columns={2}
                 />
-                <input
-                  type="number"
-                  min="0"
-                  max="255"
-                  value={foregroundColor.b}
-                  onChange={(e) => {
-                    const value = Math.min(255, Math.max(0, Number(e.target.value)));
-                    const newColor = { ...foregroundColor, b: value };
-                    const hex = rgbToHex(newColor.r, newColor.g, value);
-                    setForegroundColor({ ...newColor, hex });
-                  }}
-                />
-              </div>
-            </ColorControl>
-            <ColorPreview>
-              <ColorBox $color={foregroundHex} />
-              <ColorCode>{foregroundHex.toUpperCase()}</ColorCode>
-              <HexInput
-                type="text"
-                value={foregroundColor.hex || foregroundHex.toUpperCase()}
-                onChange={(e) => handleHexChange(e.target.value, false)}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const pastedText = e.clipboardData.getData('text');
-                  handleHexChange(pastedText, false);
-                }}
-                maxLength={7}
-                placeholder="#000000"
-              />
-            </ColorPreview>
-          </Section>
+              </Section>
+              <Section>
+                <h3>Blind check</h3>
+                <Toggle label="Show step labels" checked={showLabels} onChange={setShowLabels} />
+                <ButtonRow>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setOrder(shuffled());
+                      setShowLabels(false);
+                    }}
+                  >
+                    Shuffle & hide labels
+                  </Button>
+                  <Button type="button" onClick={() => setOrder(STEPS)}>
+                    Sort
+                  </Button>
+                </ButtonRow>
+                <Hint>
+                  Each patch differs from the background by 1, 2, 3, 4, 6 or 8 code values. Shuffle, count the
+                  patches you can see, then reveal the labels. Near black and near white are the hardest.
+                </Hint>
+              </Section>
+            </>
+          )}
         </>
       }
     >
-      <ColorSquare $foregroundColor={foregroundHex} />
+      <Stage>
+        {mode === 'pair' ? (
+          <Patch style={{ background: fg }} aria-label="Patch color" />
+        ) : (
+          <Staircase>
+            {order.map((n) => {
+              const { hex, clipped } = stepColor(n);
+              return (
+                <Step key={n}>
+                  <div style={{ background: hex }} />
+                  <figcaption style={{ color: labelColor, visibility: showLabels ? 'visible' : 'hidden' }}>
+                    {direction === 'lighter' ? '+' : '−'}
+                    {n}
+                    {clipped ? ' (clipped)' : ''}
+                  </figcaption>
+                </Step>
+              );
+            })}
+          </Staircase>
+        )}
+      </Stage>
     </TestShell>
   );
 };

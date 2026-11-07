@@ -1,160 +1,197 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import TestShell, { Section, Label } from '../../components/TestShell';
+import TestShell, { Section, Segmented, Toggle, Hint } from '../../components/TestShell';
 
-const TestArea = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-`;
+const PALETTE = [
+  { name: 'White', value: '#ffffff' },
+  { name: '50% gray', value: '#808080' },
+  { name: '25% gray', value: '#404040' },
+  { name: 'Skin tone', value: '#d8a585' },
+  { name: 'Red', value: '#ff0000' },
+  { name: 'Green', value: '#00ff00' },
+  { name: 'Blue', value: '#0000ff' },
+  { name: 'Black', value: '#000000' },
+];
 
-const PatternContainer = styled.div`
-  width: ${props => `calc(${props.$screenWidth}px * 0.98)`};
-  height: ${props => `calc(${props.$screenHeight}px * 0.98)`};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-`;
+const LAYOUTS = {
+  8: [4, 2],
+  24: [6, 4],
+  48: [8, 6],
+  96: [12, 8],
+};
 
-const Pattern = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background: #000;
-  display: grid;
-  grid-template-columns: repeat(${props => props.$columns}, 1fr);
-  grid-template-rows: repeat(${props => props.$rows}, 1fr);
-  gap: ${props => `calc(${props.$screenHeight}px * 0.005)`};
-  padding: ${props => `calc(${props.$screenHeight}px * 0.005)`};
-`;
+const MODES = [
+  { value: 'patches', label: 'Patches' },
+  { value: 'bars', label: 'Gray bars' },
+  { value: 'near-black', label: 'Near-black' },
+];
 
-const CircleContainer = styled.div`
-  position: relative;
-  width: 100%;
-  &:after {
-    content: '';
-    display: block;
-    padding-bottom: 100%;
-  }
-`;
+const DEFAULTS = { mode: 'patches', patches: 24, bars: 16, labels: true };
 
-const Circle = styled.div`
+const Grid = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(circle at center,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.95) 10%,
-    rgba(255, 255, 255, 0.85) 20%,
-    rgba(255, 255, 255, 0.75) 30%,
-    rgba(255, 255, 255, 0.6) 40%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.2) 60%,
-    rgba(255, 255, 255, 0.1) 70%,
-    rgba(255, 255, 255, 0.05) 80%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(${({ $cols }) => $cols}, 1fr);
+  grid-template-rows: repeat(${({ $rows }) => $rows}, 1fr);
+  gap: ${({ $gap }) => $gap}px;
+  padding: ${({ $gap }) => $gap}px;
+  background: #000;
 `;
 
-const RangeControl = styled.div`
+const Cell = styled.div`
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-
-  label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #666;
-  }
-
-  input[type="range"] {
-    width: 100%;
-  }
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+  font: 600 0.75rem/1 var(--font-mono);
+  user-select: none;
 `;
+
+const textOn = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  const y = 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+  return y > 100 ? '#000000' : '#9a9a9a';
+};
+
+const levelHex = (v) => {
+  const h = v.toString(16).padStart(2, '0');
+  return `#${h}${h}${h}`;
+};
+
+const barLevels = (mode, count) =>
+  Array.from({ length: count }, (_, i) =>
+    mode === 'bars' ? Math.round((i * 255) / (count - 1)) : Math.round((i * 40) / (count - 1))
+  );
 
 const ViewingAngleTest = () => {
-  const [circleDiameter, setCircleDiameter] = useState(100); // in pixels
-  const [screenDimensions, setScreenDimensions] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setScreenDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Calculate optimal grid size based on viewport and circle size
-  const gridDimensions = useMemo(() => {
-    const cols = Math.floor(screenDimensions.width / circleDiameter);
-    const rows = Math.floor(screenDimensions.height / circleDiameter);
-    return { rows, cols, total: rows * cols };
-  }, [screenDimensions, circleDiameter]);
-
-  const circles = useMemo(() => {
-    return Array.from({ length: gridDimensions.total }, (_, i) => i);
-  }, [gridDimensions.total]);
+  const [mode, setMode] = useState(DEFAULTS.mode);
+  const [patches, setPatches] = useState(DEFAULTS.patches);
+  const [bars, setBars] = useState(DEFAULTS.bars);
+  const [labels, setLabels] = useState(DEFAULTS.labels);
 
   const handleReset = () => {
-    setCircleDiameter(100);
+    setMode(DEFAULTS.mode);
+    setPatches(DEFAULTS.patches);
+    setBars(DEFAULTS.bars);
+    setLabels(DEFAULTS.labels);
+  };
+
+  const cycle = (list, value, dir) => list[(list.indexOf(value) + dir + list.length) % list.length];
+  const patchOptions = Object.keys(LAYOUTS).map(Number);
+  const barOptions = [8, 16, 32];
+
+  const shortcuts = [
+    {
+      key: ['ArrowRight', ' '],
+      label: 'Next pattern',
+      action: () => setMode((m) => cycle(MODES.map((o) => o.value), m, 1)),
+    },
+    {
+      key: 'ArrowLeft',
+      label: 'Previous pattern',
+      action: () => setMode((m) => cycle(MODES.map((o) => o.value), m, -1)),
+    },
+    {
+      key: 'ArrowUp',
+      label: 'More patches / bars',
+      action: () =>
+        mode === 'patches'
+          ? setPatches((p) => patchOptions[Math.min(patchOptions.indexOf(p) + 1, patchOptions.length - 1)])
+          : setBars((b) => barOptions[Math.min(barOptions.indexOf(b) + 1, barOptions.length - 1)]),
+    },
+    {
+      key: 'ArrowDown',
+      label: 'Fewer patches / bars',
+      action: () =>
+        mode === 'patches'
+          ? setPatches((p) => patchOptions[Math.max(patchOptions.indexOf(p) - 1, 0)])
+          : setBars((b) => barOptions[Math.max(barOptions.indexOf(b) - 1, 0)]),
+    },
+    { key: 'l', label: 'Toggle labels', action: () => setLabels((v) => !v) },
+  ];
+
+  let content;
+  if (mode === 'patches') {
+    const [cols, rows] = LAYOUTS[patches];
+    // Offset each row so identical colors don't stack into columns.
+    const rowShift = cols % PALETTE.length === 0 ? 3 : 0;
+    content = (
+      <Grid $cols={cols} $rows={rows} $gap={patches > 48 ? 3 : 6}>
+        {Array.from({ length: cols * rows }, (_, i) => {
+          const r = Math.floor(i / cols);
+          const c = PALETTE[(i + r * rowShift) % PALETTE.length];
+          return (
+            <Cell key={i} style={{ background: c.value, color: textOn(c.value) }}>
+              {labels && patches <= 48 ? c.name : null}
+            </Cell>
+          );
+        })}
+      </Grid>
+    );
+  } else {
+    const levels = barLevels(mode, bars);
+    content = (
+      <Grid $cols={bars} $rows={1} $gap={0}>
+        {levels.map((v, i) => (
+          <Cell key={i} style={{ background: levelHex(v), color: textOn(levelHex(v)) }}>
+            {labels && bars <= 16 ? v : null}
+          </Cell>
+        ))}
+      </Grid>
+    );
+  }
+
+  const descriptions = {
+    patches:
+      'Note how the patches look head-on, then move your head left/right and up/down. Watch whites tint, grays brighten or darken, skin tone shift, and black lift.',
+    bars: 'Full-height steps from black to white. Moving up and down shows gamma shift; on TN panels the steps can invert near the top or bottom.',
+    'near-black':
+      'Steps from 0 to 40 (of 255). Off-axis, VA panels often crush or lift these; IPS glow washes them out from an angle.',
   };
 
   return (
     <TestShell
-      title="Viewing Angle Controls"
-      description="This test helps evaluate your display's viewing angle performance. Adjust the circle size to create an optimal pattern for checking color and brightness consistency across your screen from different viewing angles."
+      title="Viewing Angle Test"
+      description={descriptions[mode]}
       onReset={handleReset}
+      shortcuts={shortcuts}
       controls={
-        <Section>
-          <h3>Circle Size</h3>
-          <RangeControl>
-            <Label>Size: {circleDiameter}px ({gridDimensions.cols}×{gridDimensions.rows} grid)</Label>
-            <input
-              type="range"
-              min="50"
-              max="400"
-              step="10"
-              value={circleDiameter}
-              onChange={(e) => setCircleDiameter(parseInt(e.target.value))}
-            />
-          </RangeControl>
-        </Section>
+        <>
+          <Section>
+            <h3>Pattern</h3>
+            <Segmented options={MODES} value={mode} onChange={setMode} columns={3} />
+          </Section>
+
+          <Section>
+            {mode === 'patches' ? (
+              <Segmented
+                label="Patch count"
+                options={patchOptions.map((n) => ({ value: n, label: String(n) }))}
+                value={patches}
+                onChange={setPatches}
+                columns={4}
+              />
+            ) : (
+              <Segmented
+                label="Number of bars"
+                options={barOptions.map((n) => ({ value: n, label: String(n) }))}
+                value={bars}
+                onChange={setBars}
+                columns={3}
+              />
+            )}
+            <Toggle label="Show labels" checked={labels} onChange={setLabels} />
+            <Hint>
+              Labels hide automatically at the highest densities. Keep your eyes level with the screen center
+              as your reference, then move only your head.
+            </Hint>
+          </Section>
+        </>
       }
     >
-      <TestArea>
-        <PatternContainer
-          $screenWidth={screenDimensions.width}
-          $screenHeight={screenDimensions.height}
-        >
-          <Pattern
-            $rows={gridDimensions.rows}
-            $columns={gridDimensions.cols}
-            $screenHeight={screenDimensions.height}
-          >
-            {circles.map((i) => (
-              <CircleContainer key={i}>
-                <Circle />
-              </CircleContainer>
-            ))}
-          </Pattern>
-        </PatternContainer>
-      </TestArea>
+      {content}
     </TestShell>
   );
 };

@@ -54,7 +54,13 @@ export function getDisplayInfo() {
     pointer: mq('(pointer: fine)') ? 'fine' : mq('(pointer: coarse)') ? 'coarse' : 'none',
     hover: mq('(hover: hover)'),
     prefersReducedMotion: mq('(prefers-reduced-motion: reduce)'),
-    prefersContrast: mq('(prefers-contrast: more)') ? 'more' : 'no-preference',
+    prefersContrast: !supportsMq('prefers-contrast: more')
+      ? null
+      : mq('(prefers-contrast: more)')
+        ? 'more'
+        : mq('(prefers-contrast: less)')
+          ? 'less'
+          : 'no-preference',
     forcedColors: mq('(forced-colors: active)'),
     aspectRatio: aspectLabel(physicalWidth, physicalHeight),
   };
@@ -78,16 +84,28 @@ export function aspectLabel(w, h) {
 /** Subscribe to changes when the window moves between monitors or settings change. */
 export function onDisplayChange(callback) {
   if (typeof window === 'undefined') return () => {};
-  const queries = [
-    '(color-gamut: p3)',
-    '(color-gamut: rec2020)',
-    '(dynamic-range: high)',
-    `(resolution: ${window.devicePixelRatio}dppx)`,
-  ].map((q) => window.matchMedia(q));
+  const queries = ['(color-gamut: p3)', '(color-gamut: rec2020)', '(dynamic-range: high)'].map((q) =>
+    window.matchMedia(q)
+  );
   queries.forEach((q) => q.addEventListener?.('change', callback));
   window.addEventListener('resize', callback);
+
+  // A resolution query only matches one DPR, so re-arm it after every change.
+  let dprQuery = null;
+  const onDpr = () => {
+    armDpr();
+    callback();
+  };
+  const armDpr = () => {
+    dprQuery?.removeEventListener?.('change', onDpr);
+    dprQuery = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    dprQuery.addEventListener?.('change', onDpr);
+  };
+  armDpr();
+
   return () => {
     queries.forEach((q) => q.removeEventListener?.('change', callback));
+    dprQuery?.removeEventListener?.('change', onDpr);
     window.removeEventListener('resize', callback);
   };
 }

@@ -16,7 +16,7 @@ export default {
     description: 'Full-screen solid colors to find dead, stuck, and hot pixels.',
   },
   load: () => import('../../pages/tests/DeadPixelTest'),
-  checkup: { step: 20, question: 'Did you find any dead, stuck, or hot pixels?' },
+  checkup: { step: 20, question: 'Is the screen free of dead, stuck, or hot pixels?' },
   page: {
     title: 'Dead Pixel Test',
     intro:
@@ -47,7 +47,7 @@ export default {
             ol: [
               'Wipe the screen with a dry microfiber cloth — dust looks exactly like a dead pixel.',
               'Dim the room lights and sit at your normal distance.',
-              'Click **Start dead pixel test**. Use **← / →** or **Space** to step through colors, or turn on auto-cycle.',
+              'Click **Start dead pixel test**. Use **← / →** or **Space**, or click/tap the screen, to step through colors — or turn on auto-cycle (0.5–5 s per color).',
               'On each color, scan the screen in rows: left to right, top to bottom. Spend the most time on **white**, **black**, **red**, **green**, and **blue**.',
               'If you find something, step through every color to classify it, and photograph it on the color where it’s most visible.',
             ],

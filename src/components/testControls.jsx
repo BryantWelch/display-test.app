@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useEffect, useId, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 /**
@@ -52,7 +52,7 @@ export const Label = styled.label`
 `;
 
 export const Button = styled.button`
-  min-height: 40px;
+  min-height: 44px;
   padding: 0.5rem 0.85rem;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
@@ -167,7 +167,7 @@ export function Slider({ label, value, min, max, step = 1, onChange, format = (v
 
 const NativeSelect = styled.select`
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0.4rem 0.6rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-strong);
@@ -227,7 +227,7 @@ const SwatchGrid = styled.div`
 
 const Swatch = styled.button`
   aspect-ratio: 1;
-  min-height: 40px;
+  min-height: 44px;
   border-radius: var(--radius-sm);
   background: ${({ $color }) => $color};
   border: 2px solid ${({ $active }) => ($active ? 'var(--accent)' : 'rgba(148, 163, 184, 0.35)')};
@@ -260,7 +260,7 @@ const ColorRow = styled.div`
 
   input[type='color'] {
     width: 44px;
-    height: 40px;
+    height: 44px;
     padding: 0;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
@@ -269,7 +269,7 @@ const ColorRow = styled.div`
 
   input[type='text'] {
     flex: 1;
-    min-height: 40px;
+    min-height: 44px;
     padding: 0.4rem 0.6rem;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-strong);
@@ -282,6 +282,8 @@ const ColorRow = styled.div`
 
 export function ColorInput({ label, value, onChange }) {
   const id = useId();
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
   return (
     <div style={{ marginBottom: '0.85rem' }}>
       <Label htmlFor={id}>{label}</Label>
@@ -290,12 +292,15 @@ export function ColorInput({ label, value, onChange }) {
         <input
           id={id}
           type="text"
-          value={value}
+          value={draft}
           maxLength={7}
+          spellCheck={false}
           onChange={(e) => {
+            setDraft(e.target.value);
             const v = e.target.value.startsWith('#') ? e.target.value : `#${e.target.value}`;
             if (/^#[0-9a-fA-F]{6}$/.test(v)) onChange(v.toLowerCase());
           }}
+          onBlur={() => setDraft(value)}
         />
       </ColorRow>
     </div>

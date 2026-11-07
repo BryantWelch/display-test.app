@@ -1,269 +1,241 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-import TestShell, { Section, Label } from '../../components/TestShell';
+import { useRef, useState } from 'react';
+import TestShell, {
+  Section,
+  Segmented,
+  Slider,
+  Toggle,
+  ColorSwatches,
+  ColorInput,
+  Hint,
+} from '../../components/TestShell';
+import { usePixelCanvas } from '../../components/PixelCanvas';
 
-const MatrixCanvas = styled.canvas`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`;
+const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => String.fromCharCode(from + i)).join('');
 
-const Slider = styled.input`
-  width: 100%;
-  margin: 0.5rem 0;
-`;
+const CHARSETS = {
+  katakana: { label: 'Katakana', chars: range(0xff66, 0xff9d) + '0123456789' },
+  latin: { label: 'Latin', chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+=<>' },
+  hex: { label: 'Hex', chars: '0123456789ABCDEF' },
+  binary: { label: 'Binary', chars: '01' },
+};
 
-const ColorButton = styled.button`
-  width: 100%;
-  height: 40px;
-  padding: 0;
-  border: 2px solid #4169e1;
-  border-radius: 4px;
-  background: ${props => props.$color};
-  cursor: pointer;
-  transition: all 0.2s ease;
-`;
+const TEXT_COLORS = [
+  { name: 'Matrix green', value: '#00ff41' },
+  { name: 'Cyan', value: '#00e5ff' },
+  { name: 'Amber', value: '#ffb000' },
+  { name: 'Magenta', value: '#ff2bd6' },
+  { name: 'Red pill', value: '#ff2a2a' },
+  { name: 'Blue pill', value: '#3d7bff' },
+  { name: 'White', value: '#e8e8e8' },
+];
 
-const ColorGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-`;
+const BG_COLORS = [
+  { name: 'Black', value: '#000000' },
+  { name: 'Charcoal', value: '#141414' },
+  { name: 'Deep green', value: '#001a08' },
+  { name: 'Navy', value: '#000a1f' },
+];
 
-const ColorSection = styled.div`
-  margin-bottom: 2rem;
+const TRAILS = { short: 250, medium: 550, long: 1100 };
 
-  h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-`;
+const DEFAULTS = {
+  color: '#00ff41',
+  bg: '#000000',
+  size: 22,
+  speed: 50,
+  density: 70,
+  trail: 'medium',
+  charset: 'katakana',
+  heads: true,
+};
+
+const FADE_INTERVAL = 1000 / 30;
+const MAX_DT = 100;
+
+const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
 const MatrixTest = () => {
-  const [textColor, setTextColor] = useState('#00ff00');
-  const [backgroundColor, setBackgroundColor] = useState('#000000');
-  const [fontSize, setFontSize] = useState(30);
-  const [speed, setSpeed] = useState(50);
-  const [resetKey, setResetKey] = useState(0);
-  const canvasRef = React.useRef(null);
-  const animationRef = React.useRef(null);
-  const abortControllerRef = React.useRef(null);
+  const [color, setColor] = useState(DEFAULTS.color);
+  const [bg, setBg] = useState(DEFAULTS.bg);
+  const [size, setSize] = useState(DEFAULTS.size);
+  const [speed, setSpeed] = useState(DEFAULTS.speed);
+  const [density, setDensity] = useState(DEFAULTS.density);
+  const [trail, setTrail] = useState(DEFAULTS.trail);
+  const [charset, setCharset] = useState(DEFAULTS.charset);
+  const [heads, setHeads] = useState(DEFAULTS.heads);
+  const [paused, setPaused] = useState(false);
+  const sim = useRef(null);
 
-  useEffect(() => {
-    abortControllerRef.current = new AbortController();
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+  const animate = (ctx, { width, height, dpr }, t) => {
+    const cellH = Math.max(6, Math.round(size * dpr));
+    const cellW = Math.max(4, Math.round(cellH * 0.8));
+    const chars = CHARSETS[charset].chars;
+    const key = `${width}x${height}:${cellH}:${bg}:${charset}`;
+    let s = sim.current;
+
+    if (!s || s.key !== key) {
+      const cols = Math.ceil(width / cellW);
+      const rows = Math.ceil(height / cellH);
+      s = sim.current = {
+        key,
+        cols,
+        rows,
+        last: t,
+        fadeAcc: 0,
+        y: Array.from({ length: cols }, () => -Math.random() * rows),
+        speedMul: Array.from({ length: cols }, () => 0.6 + Math.random() * 0.8),
+        prevRow: new Array(cols).fill(-1),
+        prevChar: new Array(cols).fill(''),
+      };
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    const dt = Math.min(MAX_DT, Math.max(0, t - s.last));
+    s.last = t;
+    if (paused) return;
+
+    const [br, bgG, bb] = hexToRgb(bg);
+    s.fadeAcc += dt;
+    if (s.fadeAcc >= FADE_INTERVAL) {
+      const alpha = 1 - Math.exp(-s.fadeAcc / TRAILS[trail]);
+      ctx.fillStyle = `rgba(${br}, ${bgG}, ${bb}, ${alpha})`;
+      ctx.fillRect(0, 0, width, height);
+      if (br + bgG + bb === 0) {
+        // 8-bit alpha blending stalls a few levels above black; color-burn floors that residue to 0.
+        ctx.globalCompositeOperation = 'color-burn';
+        ctx.fillStyle = 'rgb(246, 246, 246)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.globalCompositeOperation = 'source-over';
       }
-    };
-  }, []);
-
-  const textColors = [
-    { name: 'Matrix Green', value: '#00ff00' },
-    { name: 'Cyan', value: '#00ffff' },
-    { name: 'Magenta', value: '#ff00ff' },
-    { name: 'Yellow', value: '#ffff00' },
-    { name: 'White', value: '#ffffff' },
-    { name: 'Red', value: '#ff0000' }
-  ];
-
-  const backgroundColors = [
-    { name: 'Black', value: '#000000' },
-    { name: 'Dark Gray', value: '#222222' },
-    { name: 'Navy', value: '#000033' },
-    { name: 'Dark Blue', value: '#000066' }
-  ];
-
-  const initMatrix = useCallback(() => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
+      s.fadeAcc = 0;
     }
 
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
+    const rowsPerSec = 6 + speed * 0.5;
+    const restartSpread = s.rows * (0.1 + (1 - density / 100) * 2.5);
+    ctx.font = `${cellH}px "MS Gothic", "Yu Gothic", "Hiragino Kaku Gothic ProN", "Noto Sans Mono CJK JP", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
 
-    const canvas = canvasRef.current;
-    if (!canvas || signal.aborted) return;
+    for (let i = 0; i < s.cols; i++) {
+      s.y[i] += rowsPerSec * s.speedMul[i] * (dt / 1000);
+      const row = Math.floor(s.y[i]);
+      if (row <= s.prevRow[i]) continue;
+      const x = i * cellW + cellW / 2;
 
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = new Array(columns).fill(0).map(() =>
-      Math.floor(Math.random() * -canvas.height / fontSize)
-    );
-
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
-
-    const draw = () => {
-      if (signal.aborted) return;
-
-      ctx.fillStyle = backgroundColor + '0a';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = textColor;
-      ctx.font = fontSize + 'px monospace';
-      ctx.textAlign = 'start';
-      ctx.textBaseline = 'top';
-
-      for (let i = 0; i < drops.length; i++) {
-        if (drops[i] * fontSize > 0) {
-          const text = chars[Math.floor(Math.random() * chars.length)];
-          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      for (let r = s.prevRow[i] + 1; r <= row; r++) {
+        if (r < 0 || r >= s.rows) continue;
+        if (heads && s.prevChar[i] && s.prevRow[i] >= 0 && r === s.prevRow[i] + 1) {
+          ctx.fillStyle = bg;
+          ctx.fillRect(i * cellW, s.prevRow[i] * cellH, cellW, cellH);
+          ctx.fillStyle = color;
+          ctx.fillText(s.prevChar[i], x, s.prevRow[i] * cellH);
         }
-
-        if (drops[i] * fontSize > canvas.height) {
-          drops[i] = Math.random() > 0.975 ? 0 : -10;
-        }
-        drops[i]++;
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillStyle = heads && r === row ? '#f0fff4' : color;
+        ctx.fillText(ch, x, r * cellH);
+        s.prevChar[i] = ch;
+        s.prevRow[i] = r;
       }
 
-      if (!signal.aborted) {
-        animationRef.current = setTimeout(() => {
-          requestAnimationFrame(draw);
-        }, Math.max(1, 100 - speed));
+      if (row >= s.rows + 4) {
+        s.y[i] = -Math.random() * restartSpread;
+        s.speedMul[i] = 0.6 + Math.random() * 0.8;
+        s.prevRow[i] = Math.floor(s.y[i]);
+        s.prevChar[i] = '';
+      } else {
+        s.prevRow[i] = Math.max(s.prevRow[i], row);
       }
-    };
-
-    if (!signal.aborted) {
-      animationRef.current = setTimeout(() => {
-        requestAnimationFrame(draw);
-      }, Math.max(1, 100 - speed));
     }
-  }, [backgroundColor, textColor, fontSize, speed]);
-
-  useEffect(() => {
-    initMatrix();
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, [backgroundColor, textColor, fontSize, speed, initMatrix]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (canvasRef.current) {
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
-        initMatrix();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [initMatrix]);
-
-  const handleReset = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-
-    setTextColor('#00ff00');
-    setBackgroundColor('#000000');
-    setFontSize(30);
-    setSpeed(50);
-
-    setResetKey(prev => prev + 1);
   };
 
-  const cleanupAnimation = useCallback(() => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-  }, []);
+  const { canvasRef } = usePixelCanvas({ animate });
+
+  const handleReset = () => {
+    setColor(DEFAULTS.color);
+    setBg(DEFAULTS.bg);
+    setSize(DEFAULTS.size);
+    setSpeed(DEFAULTS.speed);
+    setDensity(DEFAULTS.density);
+    setTrail(DEFAULTS.trail);
+    setCharset(DEFAULTS.charset);
+    setHeads(DEFAULTS.heads);
+    setPaused(false);
+  };
+
+  const shortcuts = [
+    { key: ' ', label: 'Pause / resume', action: () => setPaused((p) => !p) },
+    { key: 'ArrowUp', label: 'Faster', action: () => setSpeed((v) => Math.min(100, v + 5)) },
+    { key: 'ArrowDown', label: 'Slower', action: () => setSpeed((v) => Math.max(1, v - 5)) },
+    {
+      key: 'c',
+      label: 'Next color',
+      action: () => {
+        const i = TEXT_COLORS.findIndex((c) => c.value === color);
+        setColor(TEXT_COLORS[(i + 1) % TEXT_COLORS.length].value);
+      },
+    },
+  ];
 
   return (
     <TestShell
-      title="Matrix Controls"
-      description={'"You take the blue pill — the story ends, you wake up in your bed and believe whatever you want to believe. You take the red pill — you stay in Wonderland, and I show you how deep the rabbit-hole goes."'}
+      title="Matrix Digital Rain"
+      description="Just for fun. Wake up, Neo… then dim the lights — on an OLED, the background between the streams should be truly black."
       onReset={handleReset}
-      onBeforeExit={cleanupAnimation}
-      style={{ backgroundColor, fontFamily: 'monospace' }}
+      shortcuts={shortcuts}
+      style={{ background: bg }}
       controls={
         <>
-          <ColorSection>
-            <h3>Text Color</h3>
-            <ColorGrid>
-              {textColors.map(color => (
-                <ColorButton
-                  key={color.value}
-                  type="button"
-                  $color={color.value}
-                  onClick={() => setTextColor(color.value)}
-                />
-              ))}
-            </ColorGrid>
-          </ColorSection>
-
-          <ColorSection>
-            <h3>Background Color</h3>
-            <ColorGrid>
-              {backgroundColors.map(color => (
-                <ColorButton
-                  key={color.value}
-                  type="button"
-                  $color={color.value}
-                  onClick={() => setBackgroundColor(color.value)}
-                />
-              ))}
-            </ColorGrid>
-          </ColorSection>
+          <Section>
+            <h3>Rain color</h3>
+            <ColorSwatches colors={TEXT_COLORS} value={color} onChange={setColor} columns={7} />
+            <div style={{ marginTop: '0.6rem' }}>
+              <ColorInput label="Custom" value={color} onChange={setColor} />
+            </div>
+          </Section>
 
           <Section>
-            <h3>Text Size</h3>
-            <Label>Size: {fontSize}px</Label>
-            <Slider
-              type="range"
-              min="10"
-              max="60"
-              value={fontSize}
-              onChange={(e) => setFontSize(Number(e.target.value))}
+            <h3>Background</h3>
+            <ColorSwatches colors={BG_COLORS} value={bg} onChange={setBg} columns={4} />
+          </Section>
+
+          <Section>
+            <h3>Motion</h3>
+            <Slider label="Speed" value={speed} min={1} max={100} onChange={setSpeed} format={(v) => `${v}%`} />
+            <Slider label="Density" value={density} min={10} max={100} onChange={setDensity} format={(v) => `${v}%`} />
+            <Segmented
+              label="Trail length"
+              options={[
+                { value: 'short', label: 'Short' },
+                { value: 'medium', label: 'Medium' },
+                { value: 'long', label: 'Long' },
+              ]}
+              value={trail}
+              onChange={setTrail}
+              columns={3}
             />
           </Section>
 
           <Section>
-            <h3>Speed</h3>
-            <Label>Speed: {speed}%</Label>
-            <Slider
-              type="range"
-              min="1"
-              max="100"
-              value={speed}
-              onChange={(e) => setSpeed(Number(e.target.value))}
+            <h3>Characters</h3>
+            <Slider label="Size" value={size} min={10} max={60} onChange={setSize} format={(v) => `${v}px`} />
+            <Segmented
+              options={Object.entries(CHARSETS).map(([value, c]) => ({ value, label: c.label }))}
+              value={charset}
+              onChange={setCharset}
+              columns={4}
             />
+            <Toggle label="Bright leading characters" checked={heads} onChange={setHeads} />
+            <Hint>Press Space to pause. Speed is frame-rate independent, so it looks the same at 60 Hz or 240 Hz.</Hint>
           </Section>
         </>
       }
     >
-      <MatrixCanvas key={resetKey} ref={canvasRef} />
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
+      />
     </TestShell>
   );
 };

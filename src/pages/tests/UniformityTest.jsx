@@ -1,307 +1,211 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import TestShell, { Section } from '../../components/TestShell';
+import { useState } from 'react';
+import TestShell, {
+  Section,
+  Segmented,
+  Slider,
+  Toggle,
+  ColorInput,
+  Readout,
+  Hint,
+} from '../../components/TestShell';
+import PixelCanvas from '../../components/PixelCanvas';
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(${props => props.columns}, 1fr);
-  gap: ${props => props.showGridLines ? '1px' : '0'};
-  background: ${props => props.showGridLines ? '#333' : 'transparent'};
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
+const toHex = (r, g, b) => `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+const gray = (pct) => {
+  const v = Math.round((pct / 100) * 255);
+  return toHex(v, v, v);
+};
 
-const Cell = styled.div`
-  background: ${props => props.color};
-  width: 100%;
-  height: 100%;
-  transition: background-color 0.3s ease;
-`;
+const PRESETS = [
+  { id: 'g0', label: '0%', name: 'Black (0%)', value: gray(0) },
+  { id: 'g5', label: '5%', name: '5% gray', value: gray(5) },
+  { id: 'g10', label: '10%', name: '10% gray', value: gray(10) },
+  { id: 'g25', label: '25%', name: '25% gray', value: gray(25) },
+  { id: 'g50', label: '50%', name: '50% gray', value: gray(50) },
+  { id: 'g75', label: '75%', name: '75% gray', value: gray(75) },
+  { id: 'g100', label: '100%', name: 'White (100%)', value: gray(100) },
+  { id: 'red', label: 'Red', name: 'Red', value: '#ff0000' },
+  { id: 'green', label: 'Green', name: 'Green', value: '#00ff00' },
+  { id: 'blue', label: 'Blue', name: 'Blue', value: '#0000ff' },
+];
 
-const ColorPreview = styled.div`
-  width: 100%;
-  height: 40px;
-  background: ${props => props.color};
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-`;
+const GRAY_OPTIONS = PRESETS.slice(0, 7).map((p) => ({ value: p.id, label: p.label, title: `${p.name} (${p.value})` }));
+const COLOR_OPTIONS = PRESETS.slice(7).map((p) => ({ value: p.id, label: p.label }));
 
-const RangeControl = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+const DEFAULTS = {
+  preset: 'g0',
+  custom: '#202020',
+  grid: 0,
+  markers: false,
+  checker: false,
+  checkerSize: 64,
+};
 
-  label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #666;
-  }
+const parseHex = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
-  input[type="range"] {
-    width: 100%;
-  }
-`;
-
-const ToggleButton = styled.button`
-  background: ${props => props.$active ? '#4169e1' : '#f0f0f0'};
-  color: ${props => props.$active ? 'white' : '#666'};
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-
-  &:hover {
-    background: ${props => props.$active ? '#3658c5' : '#e0e0e0'};
-  }
-`;
-
-const Checkerboard = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: ${props => `
-    linear-gradient(45deg, ${props.color1} 25%, transparent 25%),
-    linear-gradient(-45deg, ${props.color1} 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, ${props.color1} 75%),
-    linear-gradient(-45deg, transparent 75%, ${props.color1} 75%)
-  `};
-  background-size: ${props => `${props.size}px ${props.size}px`};
-  background-position: 0 0, 0 ${props => props.size/2}px, ${props => props.size/2}px ${props => -props.size/2}px, ${props => -props.size/2}px 0px;
-  background-color: ${props => props.color2};
-  transition: all 0.3s ease;
-`;
-
-const Crosshair = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  pointer-events: none;
-
-  /* Vertical line */
-  &::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    transform: translateX(-50%);
-    background: linear-gradient(
-      to bottom,
-      yellow 0%,
-      yellow 42%,
-      transparent 42%,
-      transparent 58%,
-      yellow 58%,
-      yellow 100%
-    );
-    border: 1px solid black;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Horizontal line */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    transform: translateY(-50%);
-    background: linear-gradient(
-      to right,
-      yellow 0%,
-      yellow 42%,
-      transparent 42%,
-      transparent 58%,
-      yellow 58%,
-      yellow 100%
-    );
-    border: 1px solid black;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  }
-`;
+/** Relative luminance (sRGB), 0–1. */
+const luminance = (hex) => {
+  const [r, g, b] = parseHex(hex).map((c) => {
+    const s = c / 255;
+    return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
 
 const UniformityTest = () => {
-  const [brightness, setBrightness] = useState(50);
-  const [showGridLines, setShowGridLines] = useState(false);
-  const [gridSize, setGridSize] = useState(3);
-  const [selectedColor, setSelectedColor] = useState('white');
-  const [patternType, setPatternType] = useState('solid');
-  const [showCrosshair, setShowCrosshair] = useState(false);
-  const [checkerboardSize, setCheckerboardSize] = useState(50);
+  const [preset, setPreset] = useState(DEFAULTS.preset);
+  const [custom, setCustom] = useState(DEFAULTS.custom);
+  const [grid, setGrid] = useState(DEFAULTS.grid);
+  const [markers, setMarkers] = useState(DEFAULTS.markers);
+  const [checker, setChecker] = useState(DEFAULTS.checker);
+  const [checkerSize, setCheckerSize] = useState(DEFAULTS.checkerSize);
 
-  const getBackgroundColor = () => {
-    if (selectedColor === 'white') {
-      return `rgb(${brightness * 2.55}, ${brightness * 2.55}, ${brightness * 2.55})`;
-    }
-    const colors = {
-      red: `rgb(${brightness * 2.55}, 0, 0)`,
-      green: `rgb(0, ${brightness * 2.55}, 0)`,
-      blue: `rgb(0, 0, ${brightness * 2.55})`
-    };
-    return colors[selectedColor] || colors.white;
+  const current = PRESETS.find((p) => p.id === preset);
+  const color = current ? current.value : custom;
+  const colorName = current ? current.name : 'Custom';
+  const dark = luminance(color) < 0.2;
+  // Opaque overlay color that stays visible without flooding a dark field with light.
+  const lineColor = dark ? '#808080' : '#000000';
+  const checkerColor = color === '#000000' ? '#ffffff' : '#000000';
+
+  const step = (dir) => {
+    const i = PRESETS.findIndex((p) => p.id === preset);
+    const next = i < 0 ? (dir > 0 ? 0 : PRESETS.length - 1) : (i + dir + PRESETS.length) % PRESETS.length;
+    setPreset(PRESETS[next].id);
   };
 
   const handleReset = () => {
-    setBrightness(50);
-    setGridSize(3);
-    setShowGridLines(false);
-    setSelectedColor('white');
-    setPatternType('solid');
-    setShowCrosshair(false);
-    setCheckerboardSize(50);
+    setPreset(DEFAULTS.preset);
+    setCustom(DEFAULTS.custom);
+    setGrid(DEFAULTS.grid);
+    setMarkers(DEFAULTS.markers);
+    setChecker(DEFAULTS.checker);
+    setCheckerSize(DEFAULTS.checkerSize);
   };
+
+  const draw = (ctx, { width, height, dpr }) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, width, height);
+
+    if (checker) {
+      const size = Math.max(1, Math.round(checkerSize * dpr));
+      ctx.fillStyle = checkerColor;
+      for (let y = 0, row = 0; y < height; y += size, row++) {
+        for (let x = (row % 2) * size; x < width; x += size * 2) {
+          ctx.fillRect(x, y, size, size);
+        }
+      }
+    }
+
+    const lw = Math.max(1, Math.round(dpr));
+
+    if (grid) {
+      ctx.fillStyle = lineColor;
+      for (let i = 1; i < grid; i++) {
+        ctx.fillRect(Math.round((width * i) / grid) - Math.floor(lw / 2), 0, lw, height);
+        ctx.fillRect(0, Math.round((height * i) / grid) - Math.floor(lw / 2), width, lw);
+      }
+    }
+
+    if (markers) {
+      ctx.fillStyle = lineColor;
+      const arm = Math.round(12 * dpr);
+      const points = [
+        [0.5, 0.5],
+        [1 / 6, 1 / 6],
+        [5 / 6, 1 / 6],
+        [1 / 6, 5 / 6],
+        [5 / 6, 5 / 6],
+      ];
+      points.forEach(([fx, fy]) => {
+        const cx = Math.round(width * fx);
+        const cy = Math.round(height * fy);
+        ctx.fillRect(cx - arm, cy - Math.floor(lw / 2), arm * 2 + 1, lw);
+        ctx.fillRect(cx - Math.floor(lw / 2), cy - arm, lw, arm * 2 + 1);
+      });
+    }
+  };
+
+  const shortcuts = [
+    { key: ['ArrowRight', ' '], label: 'Next preset', action: () => step(1) },
+    { key: 'ArrowLeft', label: 'Previous preset', action: () => step(-1) },
+    {
+      key: 'g',
+      label: 'Cycle grid (off / 3×3 / 5×5)',
+      action: () => setGrid((g) => (g === 0 ? 3 : g === 3 ? 5 : 0)),
+    },
+    { key: 'm', label: 'Toggle markers', action: () => setMarkers((v) => !v) },
+    { key: 'c', label: 'Toggle checkerboard', action: () => setChecker((v) => !v) },
+  ];
 
   return (
     <TestShell
-      title="Uniformity Controls"
-      description="Test your display's color and brightness uniformity across the entire screen. Use different colors and grid patterns to identify any inconsistencies in backlight distribution or color reproduction."
+      title="Uniformity Test"
+      description="Compare each zone to the center. Dark fields (0–10%) show backlight bleed, IPS glow and clouding; 5–25% gray while panning shows dirty-screen effect; 50–100% shows vignetting and tint."
       onReset={handleReset}
-      style={{ backgroundColor: getBackgroundColor() }}
+      shortcuts={shortcuts}
       controls={
         <>
           <Section>
-            <h3>Background Color</h3>
-            <ColorPreview color={getBackgroundColor()} />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
-              {['white', 'red', 'green', 'blue'].map(color => (
-                <ToggleButton
-                  key={color}
-                  type="button"
-                  $active={selectedColor === color}
-                  onClick={() => setSelectedColor(color)}
-                >
-                  {color.charAt(0).toUpperCase() + color.slice(1)}
-                </ToggleButton>
-              ))}
-            </div>
+            <h3>Gray level</h3>
+            <Segmented options={GRAY_OPTIONS} value={preset} onChange={setPreset} columns={4} />
+            <h3>Primaries</h3>
+            <Segmented options={COLOR_OPTIONS} value={preset} onChange={setPreset} columns={3} />
+            <ColorInput
+              label="Custom color"
+              value={color}
+              onChange={(v) => {
+                setCustom(v);
+                setPreset('custom');
+              }}
+            />
           </Section>
 
           <Section>
-            <h3>Brightness</h3>
-            <RangeControl>
-              <label>
-                <span>Level: {brightness}%</span>
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={brightness}
-                onChange={(e) => setBrightness(Number(e.target.value))}
+            <h3>Overlays</h3>
+            <Segmented
+              label="Zone grid"
+              options={[
+                { value: 0, label: 'Off' },
+                { value: 3, label: '3×3' },
+                { value: 5, label: '5×5' },
+              ]}
+              value={grid}
+              onChange={setGrid}
+              columns={3}
+            />
+            <Toggle label="Center and corner markers" checked={markers} onChange={setMarkers} />
+            <Toggle label="Checkerboard" checked={checker} onChange={setChecker} />
+            {checker ? (
+              <Slider
+                label="Square size"
+                value={checkerSize}
+                min={16}
+                max={256}
+                step={8}
+                onChange={setCheckerSize}
+                format={(v) => `${v} px`}
               />
-            </RangeControl>
+            ) : null}
+            <Hint>
+              Overlays add light to the screen. Turn them off for the final dark-room check — and turn off
+              local dimming, which can hide or fake non-uniformity.
+            </Hint>
           </Section>
 
           <Section>
-            <h3>Pattern Type</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
-              {['solid', 'checkerboard'].map(type => (
-                <ToggleButton
-                  key={type}
-                  type="button"
-                  $active={patternType === type}
-                  onClick={() => setPatternType(type)}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </ToggleButton>
-              ))}
-            </div>
-          </Section>
-
-          {patternType === 'checkerboard' && (
-            <Section>
-              <h3>Checkerboard Size</h3>
-              <RangeControl>
-                <label>
-                  <span>Size: {checkerboardSize}px</span>
-                </label>
-                <input
-                  type="range"
-                  min="20"
-                  max="200"
-                  value={checkerboardSize}
-                  onChange={(e) => setCheckerboardSize(Number(e.target.value))}
-                />
-              </RangeControl>
-            </Section>
-          )}
-
-          <Section>
-            <h3>Grid Pattern</h3>
-            <ToggleButton
-              type="button"
-              $active={showGridLines}
-              onClick={() => setShowGridLines(!showGridLines)}
-              style={{ marginBottom: '1rem' }}
-            >
-              {showGridLines ? 'Hide Grid' : 'Show Grid'}
-            </ToggleButton>
-
-            {showGridLines && (
-              <RangeControl>
-                <label>
-                  <span>Grid Size: {gridSize}x{gridSize}</span>
-                </label>
-                <input
-                  type="range"
-                  min="2"
-                  max="8"
-                  value={gridSize}
-                  onChange={(e) => setGridSize(Number(e.target.value))}
-                />
-              </RangeControl>
-            )}
-          </Section>
-
-          <Section>
-            <h3>Additional Tools</h3>
-            <ToggleButton
-              type="button"
-              $active={showCrosshair}
-              onClick={() => setShowCrosshair(!showCrosshair)}
-              style={{ marginBottom: '1rem' }}
-            >
-              {showCrosshair ? 'Hide Crosshair' : 'Show Crosshair'}
-            </ToggleButton>
+            <h3>Now showing</h3>
+            <Readout
+              items={[
+                ['Field', colorName],
+                ['Value', color.toUpperCase()],
+              ]}
+            />
           </Section>
         </>
       }
     >
-      {patternType === 'checkerboard' && (
-        <Checkerboard
-          color1={getBackgroundColor()}
-          color2="rgba(0,0,0,0.5)"
-          size={checkerboardSize}
-        />
-      )}
-
-      {showGridLines && (
-        <Grid
-          columns={gridSize}
-          showGridLines={showGridLines}
-        >
-          {Array(gridSize * gridSize).fill(0).map((_, i) => (
-            <Cell key={i} color={getBackgroundColor()} />
-          ))}
-        </Grid>
-      )}
-
-      {showCrosshair && <Crosshair />}
+      <PixelCanvas draw={draw} deps={[color, grid, markers, checker, checkerSize, lineColor, checkerColor]} />
     </TestShell>
   );
 };

@@ -1,214 +1,78 @@
-import React from 'react';
-import styled from 'styled-components';
+import Breadcrumbs from '../components/Breadcrumbs';
+import { Page, Eyebrow, H1, Meta, Prose } from '../components/ui';
+import { Inline } from '../lib/markup';
+import { getRouteMeta } from '../registry/routeMeta';
 
-const Container = styled.div`
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 2rem;
-  color: var(--text);
-`;
+const P = ({ text }) => (
+  <p>
+    <Inline text={text} />
+  </p>
+);
 
-const Section = styled.section`
-  margin-bottom: 2rem;
-`;
+const Li = ({ text }) => (
+  <li>
+    <Inline text={text} />
+  </li>
+);
 
-const Title = styled.h1`
-  color: var(--primary);
-  margin-bottom: 2rem;
-`;
+const PrivacyPolicy = () => (
+  <Page $narrow>
+    <Breadcrumbs items={getRouteMeta('/privacy').breadcrumbs} />
+    <Eyebrow>Legal</Eyebrow>
+    <H1>Privacy policy</H1>
+    <Meta>Last updated: November 7, 2026</Meta>
 
-const Heading = styled.h2`
-  color: var(--primary);
-  margin: 1.5rem 0 1rem;
-`;
+    <Prose style={{ marginTop: '2rem' }}>
+      <h2>Overview</h2>
+      <P text='Display Test ("we", "our", or "us") operates display-test.app. This policy explains what information is handled when you use the site, including advertising and affiliate features.' />
 
-const Text = styled.p`
-  margin-bottom: 1rem;
-  line-height: 1.6;
-`;
+      <h2>How the testing tools work</h2>
+      <P text="Every test runs entirely in your browser. There is no account and no backend that receives your test results. Tools read information your browser already exposes — screen resolution, scaling, refresh timing, color gamut and HDR support, touch and pointer capabilities — to display it back to you. That information is not sent anywhere by us." />
 
-const List = styled.ul`
-  margin: 1rem 0;
-  padding-left: 2rem;
-  
-  li {
-    margin-bottom: 0.5rem;
-    line-height: 1.6;
-  }
-`;
+      <h2>What is stored on your device</h2>
+      <P text="Some features save data in your browser's **local storage** so they work when you come back:" />
+      <ul>
+        <Li text="**New monitor checkup** — your pass / minor / fail answers, selected panel type, and a snapshot of display information (resolution, scaling, measured refresh rate, gamut)." />
+        <Li text="**Calibration and preferences** — for example the screen ruler's pixels-per-millimetre calibration." />
+      </ul>
+      <P text="This data never leaves your device unless you choose to copy a report or a share link. A share link encodes your checkup results and resolution in the part of the URL after `#`, which browsers do not send to our server. You can delete stored data with **Start over** on the checkup page or by clearing site data in your browser." />
 
-const ExternalLink = styled.a`
-  color: var(--primary);
-  text-decoration: none;
+      <h2>Information we do not collect</h2>
+      <ul>
+        <Li text="We do not ask you to create an account or submit a contact form." />
+        <Li text="We do not store test results on our servers." />
+        <Li text="We do not sell your personal information." />
+        <Li text="We do not use a first-party analytics product." />
+      </ul>
 
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+      <h2>Advertising (Google AdSense)</h2>
+      <P text="We use Google AdSense to show ads. Google and its partners may use cookies, device identifiers, and similar technologies to serve ads, measure performance, and (where allowed) personalize advertising based on your visits to this and other sites. Ads are not shown inside fullscreen tests." />
+      <ul>
+        <Li text="[How Google uses data from sites that use its services](https://policies.google.com/technologies/ads)" />
+        <Li text="[Google Ad Settings](https://adssettings.google.com/)" />
+        <Li text="[Google Privacy Policy](https://policies.google.com/privacy)" />
+      </ul>
+      <P text="If you use an ad blocker, some of these technologies may not load." />
 
-const PrivacyPolicy = () => {
-  return (
-    <Container>
-      <Title>Privacy Policy</Title>
-      
-      <Section>
-        <Text>Last updated: August 8, 2026</Text>
-        
-        <Heading>Overview</Heading>
-        <Text>
-          Display Test App (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates display-test.app.
-          This Privacy Policy explains what information is handled when you use the site,
-          including advertising and affiliate features.
-        </Text>
-      </Section>
+      <h2>Affiliate links (Amazon Associates)</h2>
+      <P text="display-test.app is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. When you click an Amazon link (including amzn.to), Amazon may use cookies to attribute purchases. We may earn a commission on qualifying purchases at no extra cost to you. Amazon's handling of your information is governed by Amazon's privacy policy." />
 
-      <Section>
-        <Heading>How the Testing Tools Work</Heading>
-        <Text>
-          The display tests themselves run in your browser. We do not require an account,
-          and we do not operate a backend that stores your test results or personal profile
-          data. Visual tests and settings stay on your device unless you choose to share
-          them yourself.
-        </Text>
-      </Section>
+      <h2>Web fonts</h2>
+      <P text="The site's own font is self-hosted. The [Text Clarity Test](/text-clarity) can load a few optional fonts from Google Fonts when you open it, which means your browser contacts Google's font servers and they receive your IP address and browser details. See the [Google Fonts privacy FAQ](https://developers.google.com/fonts/faq/privacy)." />
 
-      <Section>
-        <Heading>Information We Do Not Collect Directly</Heading>
-        <Text>We do not:</Text>
-        <List>
-          <li>Ask you to create an account or submit a contact form on this site</li>
-          <li>Store test results on our own servers</li>
-          <li>Sell your personal information</li>
-        </List>
-        <Text>
-          Third-party services we use (described below) may collect information according
-          to their own policies when their technologies load on the site or when you follow
-          outbound links.
-        </Text>
-      </Section>
+      <h2>Other third-party links</h2>
+      <P text="The site links to other services, including Ko-fi (optional donations), GitHub, our sister sites keyboard-test.app and controller-test.app, and software or manufacturer sites referenced in guides. Those services have their own privacy policies; this policy covers display-test.app only." />
 
-      <Section>
-        <Heading>Advertising (Google AdSense)</Heading>
-        <Text>
-          We use Google AdSense to show ads. Google and its advertising partners may use
-          cookies, device identifiers, and similar technologies to serve ads, measure
-          performance, and (where allowed) personalize advertising based on your visits
-          to this and other sites.
-        </Text>
-        <Text>
-          You can learn more about how Google uses data when you use partners&apos; sites
-          or apps, and manage ad settings, here:
-        </Text>
-        <List>
-          <li>
-            <ExternalLink
-              href="https://policies.google.com/technologies/ads"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              How Google uses data from sites or apps that use our services
-            </ExternalLink>
-          </li>
-          <li>
-            <ExternalLink
-              href="https://adssettings.google.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Google Ad Settings
-            </ExternalLink>
-          </li>
-          <li>
-            <ExternalLink
-              href="https://policies.google.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Google Privacy Policy
-            </ExternalLink>
-          </li>
-        </List>
-        <Text>
-          If you use an ad blocker or similar tools, some of these technologies may not load.
-        </Text>
-      </Section>
+      <h2>Children's privacy</h2>
+      <P text="The site is not directed at children under 13, and we do not knowingly collect personal information from children." />
 
-      <Section>
-        <Heading>Affiliate Links (Amazon Associates)</Heading>
-        <Text>
-          display-test.app is a participant in the Amazon Services LLC Associates Program,
-          an affiliate advertising program designed to provide a means for sites to earn
-          advertising fees by advertising and linking to Amazon.com and related sites.
-        </Text>
-        <Text>
-          When you click Amazon (including amzn.to) links on this site, Amazon may use
-          cookies and similar technologies to track referrals and attribute purchases.
-          We may earn a commission on qualifying purchases at no additional cost to you.
-          Amazon&apos;s handling of your information is governed by Amazon&apos;s privacy
-          policy.
-        </Text>
-      </Section>
+      <h2>Changes to this policy</h2>
+      <P text="We may update this policy from time to time. Changes are posted on this page with an updated date." />
 
-      <Section>
-        <Heading>Other Third-Party Links and Services</Heading>
-        <Text>
-          The site may link to or load content from other services, including:
-        </Text>
-        <List>
-          <li>Ko-fi (optional donations)</li>
-          <li>Related tools such as keyboard-test.app and controller-test.app</li>
-          <li>GitHub (source code, issues, and project pages)</li>
-          <li>External product, software, and resource sites linked from navigation or content</li>
-        </List>
-        <Text>
-          Those services have their own privacy policies. This policy only covers
-          display-test.app.
-        </Text>
-      </Section>
-
-      <Section>
-        <Heading>Cookies and Similar Technologies</Heading>
-        <Text>
-          Cookies and similar technologies may be set by Google AdSense and by third
-          parties when you interact with ads or follow affiliate or external links.
-          We do not use a first-party analytics product on this site today, but advertising
-          and affiliate partners may still collect usage and device data as described above.
-        </Text>
-      </Section>
-
-      <Section>
-        <Heading>Children&apos;s Privacy</Heading>
-        <Text>
-          The site is not directed at children under 13, and we do not knowingly collect
-          personal information from children.
-        </Text>
-      </Section>
-
-      <Section>
-        <Heading>Changes to This Policy</Heading>
-        <Text>
-          We may update this privacy policy from time to time. Changes will be posted on
-          this page with an updated &quot;Last updated&quot; date.
-        </Text>
-      </Section>
-
-      <Section>
-        <Heading>Contact Us</Heading>
-        <Text>
-          If you have questions about this Privacy Policy, you can open an issue on our
-          GitHub repository:
-          <br />
-          <ExternalLink
-            href="https://github.com/BryantWelch/display-test.app/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            https://github.com/BryantWelch/display-test.app/issues
-          </ExternalLink>
-        </Text>
-      </Section>
-    </Container>
-  );
-};
+      <h2>Contact</h2>
+      <P text="Questions about this policy can be raised on [GitHub Issues](https://github.com/BryantWelch/display-test.app/issues)." />
+    </Prose>
+  </Page>
+);
 
 export default PrivacyPolicy;

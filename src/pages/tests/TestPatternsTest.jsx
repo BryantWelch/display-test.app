@@ -1,222 +1,146 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-import TestShell, { Description } from '../../components/TestShell';
+import { useState } from 'react';
+import TestShell, {
+  Section,
+  Segmented,
+  Select,
+  Toggle,
+  Readout,
+  Button,
+  ButtonRow,
+  Hint,
+  Description,
+} from '../../components/TestShell';
+import { usePixelCanvas, SCALING_WARNING } from '../../components/PixelCanvas';
+import { PATTERNS, PATTERN_CATEGORIES } from './patterns/catalog';
+import { invertCanvas } from './patterns/generators';
 
-const PatternImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: opacity 0.3s ease;
-`;
+const canvasStyle = {
+  position: 'absolute',
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  display: 'block',
+  imageRendering: 'pixelated',
+};
 
-const LoadingOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  font-size: 1.2rem;
-`;
-
-const PatternSelect = styled.select`
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  color: #333;
-  background: white;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: #4169e1;
-  }
-`;
-
-const CategorySelect = styled(PatternSelect)`
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-`;
+const DEFAULT_ID = PATTERNS[0].id;
 
 const TestPatternsTest = () => {
-  const [selectedPattern, setSelectedPattern] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [resolution, setResolution] = useState('');
-  const [patterns, setPatterns] = useState({ categories: {}, patternMap: {} });
+  const [patternId, setPatternId] = useState(DEFAULT_ID);
+  const [variants, setVariants] = useState({});
+  const [invert, setInvert] = useState(false);
 
-  const initializeTest = useCallback(() => {
-    const width = window.screen.width;
-    const height = window.screen.height;
+  const index = Math.max(0, PATTERNS.findIndex((p) => p.id === patternId));
+  const pattern = PATTERNS[index];
+  const variant = variants[pattern.id] ?? pattern.variants?.[0].value;
+  const inverted = invert && !!pattern.invertible;
+  const inCategory = PATTERNS.filter((p) => p.category === pattern.category);
 
-    const resolutionFolders = {
-      '1280x720': 'HD-1280x720',
-      '1280x800': 'WXGA-1280x800',
-      '1920x1080': 'FHD-1920x1080',
-      '2560x1440': 'QHD-2560x1440',
-      '2560x1600': 'WQXGA-2560x1600',
-      '3840x2160': 'UHD-3840x2160'
-    };
+  const { canvasRef, info } = usePixelCanvas({
+    draw: (ctx, { width, height }) => {
+      pattern.draw(ctx, width, height, variant);
+      if (inverted) invertCanvas(ctx, width, height);
+    },
+    deps: [pattern.id, variant, inverted],
+  });
 
-    const currentResolution = `${width}x${height}`;
+  const step = (delta) => setPatternId(PATTERNS[(index + delta + PATTERNS.length) % PATTERNS.length].id);
 
-    const availableResolutions = Object.keys(resolutionFolders)
-      .map(res => {
-        const [w, h] = res.split('x').map(Number);
-        return { resolution: res, pixels: w * h };
-      })
-      .sort((a, b) => a.pixels - b.pixels);
-
-    const [currentWidth, currentHeight] = currentResolution.split('x').map(Number);
-    const currentPixels = currentWidth * currentHeight;
-
-    let matchingResolution = availableResolutions.find(r => r.pixels >= currentPixels)?.resolution
-      || availableResolutions[availableResolutions.length - 1].resolution;
-
-    const selectedFolder = resolutionFolders[matchingResolution];
-    setResolution(selectedFolder);
-
-    // Function to load patterns from the assets directory
-    const loadPatterns = async () => {
-      try {
-        // Get all pattern files from the public directory
-        const response = await fetch(`/patterns/${selectedFolder}/index.json`);
-        if (!response.ok) {
-          throw new Error('Failed to load pattern index');
-        }
-        const files = await response.json();
-
-        const categorizedPatterns = {};
-        const patternMapping = {};
-
-        files.forEach(filename => {
-          const match = filename.match(/^.*?-([^-]+)-(.+)\.png$/i);
-          if (match) {
-            const category = match[1];
-            const name = match[2];
-
-            if (!categorizedPatterns[category]) {
-              categorizedPatterns[category] = [];
-            }
-
-            const friendlyName = name
-              .split('-')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-              .join(' ');
-
-            categorizedPatterns[category].push({
-              id: filename,
-              name: friendlyName
-            });
-
-            patternMapping[filename] = {
-              category,
-              name: friendlyName,
-              path: `/patterns/${selectedFolder}/${filename}`
-            };
-          }
-        });
-
-        setPatterns({
-          categories: categorizedPatterns,
-          patternMap: patternMapping
-        });
-
-        if (Object.keys(categorizedPatterns).length > 0) {
-          const firstCategory = Object.keys(categorizedPatterns).sort()[0];
-          setSelectedCategory(firstCategory);
-          if (categorizedPatterns[firstCategory].length > 0) {
-            setSelectedPattern(categorizedPatterns[firstCategory][0].id);
-          }
-        }
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error loading patterns:', error);
-        setIsLoading(false);
-      }
-    };
-
-    loadPatterns();
-  }, [setResolution, setPatterns, setIsLoading, setSelectedCategory, setSelectedPattern]);
-
-  useEffect(() => {
-    initializeTest();
-  }, [initializeTest]);
-
-  const handleCategoryChange = (e) => {
-    const category = e.target.value;
-    setSelectedCategory(category);
-    if (patterns.categories[category]?.length > 0) {
-      setSelectedPattern(patterns.categories[category][0].id);
-    }
+  const stepVariant = (delta) => {
+    const list = pattern.variants;
+    if (!list) return;
+    const i = list.findIndex((v) => v.value === variant);
+    setVariants((prev) => ({ ...prev, [pattern.id]: list[(i + delta + list.length) % list.length].value }));
   };
 
-  const handlePatternChange = (e) => {
-    setSelectedPattern(e.target.value);
-    setIsLoading(true);
+  const selectCategory = (category) => {
+    if (category !== pattern.category) setPatternId(PATTERNS.find((p) => p.category === category).id);
   };
 
   const handleReset = () => {
-    // Reset to first category
-    const firstCategory = Object.keys(patterns.categories).sort()[0];
-    setSelectedCategory(firstCategory);
-
-    // Reset to first pattern (clipping target broadcast)
-    if (patterns.categories[firstCategory]?.length > 0) {
-      const targetPattern = patterns.categories[firstCategory].find(pattern =>
-        pattern.name.toLowerCase().includes('clipping target broadcast'));
-      setSelectedPattern(targetPattern?.id || patterns.categories[firstCategory][0].id);
-    }
+    setPatternId(DEFAULT_ID);
+    setVariants({});
+    setInvert(false);
   };
+
+  const shortcuts = [
+    { key: ['ArrowRight', 'PageDown'], label: 'Next pattern', action: () => step(1) },
+    { key: ['ArrowLeft', 'PageUp'], label: 'Previous pattern', action: () => step(-1) },
+    { key: 'ArrowDown', label: 'Next variant', action: () => stepVariant(1) },
+    { key: 'ArrowUp', label: 'Previous variant', action: () => stepVariant(-1) },
+    { key: 'i', label: 'Invert (black/white patterns)', action: () => setInvert((v) => !v) },
+    ...PATTERN_CATEGORIES.map((c, i) => ({ key: String(i + 1), label: `${c.label} patterns`, action: () => selectCategory(c.value) })),
+  ];
+
+  const ready = info.width > 0;
+  const screenW = ready ? Math.round(window.screen.width * info.dpr) : 0;
+  const screenH = ready ? Math.round(window.screen.height * info.dpr) : 0;
+  const notFullscreen = ready && (info.width < screenW - 2 || info.height < screenH - 2);
 
   return (
     <TestShell
-      title="Test Patterns Controls"
-      description={`Select a category and pattern to test different aspects of your display. Current resolution: ${resolution.replace(/-/g, ' ')}`}
+      title="Test Patterns"
+      description="Every pattern is drawn live at your display’s exact device resolution, so 1px detail maps to one physical pixel."
       onReset={handleReset}
+      shortcuts={shortcuts}
       controls={
         <>
-          <CategorySelect value={selectedCategory} onChange={handleCategoryChange}>
-            {Object.keys(patterns.categories).map(category => (
-              <option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1)} Patterns
-              </option>
-            ))}
-          </CategorySelect>
+          <Section>
+            <h3>Pattern</h3>
+            <Segmented options={PATTERN_CATEGORIES} value={pattern.category} onChange={selectCategory} columns={3} />
+            <Select
+              label={`${inCategory.indexOf(pattern) + 1} of ${inCategory.length}`}
+              value={pattern.id}
+              onChange={setPatternId}
+              options={inCategory.map((p) => ({ value: p.id, label: p.name }))}
+            />
+            <ButtonRow>
+              <Button type="button" onClick={() => step(-1)}>
+                ← Previous
+              </Button>
+              <Button type="button" onClick={() => step(1)}>
+                Next →
+              </Button>
+            </ButtonRow>
+          </Section>
 
-          <PatternSelect value={selectedPattern} onChange={handlePatternChange}>
-            {patterns.categories[selectedCategory]?.map(pattern => (
-              <option key={pattern.id} value={pattern.id}>
-                {pattern.name}
-              </option>
-            ))}
-          </PatternSelect>
+          {pattern.variants ? (
+            <Section>
+              <h3>Variant</h3>
+              <Segmented
+                options={pattern.variants}
+                value={variant}
+                onChange={(v) => setVariants((prev) => ({ ...prev, [pattern.id]: v }))}
+                columns={Math.min(pattern.variants.length, 4)}
+              />
+            </Section>
+          ) : null}
 
-          {selectedPattern && patterns.patternMap[selectedPattern] && (
-            <Description>
-              This pattern helps test your display's {selectedCategory.toLowerCase()} characteristics.
-            </Description>
-          )}
+          <Section>
+            <h3>What to look for</h3>
+            <Description>{pattern.help}</Description>
+            {pattern.invertible ? <Toggle label="Invert (I)" checked={invert} onChange={setInvert} /> : null}
+          </Section>
+
+          <Section>
+            <h3>Drawing at</h3>
+            <Readout
+              items={[
+                ['Canvas', ready ? `${info.width} × ${info.height} px` : '—'],
+                ['Screen (approx.)', ready ? `${screenW} × ${screenH} px` : '—'],
+                ['Device pixel ratio', ready ? String(Math.round(info.dpr * 1000) / 1000) : '—'],
+                ['Pixel-exact', ready ? (info.exact ? 'Yes' : 'No') : '—'],
+              ]}
+            />
+            {ready && !info.exact ? <Hint style={{ color: 'var(--warning)' }}>{SCALING_WARNING}</Hint> : null}
+            {notFullscreen ? (
+              <Hint>The canvas is smaller than your screen. Enter fullscreen (F11) so patterns cover every panel pixel.</Hint>
+            ) : null}
+          </Section>
         </>
       }
     >
-      {selectedPattern && patterns.patternMap[selectedPattern] && (
-        <PatternImage
-          src={patterns.patternMap[selectedPattern].path}
-          alt={patterns.patternMap[selectedPattern].name}
-          onLoad={() => setIsLoading(false)}
-        />
-      )}
-
-      {isLoading && <LoadingOverlay>Loading pattern...</LoadingOverlay>}
+      <canvas ref={canvasRef} style={canvasStyle} aria-label={`${pattern.name} test pattern`} role="img" />
     </TestShell>
   );
 };

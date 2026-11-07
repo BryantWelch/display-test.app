@@ -14,10 +14,18 @@ import Checkup from './pages/Checkup';
 import NotFound from './pages/NotFound';
 import { getTest, getGuide, getLazyTest, hasFullscreen, infoPath } from './registry';
 
+const PageFallback = () => <div style={{ minHeight: '100vh' }} aria-busy="true" />;
+
 const InfoRoute = () => {
   const { slug } = useParams();
   const test = getTest(slug);
-  return test ? <InfoPage test={test} /> : <NotFound />;
+  return test ? (
+    <Suspense fallback={<PageFallback />}>
+      <InfoPage test={test} />
+    </Suspense>
+  ) : (
+    <NotFound />
+  );
 };
 
 const TestRoute = () => {
@@ -37,7 +45,13 @@ const TestRoute = () => {
 const GuideRoute = () => {
   const { slug } = useParams();
   const guide = getGuide(slug);
-  return guide ? <GuidePage guide={guide} /> : <NotFound />;
+  return guide ? (
+    <Suspense fallback={<PageFallback />}>
+      <GuidePage guide={guide} />
+    </Suspense>
+  ) : (
+    <NotFound />
+  );
 };
 
 const App = () => (

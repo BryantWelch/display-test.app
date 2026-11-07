@@ -1,24 +1,56 @@
-import { lazy } from 'react';
+import { lazy, use } from 'react';
 import { CATEGORIES, CATEGORY_BY_ID } from './categories';
 
 /**
  * Every file in src/content/tests and src/content/guides is picked up automatically.
  * Adding a tool = one content file (+ its component). See src/content/README.md for the schema.
+ *
+ * `?meta` imports are the lightweight versions (long-form copy stripped by
+ * scripts/contentMetaPlugin.js on the client); full entries load per page via useFullEntry.
  */
-const testModules = import.meta.glob('../content/tests/*.js', { eager: true });
-const guideModules = import.meta.glob('../content/guides/*.js', { eager: true });
+const testMeta = import.meta.glob('../content/tests/*.js', { eager: true, import: 'default', query: '?meta' });
+const guideMeta = import.meta.glob('../content/guides/*.js', { eager: true, import: 'default', query: '?meta' });
+const testFull = import.meta.glob('../content/tests/*.js', { import: 'default' });
+const guideFull = import.meta.glob('../content/guides/*.js', { import: 'default' });
 
 const byOrder = (a, b) => (a.order ?? 999) - (b.order ?? 999) || a.name.localeCompare(b.name);
 
-export const tests = Object.values(testModules)
-  .map((m) => m.default)
-  .filter(Boolean)
-  .sort(byOrder);
+const fileOf = (path) => path.replace(/\?meta$/, '');
 
-export const guides = Object.values(guideModules)
-  .map((m) => m.default)
-  .filter(Boolean)
-  .sort(byOrder);
+const index = (metaModules, fullLoaders, kind) =>
+  Object.entries(metaModules)
+    .filter(([, entry]) => entry)
+    .map(([path, entry]) => {
+      fullLoaders[`${kind}:${entry.slug}`] = (kind === 'test' ? testFull : guideFull)[fileOf(path)];
+      return entry;
+    })
+    .sort(byOrder);
+
+const fullLoaders = {};
+export const tests = index(testMeta, fullLoaders, 'test');
+export const guides = index(guideMeta, fullLoaders, 'guide');
+
+const fullCache = new Map();
+
+/** Load (and cache) the full content entry for a test or guide. */
+export function loadFullEntry(entry, kind = 'test') {
+  const key = `${kind}:${entry.slug}`;
+  if (!fullCache.has(key)) {
+    const promise = import.meta.env.SSR ? Promise.resolve(entry) : fullLoaders[key]();
+    promise.then((full) => {
+      promise.value = full;
+    });
+    fullCache.set(key, promise);
+  }
+  return fullCache.get(key);
+}
+
+/** Full entry for rendering; suspends until loaded on the client. */
+export function useFullEntry(entry, kind = 'test') {
+  if (import.meta.env.SSR) return entry;
+  const promise = loadFullEntry(entry, kind);
+  return promise.value ?? use(promise);
+}
 
 const testsBySlug = Object.fromEntries(tests.map((t) => [t.slug, t]));
 const guidesBySlug = Object.fromEntries(guides.map((g) => [g.slug, g]));
@@ -73,6 +105,18 @@ export function getLazyTool(test) {
   if (!test.inlineTool) return null;
   if (!lazyTools.has(test.slug)) lazyTools.set(test.slug, lazy(test.inlineTool));
   return lazyTools.get(test.slug);
+}
+
+/** Resolve once the content for an info or guide URL is loaded (used before hydration). */
+export function preloadRoute(pathname) {
+  const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
+  if (guideMatch) {
+    const guide = getGuide(guideMatch[1]);
+    return guide ? loadFullEntry(guide, 'guide') : Promise.resolve();
+  }
+  const testMatch = pathname.match(/^\/([^/]+)\/?$/);
+  const test = testMatch && getTest(testMatch[1]);
+  return test ? loadFullEntry(test) : Promise.resolve();
 }
 
 /** Warm the chunk when the user hovers/focuses a Start button. */

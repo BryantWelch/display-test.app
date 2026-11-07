@@ -1,401 +1,383 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-import testPatternImage from '../../assets/test-pattern.svg';
-import TestShell, { Section, Label } from '../../components/TestShell';
+import { useCallback, useRef, useState } from 'react';
+import TestShell, {
+  Section,
+  Segmented,
+  Toggle,
+  ColorSwatches,
+  ColorInput,
+  Readout,
+  Button,
+  ButtonRow,
+  Hint,
+} from '../../components/TestShell';
+import PixelCanvas from '../../components/PixelCanvas';
+import { summarizeIntervals } from '../../utils/frameTiming';
 
-const RangeControl = styled.div`
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #666;
-    font-size: 0.9rem;
+const PX_PER_FRAME = [4, 8, 12, 16, 24, 32];
+const PX_PER_SEC = [480, 960, 1920, 3840];
+const RATE_DIVISORS = [1, 2, 4, 8];
+const RATE_NAMES = ['Full rate', '½ rate', '¼ rate', '⅛ rate'];
+const BACKGROUNDS = { black: '#000000', gray: '#808080', white: '#ffffff' };
+const OBJECT_COLORS = [
+  { name: 'White', value: '#ffffff' },
+  { name: 'Black', value: '#000000' },
+  { name: 'Light gray', value: '#c0c0c0' },
+  { name: 'Dark gray', value: '#404040' },
+  { name: 'Red', value: '#ff0000' },
+  { name: 'Green', value: '#00ff00' },
+  { name: 'Blue', value: '#0000ff' },
+  { name: 'Yellow', value: '#ffff00' },
+  { name: 'Cyan', value: '#00ffff' },
+  { name: 'Magenta', value: '#ff00ff' },
+];
+const DROP_HISTORY = 120;
+
+const DEFAULTS = {
+  unit: 'frame',
+  pxPerFrame: 8,
+  pxPerSec: 960,
+  background: 'gray',
+  customBg: '#1e1e1e',
+  objectColor: '#ffffff',
+  object: 'ufo',
+  lanes: 3,
+  syncTrack: false,
+  dropIndicator: true,
+};
+
+function isLight(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 140;
+}
+
+function makeSprite(kind, color, size) {
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  if (kind === 'block') {
+    const s = Math.max(4, Math.round(size * 0.55));
+    c.width = s;
+    c.height = s;
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, s, s);
+    return c;
   }
-
-  input[type="range"] {
-    width: 100%;
-    margin: 0.5rem 0;
+  if (kind === 'text') {
+    const fontPx = Math.max(10, Math.round(size * 0.34));
+    const font = `800 ${fontPx}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+    ctx.font = font;
+    c.width = Math.ceil(ctx.measureText('MOTION').width) + 4;
+    c.height = Math.round(fontPx * 1.3);
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('MOTION', 2, c.height / 2);
+    return c;
   }
-`;
-
-const ToggleButton = styled.button`
-  background: ${props => props.$active ? '#4169e1' : '#f0f0f0'};
-  color: ${props => props.$active ? 'white' : '#333'};
-  border: none;
-  border-radius: 4px;
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-
-  &:hover {
-    background: ${props => props.$active ? '#365bb7' : '#e0e0e0'};
+  const w = Math.max(16, Math.round(size));
+  const h = Math.round(w * 0.6);
+  c.width = w;
+  c.height = h;
+  ctx.fillStyle = '#9fdcff';
+  ctx.beginPath();
+  ctx.ellipse(w / 2, h * 0.46, w * 0.2, h * 0.34, 0, Math.PI, 2 * Math.PI);
+  ctx.fill();
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(w / 2, h * 0.58, w * 0.48, h * 0.2, 0, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+  ctx.beginPath();
+  ctx.ellipse(w / 2, h * 0.72, w * 0.26, h * 0.1, 0, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.fillStyle = '#ffd84a';
+  for (let i = 0; i < 5; i += 1) {
+    ctx.beginPath();
+    ctx.arc(w * (0.2 + 0.15 * i), h * 0.58, Math.max(1.5, w * 0.032), 0, 2 * Math.PI);
+    ctx.fill();
   }
-`;
+  return c;
+}
 
-const TestArea = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${props => props.$background};
-  overflow: hidden;
-`;
-
-const Display = styled.div`
-  position: absolute;
-  width: ${props => props.$size}px;
-  height: ${props => props.$size}px;
-  ${props => props.$direction === 'horizontal' ? `
-    top: ${props.$offset}px;
-    left: -${props.$size}px;
-  ` : `
-    left: ${props.$offset}px;
-    top: -${props.$size}px;
-  `}
-  animation: ${props => props.$direction === 'horizontal' ? 'blockRight' : 'blockDown'} ${props => 100/props.$speed}s linear infinite;
-  background: url(${testPatternImage}) no-repeat center center;
-  background-size: contain;
-  filter: ${props => props.$color === 'white' ? 'invert(1)' : 'none'};
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @keyframes blockRight {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(calc(100vw + ${props => props.$size}px), 0, 0);
-    }
-  }
-
-  @keyframes blockDown {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(0, calc(100vh + ${props => props.$size}px), 0);
-    }
-  }
-`;
-
-const HorizontalWrapper = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: auto;
-  height: 100vh;
-  top: 0;
-  left: -${props => props.$size * 12}px;
-  animation: moveRight ${props => 100/props.$speed}s linear infinite;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @keyframes moveRight {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(calc(100vw + ${props => props.$size * 12}px), 0, 0);
-    }
-  }
-`;
-
-const VerticalWrapper = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  height: auto;
-  top: -${props => props.$size}px;
-  left: 0;
-  animation: moveDown ${props => 100/props.$speed}s linear infinite;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @keyframes moveDown {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(0, calc(100vh + ${props => props.$size}px), 0);
-    }
-  }
-`;
-
-const PursuitText = styled.div`
-  color: ${props => props.$color === 'white' ? 'white' : 'black'};
-  font-size: ${props => props.$size}px;
-  white-space: nowrap;
-  text-align: center;
-  min-height: ${props => props.$size}px;
-  line-height: 1;
-  margin: ${props => props.$direction === 'vertical' ? `0 ${props.$margin}px` : `${props.$margin}px 0`};
-`;
-
-const Select = styled.select`
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  background: white;
-  font-size: 1rem;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: #4169e1;
-  }
-`;
+const fmtFps = (v) => (Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) : v.toFixed(1));
 
 const ResponseTimeTest = () => {
-  const [testType, setTestType] = useState('moving-block');
-  const [speed, setSpeed] = useState(35);
-  const [blockSize, setBlockSize] = useState(100);
-  const [backgroundColor, setBackgroundColor] = useState('gray');
-  const [objectColor, setObjectColor] = useState('black');
-  const [direction, setDirection] = useState('horizontal');
-  const [objectCount, setObjectCount] = useState(1);
-  const animationFrameRef = React.useRef(null);
+  const [s, setS] = useState(DEFAULTS);
+  const [paused, setPaused] = useState(false);
+  const [stats, setStats] = useState({ hz: 0, snapped: 0, dropped: 0 });
+  const set = (patch) => setS((prev) => ({ ...prev, ...patch }));
 
-  const backgroundColors = {
-    'white': '#FFFFFF',
-    'light-gray': '#E0E0E0',
-    'gray': '#808080',
-    'dark-gray': '#404040',
-    'black': '#000000',
-    'navy': '#000080',
-    'royal-blue': '#4169E1',
-    'teal': '#008080',
-    'forest-green': '#228B22',
-    'burgundy': '#800020'
-  };
+  const loop = useRef({
+    frame: 0,
+    last: null,
+    lastEmit: 0,
+    intervals: [],
+    frameMs: 0,
+    hz: 60,
+    snapped: 60,
+    dropped: 0,
+    history: [],
+  });
+  const sprite = useRef({ key: '', canvas: null });
 
-  const cleanup = useCallback(() => {
-    const currentAnimation = animationFrameRef.current;
-    if (currentAnimation) {
-      cancelAnimationFrame(currentAnimation);
-    }
+  const hzForSpeed = stats.snapped || 60;
+  const pxPerFrame = s.unit === 'frame' ? s.pxPerFrame : Math.max(1, Math.round(s.pxPerSec / hzForSpeed));
+  const bg = s.background === 'custom' ? s.customBg : BACKGROUNDS[s.background];
+  const fg = isLight(bg) ? '0, 0, 0' : '255, 255, 255';
+
+  const resetDrops = useCallback(() => {
+    loop.current.dropped = 0;
+    loop.current.history = [];
+    setStats((prev) => ({ ...prev, dropped: 0 }));
   }, []);
 
-  useEffect(() => {
-    return cleanup;
-  }, [cleanup]);
+  const animate = (ctx, info, t) => {
+    const st = loop.current;
+    if (st.last !== null) {
+      const dt = t - st.last;
+      if (dt < 250) {
+        st.intervals.push(dt);
+        if (st.intervals.length > 240) st.intervals.shift();
+        const drop = st.frameMs > 0 && dt > st.frameMs * 1.5;
+        if (drop) st.dropped += 1;
+        st.history.push(drop);
+        if (st.history.length > DROP_HISTORY) st.history.shift();
+      }
+    }
+    st.last = t;
+    if (t - st.lastEmit >= 250) {
+      st.lastEmit = t;
+      const sum = summarizeIntervals(st.intervals);
+      if (sum) {
+        st.frameMs = sum.frameMs;
+        st.hz = sum.hz;
+        st.snapped = sum.snappedHz;
+        setStats({ hz: sum.hz, snapped: sum.snappedHz, dropped: st.dropped });
+      }
+    }
+    if (!paused) st.frame += 1;
 
-  const handleReset = useCallback(() => {
-    setTestType('moving-block');
-    setSpeed(35);
-    setBlockSize(100);
-    setBackgroundColor('gray');
-    setObjectColor('black');
-    setDirection('horizontal');
-    setObjectCount(1);
-  }, []);
+    const { width: W, height: H, dpr } = info;
+    const unit = Math.max(1, Math.round(dpr));
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
 
-  const renderTest = () => {
-    if (testType === 'moving-block') {
-      return Array.from({ length: objectCount }).map((_, i) => {
-        const sectionSize = direction === 'horizontal'
-          ? window.innerHeight / objectCount
-          : window.innerWidth / objectCount;
+    const syncH = s.syncTrack ? Math.round(44 * dpr) : 0;
+    const laneH = Math.floor(Math.min((H * 0.8 - syncH) / s.lanes, 220 * dpr));
+    const totalH = laneH * s.lanes + syncH;
+    let y = Math.floor((H - totalH) / 2);
 
-        const offset = (i * sectionSize) + (sectionSize / 2) - (blockSize / 2);
+    const spriteSize = Math.round(Math.min(laneH * 0.75, 140 * dpr));
+    const key = `${s.object}|${s.objectColor}|${spriteSize}`;
+    if (sprite.current.key !== key) sprite.current = { key, canvas: makeSprite(s.object, s.objectColor, spriteSize) };
+    const img = sprite.current.canvas;
+    const span = W + img.width;
+    const v = pxPerFrame;
 
-        return (
-          <Display
-            key={i}
-            $size={blockSize}
-            $color={objectColor}
-            $speed={speed}
-            $direction={direction}
-            $offset={offset}
-          />
-        );
-      });
+    ctx.textBaseline = 'top';
+    ctx.font = `600 ${Math.round(12 * dpr)}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+
+    if (s.syncTrack) {
+      const rowH = Math.round(10 * dpr);
+      const block = Math.round(16 * dpr);
+      const period = block * 2;
+      const phase = (st.frame * v) % period;
+      const row = st.frame % 2;
+      ctx.fillStyle = `rgba(${fg}, 0.6)`;
+      ctx.fillText('Sync track — rungs line up when your eye or camera tracks at the right speed', Math.round(12 * dpr), y);
+      const rowY = y + Math.round(16 * dpr) + row * rowH;
+      ctx.fillStyle = `rgb(${fg})`;
+      for (let x = phase - period; x < W; x += period) ctx.fillRect(x, rowY, block, rowH);
+      y += syncH;
     }
 
-    // Calculate margin based on number of objects
-    const margin = objectCount > 1 ? blockSize / 2 : 0;
+    for (let i = 0; i < s.lanes; i += 1) {
+      const k = RATE_DIVISORS[i];
+      ctx.fillStyle = `rgba(${fg}, 0.18)`;
+      ctx.fillRect(0, y, W, unit);
+      ctx.fillStyle = `rgba(${fg}, 0.7)`;
+      ctx.fillText(
+        `${RATE_NAMES[i]} · ${fmtFps(st.snapped / k)} fps · ${v * k} px per update`,
+        Math.round(12 * dpr),
+        y + Math.round(6 * dpr)
+      );
+      const step = Math.floor(st.frame / k) * k;
+      const x = ((step * v) % span) - img.width;
+      ctx.drawImage(img, x, y + Math.floor((laneH - img.height) / 2) + Math.round(8 * dpr));
+      y += laneH;
+    }
+    ctx.fillStyle = `rgba(${fg}, 0.18)`;
+    ctx.fillRect(0, y, W, unit);
 
-    const Wrapper = direction === 'horizontal' ? HorizontalWrapper : VerticalWrapper;
-
-    // For pursuit text, wrap all texts in a single container
-    return (
-      <Wrapper
-        $speed={speed}
-        $size={blockSize}
-      >
-        {Array.from({ length: objectCount }).map((_, i) => (
-          <PursuitText
-            key={i}
-            $size={blockSize}
-            $color={objectColor}
-            $margin={margin}
-            $direction={direction}
-          >
-            PURSUIT TEST
-          </PursuitText>
-        ))}
-      </Wrapper>
-    );
+    if (s.dropIndicator) {
+      const cell = Math.round(3 * dpr);
+      const gap = unit;
+      const stripW = DROP_HISTORY * (cell + gap);
+      const sx = Math.floor((W - stripW) / 2);
+      const sy = Math.round(20 * dpr);
+      const sh = Math.round(10 * dpr);
+      const offset = DROP_HISTORY - st.history.length;
+      for (let i = 0; i < st.history.length; i += 1) {
+        ctx.fillStyle = st.history[i] ? '#ef4444' : `rgba(${fg}, 0.22)`;
+        ctx.fillRect(sx + (offset + i) * (cell + gap), sy, cell, sh);
+      }
+      ctx.fillStyle = `rgba(${fg}, 0.7)`;
+      ctx.textAlign = 'center';
+      ctx.fillText(
+        `${paused ? 'Paused · ' : ''}${st.dropped} dropped frame${st.dropped === 1 ? '' : 's'}`,
+        Math.round(W / 2),
+        sy + sh + Math.round(6 * dpr)
+      );
+      ctx.textAlign = 'start';
+    }
   };
+
+  const bump = (dir) =>
+    setS((prev) => {
+      const list = prev.unit === 'frame' ? PX_PER_FRAME : PX_PER_SEC;
+      const field = prev.unit === 'frame' ? 'pxPerFrame' : 'pxPerSec';
+      const idx = Math.max(0, list.indexOf(prev[field]));
+      return { ...prev, [field]: list[Math.min(list.length - 1, Math.max(0, idx + dir))] };
+    });
+
+  const reset = () => {
+    setS(DEFAULTS);
+    setPaused(false);
+    resetDrops();
+  };
+
+  const hz = stats.hz;
 
   return (
     <TestShell
-      title="Response Time Controls"
-      description="Test your display's response time with either an image of a display or the word pursuit text. Follow the objects with your eyes or camera to evaluate motion clarity and ghosting."
-      onReset={handleReset}
-      onBeforeExit={cleanup}
+      title="Motion Blur & Ghosting"
+      description="Track the moving object with your eyes. Look for trails behind it (ghosting / smearing) and bright or dark outlines (overshoot). Compare the full-rate lane with the lower-rate lanes."
+      onReset={reset}
+      shortcuts={[
+        { key: ['ArrowUp', 'ArrowRight'], label: 'Faster', action: () => bump(1) },
+        { key: ['ArrowDown', 'ArrowLeft'], label: 'Slower', action: () => bump(-1) },
+        { key: ' ', label: 'Pause / resume', action: () => setPaused((p) => !p) },
+      ]}
       controls={
         <>
           <Section>
-            <h3>Test Type</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-              <ToggleButton
-                type="button"
-                $active={testType === 'moving-block'}
-                onClick={() => setTestType('moving-block')}
-              >
-                Display
-              </ToggleButton>
-              <ToggleButton
-                type="button"
-                $active={testType === 'pursuit'}
-                onClick={() => setTestType('pursuit')}
-              >
-                Pursuit Text
-              </ToggleButton>
-            </div>
-          </Section>
-
-          <Section>
-            <h3>Direction</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-              <ToggleButton
-                type="button"
-                $active={direction === 'horizontal'}
-                onClick={() => setDirection('horizontal')}
-              >
-                Horizontal
-              </ToggleButton>
-              <ToggleButton
-                type="button"
-                $active={direction === 'vertical'}
-                onClick={() => setDirection('vertical')}
-              >
-                Vertical
-              </ToggleButton>
-            </div>
+            <h3>Measured</h3>
+            <Readout
+              items={[
+                ['Refresh rate', hz ? `${stats.snapped} Hz (${hz.toFixed(1)})` : 'Measuring…'],
+                ['Speed per frame', `${pxPerFrame} px`],
+                ['Speed per second', hz ? `${Math.round(pxPerFrame * hz)} px` : '—'],
+                ['Dropped frames', String(stats.dropped)],
+              ]}
+            />
+            <ButtonRow style={{ marginTop: '0.6rem' }}>
+              <Button type="button" onClick={() => setPaused((p) => !p)} $active={paused}>
+                {paused ? 'Resume' : 'Pause'}
+              </Button>
+              <Button type="button" onClick={resetDrops}>
+                Reset drop counter
+              </Button>
+            </ButtonRow>
           </Section>
 
           <Section>
             <h3>Speed</h3>
-            <RangeControl>
-              <Label>
-                <span>Speed: {speed} pixels/second</span>
-              </Label>
-              <input
-                type="range"
-                min="5"
-                max="200"
-                step="5"
-                value={speed}
-                onChange={(e) => setSpeed(Number(e.target.value))}
+            <Segmented
+              label="Units"
+              value={s.unit}
+              onChange={(unit) => set({ unit })}
+              options={[
+                { value: 'frame', label: 'px / frame' },
+                { value: 'sec', label: 'px / second' },
+              ]}
+            />
+            {s.unit === 'frame' ? (
+              <Segmented
+                value={s.pxPerFrame}
+                onChange={(pxPerFrame) => set({ pxPerFrame })}
+                options={PX_PER_FRAME}
+                columns={6}
               />
-            </RangeControl>
+            ) : (
+              <Segmented
+                value={s.pxPerSec}
+                onChange={(pxPerSec) => set({ pxPerSec })}
+                options={PX_PER_SEC}
+                columns={4}
+              />
+            )}
+            <Hint>
+              Speeds are in physical (device) pixels and stay a whole number of pixels per frame, so motion is perfectly
+              even. px/second presets are rounded to the nearest px/frame at your measured refresh rate.
+            </Hint>
           </Section>
 
           <Section>
-            <h3>Size</h3>
-            <RangeControl>
-              <Label>
-                <span>Size: {blockSize}px</span>
-              </Label>
-              <input
-                type="range"
-                min="50"
-                max="200"
-                step="10"
-                value={blockSize}
-                onChange={(e) => setBlockSize(Number(e.target.value))}
-              />
-            </RangeControl>
+            <h3>Scene</h3>
+            <Segmented
+              label="Object"
+              value={s.object}
+              onChange={(object) => set({ object })}
+              options={[
+                { value: 'ufo', label: 'UFO' },
+                { value: 'block', label: 'Block' },
+                { value: 'text', label: 'Text' },
+              ]}
+            />
+            <Segmented
+              label="Lanes"
+              value={s.lanes}
+              onChange={(lanes) => set({ lanes })}
+              options={[
+                { value: 1, label: '1', title: 'Full rate only' },
+                { value: 2, label: '2', title: 'Full + ½ rate' },
+                { value: 3, label: '3', title: 'Full + ½ + ¼ rate' },
+                { value: 4, label: '4', title: 'Full + ½ + ¼ + ⅛ rate' },
+              ]}
+              columns={4}
+            />
+            <Toggle label="Pursuit camera sync track" checked={s.syncTrack} onChange={(syncTrack) => set({ syncTrack })} />
+            <Toggle
+              label="Dropped-frame indicator"
+              checked={s.dropIndicator}
+              onChange={(dropIndicator) => set({ dropIndicator })}
+            />
           </Section>
 
           <Section>
-            <h3>Number of Objects</h3>
-            <RangeControl>
-              <Label>
-                <span>Count: {objectCount}</span>
-              </Label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                step="1"
-                value={objectCount}
-                onChange={(e) => setObjectCount(Number(e.target.value))}
-              />
-            </RangeControl>
+            <h3>Background</h3>
+            <Segmented
+              value={s.background}
+              onChange={(background) => set({ background })}
+              options={[
+                { value: 'black', label: 'Black' },
+                { value: 'gray', label: 'Gray' },
+                { value: 'white', label: 'White' },
+                { value: 'custom', label: 'Custom' },
+              ]}
+              columns={4}
+            />
+            {s.background === 'custom' ? (
+              <ColorInput label="Custom background" value={s.customBg} onChange={(customBg) => set({ customBg })} />
+            ) : null}
           </Section>
 
           <Section>
-            <h3>Object & Text Color</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-              <ToggleButton
-                type="button"
-                $active={objectColor === 'black'}
-                onClick={() => setObjectColor('black')}
-              >
-                Dark
-              </ToggleButton>
-              <ToggleButton
-                type="button"
-                $active={objectColor === 'white'}
-                onClick={() => setObjectColor('white')}
-              >
-                Light
-              </ToggleButton>
+            <h3>Object color</h3>
+            <ColorSwatches colors={OBJECT_COLORS} value={s.objectColor} onChange={(objectColor) => set({ objectColor })} />
+            <div style={{ marginTop: '0.6rem' }}>
+              <ColorInput label="Custom color" value={s.objectColor} onChange={(objectColor) => set({ objectColor })} />
             </div>
-          </Section>
-
-          <Section>
-            <h3>Background Color</h3>
-            <Select
-              value={backgroundColor}
-              onChange={(e) => setBackgroundColor(e.target.value)}
-            >
-              {Object.entries(backgroundColors).map(([name]) => (
-                <option key={name} value={name}>
-                  {name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                </option>
-              ))}
-            </Select>
+            <Hint>
+              Dark backgrounds reveal VA black smearing; mid-gray shows overdrive overshoot as bright or dark halos.
+            </Hint>
           </Section>
         </>
       }
     >
-      <TestArea $background={backgroundColors[backgroundColor]}>
-        {renderTest()}
-      </TestArea>
+      <PixelCanvas animate={animate} aria-label="Moving objects for motion blur and ghosting testing" role="img" />
     </TestShell>
   );
 };

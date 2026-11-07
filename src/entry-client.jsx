@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import '@fontsource-variable/inter';
 import App from './App';
 import { GlobalStyle } from './styles/GlobalStyle';
+import { preloadRoute } from './registry';
 
 const container = document.getElementById('root');
 const app = (
@@ -16,12 +17,16 @@ const app = (
 );
 
 if (container.dataset.ssr === 'true') {
-  hydrateRoot(container, app, {
-    onRecoverableError(error) {
-      (window.__hydrationErrors ||= []).push(String(error?.message || error));
-      console.error(error);
-    },
-  });
+  preloadRoute(window.location.pathname)
+    .catch(() => {})
+    .then(() =>
+      hydrateRoot(container, app, {
+        onRecoverableError(error) {
+          (window.__hydrationErrors ||= []).push(String(error?.message || error));
+          console.error(error);
+        },
+      })
+    );
 } else {
   createRoot(container).render(app);
 }

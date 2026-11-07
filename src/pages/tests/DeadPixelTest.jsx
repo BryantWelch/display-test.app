@@ -1,135 +1,140 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import styled from 'styled-components';
-import TestShell, { Section, Description } from '../../components/TestShell';
+import { useCallback, useEffect, useState } from 'react';
+import TestShell, {
+  Section,
+  Segmented,
+  Toggle,
+  ColorSwatches,
+  ColorInput,
+  Readout,
+  Button,
+  ButtonRow,
+  Hint,
+} from '../../components/TestShell';
 
-const ColorGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
+const COLORS = [
+  { name: 'White', value: '#ffffff' },
+  { name: 'Black', value: '#000000' },
+  { name: 'Red', value: '#ff0000' },
+  { name: 'Green', value: '#00ff00' },
+  { name: 'Blue', value: '#0000ff' },
+  { name: 'Cyan', value: '#00ffff' },
+  { name: 'Magenta', value: '#ff00ff' },
+  { name: 'Yellow', value: '#ffff00' },
+  { name: '50% gray', value: '#808080' },
+];
 
-const ColorButton = styled.button`
-  width: 100%;
-  aspect-ratio: 1;
-  border: 2px solid ${(props) => (props.$isSelected ? '#4169e1' : 'transparent')};
-  border-radius: 0.5rem;
-  cursor: pointer;
-  background: ${(props) => props.$color};
-  transition: transform 0.2s;
+const INTERVALS = [
+  { value: 500, label: '0.5 s' },
+  { value: 1000, label: '1 s' },
+  { value: 2000, label: '2 s' },
+  { value: 5000, label: '5 s' },
+];
 
-  &:hover {
-    transform: scale(1.05);
-  }
-`;
-
-const Checkbox = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #666;
-  font-size: 0.95rem;
-  cursor: pointer;
-
-  input {
-    width: 1rem;
-    height: 1rem;
-  }
-`;
+const DEFAULTS = { index: 0, custom: '#ff8800', running: false, interval: 2000 };
 
 const DeadPixelTest = () => {
-  const [backgroundColor, setBackgroundColor] = useState('#808080');
-  const [isAutoChanging, setIsAutoChanging] = useState(false);
-  const autoChangeRef = useRef(null);
+  // index -1 means the custom color is showing.
+  const [index, setIndex] = useState(DEFAULTS.index);
+  const [custom, setCustom] = useState(DEFAULTS.custom);
+  const [running, setRunning] = useState(DEFAULTS.running);
+  const [interval, setIntervalMs] = useState(DEFAULTS.interval);
 
-  const colors = useMemo(
-    () => [
-      { name: 'White', value: '#FFFFFF' },
-      { name: 'Black', value: '#000000' },
-      { name: 'Red', value: '#FF0000' },
-      { name: 'Green', value: '#00FF00' },
-      { name: 'Blue', value: '#0000FF' },
-      { name: 'Yellow', value: '#FFFF00' },
-      { name: 'Magenta', value: '#FF00FF' },
-      { name: 'Cyan', value: '#00FFFF' },
-      { name: 'Gray', value: '#808080' },
-    ],
-    []
-  );
+  const step = useCallback((dir) => {
+    setIndex((i) => {
+      if (i < 0) return dir > 0 ? 0 : COLORS.length - 1;
+      return (i + dir + COLORS.length) % COLORS.length;
+    });
+  }, []);
 
   useEffect(() => {
-    if (!isAutoChanging) {
-      if (autoChangeRef.current) {
-        clearInterval(autoChangeRef.current);
-      }
-      return undefined;
-    }
+    if (!running) return undefined;
+    const id = setInterval(() => step(1), interval);
+    return () => clearInterval(id);
+  }, [running, interval, step]);
 
-    const colorValues = colors.map((color) => color.value);
-    let currentIndex = colorValues.indexOf(backgroundColor);
-
-    autoChangeRef.current = setInterval(() => {
-      currentIndex = (currentIndex + 1) % colorValues.length;
-      setBackgroundColor(colorValues[currentIndex]);
-    }, 2000);
-
-    return () => {
-      if (autoChangeRef.current) {
-        clearInterval(autoChangeRef.current);
-      }
-    };
-  }, [isAutoChanging, backgroundColor, colors]);
+  const color = index < 0 ? custom : COLORS[index].value;
+  const colorName = index < 0 ? 'Custom' : COLORS[index].name;
 
   const handleReset = () => {
-    setBackgroundColor('#808080');
-    setIsAutoChanging(false);
-    if (autoChangeRef.current) {
-      clearInterval(autoChangeRef.current);
-    }
+    setIndex(DEFAULTS.index);
+    setCustom(DEFAULTS.custom);
+    setRunning(DEFAULTS.running);
+    setIntervalMs(DEFAULTS.interval);
   };
+
+  const shortcuts = [
+    { key: ['ArrowRight', ' '], label: 'Next color', action: () => step(1) },
+    { key: 'ArrowLeft', label: 'Previous color', action: () => step(-1) },
+    { key: 'a', label: 'Start / stop auto-cycle', action: () => setRunning((v) => !v) },
+  ];
 
   return (
     <TestShell
-      title="Dead Pixel Controls"
-      description="Test your display for dead or stuck pixels by cycling through different colors. A dead pixel will appear black on all colors, while a stuck pixel will remain one color regardless of the background."
+      title="Dead Pixel Test"
+      description="Scan each solid color in rows. Dead pixels stay black on every color; stuck and hot pixels stay lit. Click or tap anywhere on the screen to advance."
       onReset={handleReset}
-      style={{ backgroundColor }}
+      shortcuts={shortcuts}
       controls={
         <>
           <Section>
-            <h3>Background Color</h3>
-            <ColorGrid>
-              {colors.map((color) => (
-                <ColorButton
-                  key={color.name}
-                  type="button"
-                  $color={color.value}
-                  $isSelected={backgroundColor === color.value}
-                  onClick={() => setBackgroundColor(color.value)}
-                  title={color.name}
-                />
-              ))}
-            </ColorGrid>
+            <h3>Color</h3>
+            <ColorSwatches
+              colors={COLORS}
+              value={index < 0 ? null : color}
+              onChange={(v) => setIndex(COLORS.findIndex((c) => c.value === v))}
+            />
+            <ButtonRow style={{ marginTop: '0.6rem' }}>
+              <Button type="button" onClick={() => step(-1)}>
+                ← Previous
+              </Button>
+              <Button type="button" onClick={() => step(1)}>
+                Next →
+              </Button>
+            </ButtonRow>
           </Section>
 
           <Section>
-            <h3>Auto Cycle</h3>
-            <Description>
-              Enable automatic cycling through all colors to help identify stuck or dead pixels.
-              Colors will change every 2 seconds.
-            </Description>
-            <Checkbox>
-              <input
-                type="checkbox"
-                checked={isAutoChanging}
-                onChange={(e) => setIsAutoChanging(e.target.checked)}
-              />
-              Enable auto color change
-            </Checkbox>
+            <h3>Custom color</h3>
+            <ColorInput
+              label="Hex"
+              value={custom}
+              onChange={(v) => {
+                setCustom(v);
+                setIndex(-1);
+              }}
+            />
+            {index >= 0 ? (
+              <Button type="button" onClick={() => setIndex(-1)} style={{ width: '100%' }}>
+                Show custom color
+              </Button>
+            ) : null}
+          </Section>
+
+          <Section>
+            <h3>Auto-cycle</h3>
+            <Toggle label="Cycle colors automatically" checked={running} onChange={setRunning} />
+            <Segmented label="Interval" options={INTERVALS} value={interval} onChange={setIntervalMs} columns={4} />
+            <Hint>Auto-cycle is good for a first pass. Stop on a color to inspect a suspicious spot closely.</Hint>
+          </Section>
+
+          <Section>
+            <h3>Now showing</h3>
+            <Readout
+              items={[
+                ['Color', colorName],
+                ['Value', color.toUpperCase()],
+              ]}
+            />
           </Section>
         </>
       }
-    />
+    >
+      <div
+        onClick={() => step(1)}
+        style={{ position: 'absolute', inset: 0, background: color }}
+        aria-hidden="true"
+      />
+    </TestShell>
   );
 };
 
