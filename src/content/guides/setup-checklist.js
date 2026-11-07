@@ -202,6 +202,23 @@ export default {
         { warning: 'Browser tests are visual aids. They are excellent for spotting defects and misconfiguration, but they don’t replace a colorimeter for calibration or lab equipment for measurements.' },
       ],
     },
+    {
+      id: 'pwm-flicker',
+      heading: 'PWM flicker (why there’s no browser test for it)',
+      blocks: [
+        'Many displays dim the backlight (or OLED pixels) by switching it on and off very quickly — **pulse-width modulation (PWM)**. At lower brightness the off periods get longer. Some people notice it as eye strain, headaches, or a stroboscopic “trail” when moving the mouse or eyes quickly; many don’t notice it at all.',
+        'A web page can’t detect PWM: the flicker happens inside the panel, far faster than the browser’s frame rate, and the browser has no light sensor. A “flicker test” page can only show you its own animation, not your backlight.',
+        { h3: 'How to check without a meter' },
+        {
+          ul: [
+            '**Phone camera:** point it at the screen showing [white](/white-screen) at low brightness. Dark rolling bands in the viewfinder (or in slow-motion video) suggest PWM. No bands doesn’t prove it’s flicker-free — some cameras hide it.',
+            '**Pencil / fan test:** wave a pen quickly in front of a white screen. A smooth blur is fine; several distinct copies suggest PWM.',
+            '**Reviews:** reviewers like RTINGS and Notebookcheck measure PWM frequency with a photodiode. Look for “flicker-free” or a high frequency (in the kHz range) if you’re sensitive.',
+          ],
+        },
+        { note: 'If PWM bothers you: run at higher brightness (PWM is usually worse when dimmed), lower brightness with the room lighting instead, or check whether the monitor has a DC-dimming or “flicker-free” setting.' },
+      ],
+    },
   ],
   related: ['screen-resolution', 'refresh-rate', 'black-level', 'white-saturation', 'uniformity', 'test-patterns'],
   faqs: [
