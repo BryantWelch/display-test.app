@@ -34,3 +34,7 @@ yarn-error.log*
 
 # Documentation
 PRD.md
+
+/dist
+/dist-server
+
