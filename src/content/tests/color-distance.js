@@ -7,9 +7,9 @@ export default {
   badges: [],
   summary: 'Find the smallest color difference you can see on your display, from near-black to near-white.',
   seo: {
-    title: 'Color Distinction Test — How Small a Color Difference Can You See? | Free',
+    title: 'Color Distinction Test — Spot 1-Step Color Differences | Free',
     description:
-      'Free full-screen test of near-identical colors. Compare two shades with ±1 step controls or a 1–8 step staircase to find your threshold in shadows, highlights, skin tones, and blues.',
+      'Free full-screen test of near-identical colors. Use ±1 steps or a 1–8 step staircase to find the smallest difference you can see in shadows, highlights, and skin tones.',
   },
   testSeo: {
     title: 'Color Distinction Test — Fullscreen',
@@ -27,9 +27,10 @@ export default {
         id: 'what-it-tests',
         heading: 'What this test does (and doesn’t) measure',
         blocks: [
-          'Colors on the web are sent to your display as 8-bit code values: 0–255 for each of red, green, and blue. This test shows a patch that differs from its background by a few code values and lets you see whether that difference is visible.',
+          'Web colors are specified as 8-bit sRGB code values: 0–255 for each of red, green, and blue. This test shows a patch that differs from its background by a few code values and lets you see whether that difference is visible.',
+          'Those values aren’t always what reaches the panel unchanged. Browser and OS color management (an ICC calibration profile, or mapping sRGB onto a wide-gamut screen), GPU settings, and a 6-bit + FRC panel can all merge, split, or dither neighboring steps. That’s part of what this test reveals.',
           'The result depends on your **display, its settings, your eyes, and your room lighting** together. That’s exactly what matters for day-to-day use, but it is not a measurement of color accuracy. A display can show every 1-step difference and still be noticeably off in hue or white point.',
-          { note: 'We deliberately don’t show Delta E (ΔE) values. ΔE describes the difference between measured colors, and a browser can’t measure what your screen actually emits — only a colorimeter or spectrophotometer can.' },
+          { note: 'We deliberately don’t show Delta E (ΔE) values. ΔE (CIE76, CIEDE2000, etc.) is a distance between colors in a space like CIELAB. A ΔE computed from the code values would assume a perfect sRGB display; what you actually see depends on the light your screen emits, which only a colorimeter or spectrophotometer can measure.' },
         ],
       },
       {
@@ -39,8 +40,8 @@ export default {
           {
             ol: [
               'Use your normal brightness and picture mode, and turn off dynamic contrast or “black enhancer” modes for a fair result.',
-              'Click **Start color distinction test**. In **Two colors** mode, pick a preset, then tap **−1** on one channel or press **↓** until the patch disappears. The last visible difference is your threshold for that color.',
-              'Switch to **Staircase** for an at-a-glance view: six patches at 1, 2, 3, 4, 6, and 8 code values from the background. Use **Shuffle & hide labels** for a blind check, count what you can see, then reveal.',
+              'Click **Start color distinction test**. In **Two colors** mode, pick a preset, then press **↓** to shrink the difference one step at a time (or use the **−1** / **+1** buttons under **Fine tune**) until the patch disappears. The last visible difference is your threshold for that color; **↑** makes it larger again.',
+              'Switch to **Staircase** for an at-a-glance view: six patches at 1, 2, 3, 4, 6, and 8 code values from the background. Choose **Darker** for near-white backgrounds so the steps aren’t clipped. Use **Shuffle & hide labels** for a blind check, count what you can see, then turn **Show step labels** back on to reveal.',
               'Repeat on near black, near white, and mid gray — results usually differ a lot between them.',
             ],
           },
@@ -56,7 +57,7 @@ export default {
               rows: [
                 ['1–2 step differences visible at mid gray', 'Excellent tonal resolution — typical of a good, well-set-up display in a dim room.'],
                 ['Need 3–4 steps at mid gray', 'Normal for many displays and viewing conditions.'],
-                ['Near-black patches invisible below 4–8 steps', 'Black crush: brightness/black level set too low, gamma too high, or a VA/OLED near-black handling issue. Check the [black level test](/black-level).'],
+                ['Near-black patches still invisible at 4–8 steps', 'Black crush: brightness/black level set too low, gamma too high, or a VA/OLED near-black handling issue. Check the [black level test](/black-level).'],
                 ['Near-white patches invisible', 'Highlight clipping: contrast too high, or an oversaturated / “vivid” mode. Check [white saturation](/white-saturation).'],
                 ['Steps look uneven (e.g. +3 visible but +4 not)', 'Banding or dithering in the display pipeline; compare with the [color gradient test](/color-gradient).'],
               ],
@@ -118,7 +119,7 @@ export default {
       {
         question: 'Why doesn’t this test show Delta E?',
         answer:
-          'Delta E compares colors that have been measured. A browser only knows the values it sends to the screen, not the light the screen emits, so any ΔE figure here would be false precision. Use a colorimeter if you need real accuracy numbers.',
+          'Delta E is a distance between two colors in a space like CIELAB. A browser only knows the values it sends to the screen, not the light the screen emits, so a ΔE figure here would describe an ideal sRGB display rather than yours. Use a colorimeter if you need real accuracy numbers.',
       },
       {
         question: 'Why can’t I see the difference near black?',

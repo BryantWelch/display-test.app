@@ -68,7 +68,7 @@ const TestPatternsTest = () => {
     { key: ['ArrowLeft', 'PageUp'], label: 'Previous pattern', action: () => step(-1) },
     { key: 'ArrowDown', label: 'Next variant', action: () => stepVariant(1) },
     { key: 'ArrowUp', label: 'Previous variant', action: () => stepVariant(-1) },
-    { key: 'i', label: 'Invert (black/white patterns)', action: () => setInvert((v) => !v) },
+    { key: 'i', label: 'Invert (black/white patterns)', action: () => pattern.invertible && setInvert((v) => !v) },
     ...PATTERN_CATEGORIES.map((c, i) => ({ key: String(i + 1), label: `${c.label} patterns`, action: () => selectCategory(c.value) })),
   ];
 

@@ -9,7 +9,7 @@ export default {
   seo: {
     title: 'Backlight Bleed & Uniformity Test — IPS Glow, Clouding, DSE | Free',
     description:
-      'Free full-screen backlight bleed test. Solid black, gray, and color fields with a 3×3 / 5×5 zone grid to spot bleed, IPS glow, clouding, vignetting, and dirty-screen effect on any monitor or TV.',
+      'Free full-screen backlight bleed and uniformity test. Black, gray, and color fields with a zone grid to spot bleed, IPS glow, clouding, vignetting, and DSE.',
   },
   testSeo: {
     title: 'Uniformity & Backlight Bleed Test — Fullscreen',
@@ -36,8 +36,10 @@ export default {
               '**Clouding** — soft, blotchy lighter areas anywhere on the panel (often edge-lit VA and IPS), visible on black and very dark gray.',
               '**Dirty screen effect (DSE)** — faint smudges, bands, or a "dirty window" texture that stays fixed while the image moves. Most visible on 5–20% gray and on large panels during camera pans.',
               '**Vignetting and tint shift** — corners or edges a little darker, or one side warmer/cooler than the center. Most visible on 50–100% gray.',
+              '**OLED near-black non-uniformity** — no backlight, so no bleed or glow, but faint banding, vertical lines, or tinted patches can show on 5–10% gray.',
             ],
           },
+          'Gray levels on this site are a percentage of the full signal (50% = RGB 128), not of light output — 50% gray emits only about a fifth of white’s luminance.',
         ],
       },
       {
@@ -50,6 +52,7 @@ export default {
               'Use your normal brightness. Turn off local dimming, dynamic contrast, and ambient-light sensors — they change the backlight while you look.',
               'Dim the room, but don’t test in total darkness at max brightness unless that’s how you actually use the screen; that exaggerates bleed far beyond what you’ll see in practice.',
               'Click **Start uniformity test**. Step through presets with **← / →**: start at **0%** and **5–10%** for bleed and clouding, then **50%** and **100%** for vignetting and tint, then red, green, and blue.',
+              'For dirty screen effect, pick **5–20%** gray and press **P** to scroll a faint moving pattern. Smudges or bands that stay put while it moves are DSE.',
               'Press **G** for a 3×3 or 5×5 zone grid and compare each zone to the center. Turn overlays off for the final dark-room look.',
               'If you see a bright corner, move your head side to side and back. If it shifts or fades, it’s glow; if it stays put, it’s bleed.',
             ],
@@ -71,6 +74,7 @@ export default {
               'One side clearly warmer or cooler than the other on 50% gray: color uniformity issue; matters most for photo and video work.',
             ],
           },
+          'Uniformity is a panel lottery: two units of the same model can look very different. Measured corner-to-center brightness drops of 10–20% are common on consumer monitors and hard to see on real content; only some professional monitors guarantee tighter tolerances.',
           'A browser can show the patterns but can’t measure luminance. For numbers (for example, “corner is 15% dimmer than center”), you need a colorimeter and uniformity software.',
         ],
       },
@@ -83,6 +87,7 @@ export default {
               'Lower brightness: bleed and glow scale with backlight level.',
               'Add some ambient light behind or around the screen (bias lighting) so the eye is less sensitive to dark-scene glow.',
               'For IPS glow, sit a little farther back or slightly lower so you look at the panel more head-on.',
+              'Some photo and pro monitors have a **uniformity compensation** mode that evens out brightness and tint across the screen. It lowers peak brightness and contrast and does not fix bleed on black.',
               'Loosening bezel screws or massaging the panel occasionally reduces bleed, but it can crack the panel and void the warranty — not recommended.',
             ],
           },
@@ -91,7 +96,7 @@ export default {
     ],
     lookFor: {
       good: [
-        'Black looks like a dark, fairly even gray with slightly brighter corners or edges.',
+        'On an LCD, black looks like a dark, fairly even gray with slightly brighter corners or edges.',
         'Corner glow that changes or fades as you move your head (IPS glow).',
         'Gray and white fields look even, with only gentle darkening toward the edges.',
       ],
@@ -149,7 +154,7 @@ export default {
       {
         question: 'What is dirty screen effect (DSE)?',
         answer:
-          'Faint bands or smudges that stay fixed while the picture moves, like looking through a dirty window. Check with the 5–25% gray fields — it’s most visible on large TVs during camera pans over grass, ice, or sky. Some DSE is common; strong DSE is a valid reason to exchange.',
+          'Faint bands or smudges that stay fixed while the picture moves, like looking through a dirty window. Check with the 5–20% gray fields and the moving pattern on — it’s most visible on large TVs during camera pans over grass, ice, or sky. Some DSE is common; strong DSE is a valid reason to exchange.',
       },
       {
         question: 'Can backlight bleed get better or worse over time?',

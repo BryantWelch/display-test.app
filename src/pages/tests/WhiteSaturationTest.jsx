@@ -60,7 +60,7 @@ const WhiteSaturationTest = () => {
   return (
     <TestShell
       title="White Saturation Test"
-      description="Each patch is one code value darker than the white background. Count how many of the top patches you can still tell apart from pure white."
+      description="Each patch is one code value darker than the white background. Count how many of the top patches you can still tell apart from the background."
       onReset={handleReset}
       shortcuts={shortcuts}
       controls={

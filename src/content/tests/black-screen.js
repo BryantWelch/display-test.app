@@ -4,12 +4,12 @@ export default {
   category: 'utilities',
   name: 'Black Screen',
   shortName: 'Black Screen',
-  badges: ['New'],
+  badges: [],
   summary: 'A full-screen black page for cleaning, checking backlight bleed and hot pixels, or blacking out the screen.',
   seo: {
     title: 'Black Screen — Full-Screen Black Page (with Cleaning Lock) | Free',
     description:
-      'Open a pure black full screen in one click. Black out an OLED, clean your monitor with touches locked, check backlight bleed and IPS glow, find hot pixels, or cut light in a dark room. Free.',
+      'Pure black full screen in one click. Black out an OLED, clean your monitor with touches locked, check backlight bleed and IPS glow, or find hot pixels. Free, no download.',
   },
   testSeo: {
     title: 'Black Screen — Fullscreen',
@@ -19,7 +19,7 @@ export default {
   page: {
     title: 'Black Screen',
     intro:
-      'A pure black (#000000) full screen with the cursor and controls hidden. On an OLED it looks like the display is off; on an LCD it shows how dark your panel really gets. Use it to black out a screen, clean it, or check for backlight bleed and hot pixels.',
+      'A pure black (#000000) full screen; the cursor and controls hide after a few seconds. On an OLED it looks like the display is off; on an LCD it shows how dark your panel really gets. Use it to black out a screen, clean it, or check for backlight bleed and hot pixels.',
     startLabel: 'Open black screen',
     lastReviewed: '2026-11-07',
     sections: [
@@ -31,8 +31,8 @@ export default {
             ul: [
               '**OLED “off” look.** OLED pixels switch off completely on black, so the panel looks powered down while the computer keeps running — handy for a downloading game, a second screen you don’t need, or a dark room.',
               '**Cleaning.** Black shows streaks, lint, and wipe marks that hide on white. Turn on the **cleaning lock** so wiping doesn’t click or type anything.',
-              '**Backlight bleed and IPS glow.** In a dark room, LCDs leak light at the edges. Black makes it obvious. See the [uniformity test](/uniformity) for a more careful check.',
-              '**Hot and stuck pixels.** A pixel that’s always lit shows up as a bright dot on black.',
+              '**Backlight bleed and IPS glow.** In a dark room, LCD backlight leaks show up as bright patches at the edges and corners, and IPS panels add a glow that shifts with viewing angle. Black makes both obvious. See the [uniformity test](/uniformity) for a more careful check.',
+              '**Hot and stuck pixels.** A pixel that’s always lit shows up as a bright dot on black. Dead (always-off) pixels are invisible on black — use the [white screen](/white-screen) for those.',
               '**Reducing light.** A black screen is the quickest way to stop a monitor lighting up a bedroom without changing inputs or settings.',
             ],
           },
@@ -50,12 +50,15 @@ export default {
               'Look for bright patches along the edges or corners. Then move your head: **glow** changes with viewing angle; **bleed** stays in place.',
             ],
           },
-          'Some edge glow is normal on IPS panels, and VA panels are darker but can smear. Bleed that’s visible at your usual brightness, in normal content, is worth raising with the retailer while you can still return the monitor.',
+          'Some edge glow is normal on IPS panels; VA panels have far less glow but can still show edge bleed. Bleed that’s visible at your usual brightness, in normal content, is worth raising with the retailer while you can still return the monitor.',
           {
             table: {
               head: ['Panel', 'What black looks like'],
               rows: [
-                ['**OLED / QD-OLED**', 'Truly black — pixels are off. Any glow means the content isn’t pure black.'],
+                [
+                  '**OLED / QD-OLED**',
+                  'Truly black in a dark room — pixels are off. QD-OLED can look dark gray in a lit room because the panel reflects room light; that isn’t glow.',
+                ],
                 ['**IPS**', 'Dark gray with glow in the corners when viewed off-center. Normal within limits.'],
                 ['**VA**', 'Deepest LCD black; little glow, occasional edge bleed.'],
                 ['**Mini-LED**', 'Near-black with local dimming on; check bleed with local dimming off.'],
@@ -71,9 +74,9 @@ export default {
           {
             ol: [
               'Open the black screen and click **Lock screen for cleaning** (or press **L**).',
-              'Wipe gently with a dry microfiber cloth. Use a cloth barely dampened with distilled water for stubborn marks — never spray the screen.',
-              'Check under a lamp at an angle; black shows remaining streaks clearly. Switch to the [white screen](/white-screen) to find dust.',
+              'Wipe gently with a dry microfiber cloth. Use a cloth barely dampened with distilled water for stubborn marks — never spray the screen. For a wetter clean, turn the display off first.',
               'Hold **Esc** for 2 seconds, or press and hold a corner for 3 seconds on a touchscreen, to unlock.',
+              'Check under a lamp at an angle; black shows remaining streaks clearly. Then pick **White** in the controls (or open the [white screen](/white-screen)) to find dust.',
             ],
           },
         ],
@@ -130,7 +133,7 @@ export default {
       {
         question: 'Can I leave a black screen on overnight?',
         answer:
-          'Yes. It’s safe on both LCD and OLED. Your OS may still sleep the display on its own schedule, which is fine. On an OLED, a black screen is gentler than any static image.',
+          'Yes. It’s safe on both LCD and OLED. **Keep screen awake** is off by default on the black screen, so your OS can still sleep the display on its own schedule, which saves more power on an LCD. Turn it on if you need the screen to stay on. On an OLED, a black screen is gentler than any static image.',
       },
     ],
   },

@@ -4,12 +4,12 @@ export default {
   category: 'defects',
   name: 'Burn-in & Image Retention Test',
   shortName: 'Burn-in Test',
-  badges: ['New'],
+  badges: [],
   summary: 'Check OLED and LCD screens for burn-in, test temporary image retention, and run a gentle refresher.',
   seo: {
-    title: 'OLED Burn-in Test & Image Retention Fixer — Free Online Check',
+    title: 'OLED Burn-in & Image Retention Test — Free Online Check',
     description:
-      'Free full-screen burn-in test for OLED, plasma, and LCD screens. Check uniform grays and colors for taskbar or HUD ghosts, time how fast image retention fades, and run a gentle refresher.',
+      'Free full-screen burn-in test for OLED, plasma, and LCD. Check grays and colors for taskbar or HUD ghosts, time how fast image retention fades, and run a slow refresher.',
   },
   testSeo: {
     title: 'Burn-in Test — Fullscreen',
@@ -41,11 +41,11 @@ export default {
         heading: 'The three modes',
         blocks: [
           { h3: 'Check for burn-in' },
-          'Full-screen uniform fields: **18% gray**, **50% gray**, **red**, **green**, **blue**, and **cyan**. Dark gray is the most revealing for OLED wear; the primaries show which subpixel color has aged (red and blue OLED subpixels often wear differently). Look for shapes that match what you leave on screen: taskbar, browser tabs, channel logos, news tickers, game HUDs, minimaps.',
+          'Full-screen uniform fields: **18% gray**, **50% gray**, **red**, **green**, **blue**, and **cyan**. The dark and mid grays show overall OLED wear best; the primaries show whether one subpixel color has aged more than the others. Look for shapes that match what you leave on screen: taskbar, browser tabs, channel logos, news tickers, game HUDs, minimaps.',
           { h3: 'Retention test' },
           'Shows a high-contrast static pattern — a fake taskbar, logo, “LIVE” bug, crosshair, and health bar — for 1 to 10 minutes, then automatically switches to 50% gray. Watch how visible the ghost is and how quickly it fades. Panels that retain strongly after a few minutes are worth babying with dark themes and auto-hide taskbars.',
           { h3: 'Refresher' },
-          'A slowly scrolling white bar, an inverted copy of the retention pattern, or a slow full-screen hue cycle, for 5 to 60 minutes with a countdown. Everything moves or changes slowly — there’s no fast flashing. It can help **temporary** retention fade sooner. It does nothing for real burn-in.',
+          'A white bar slowly crossing black, a static inverted copy of the retention pattern, or a slow full-screen hue cycle, for 5 to 60 minutes with a countdown, then 50% gray. Nothing flashes quickly. It can help **temporary** retention fade sooner. It does nothing for real burn-in, and on OLED long runs of bright content add a little wear of their own, so keep sessions short.',
           { note: 'While a timer runs, the page asks for a screen wake lock so the display doesn’t sleep. If your browser doesn’t support it, set your power plan to keep the screen on.' },
         ],
       },
@@ -104,7 +104,7 @@ export default {
     ],
     tips: [
       'Run the check after the display has been on for 15+ minutes.',
-      'Dim the room and use dark gray first; it shows OLED wear best.',
+      'Dim the room and start with the grays; they show OLED wear best.',
       'Hide the control panel with H during timed modes so it doesn’t leave its own mark.',
       'Let the TV or monitor go into standby afterwards so its compensation cycle can run.',
     ],

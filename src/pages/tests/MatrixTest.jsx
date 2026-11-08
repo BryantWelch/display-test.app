@@ -52,8 +52,6 @@ const DEFAULTS = {
 const FADE_INTERVAL = 1000 / 30;
 const MAX_DT = 100;
 
-const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-
 const MatrixTest = () => {
   const [color, setColor] = useState(DEFAULTS.color);
   const [bg, setBg] = useState(DEFAULTS.bg);
@@ -70,7 +68,7 @@ const MatrixTest = () => {
     const cellH = Math.max(6, Math.round(size * dpr));
     const cellW = Math.max(4, Math.round(cellH * 0.8));
     const chars = CHARSETS[charset].chars;
-    const key = `${width}x${height}:${cellH}:${bg}:${charset}`;
+    const key = `${width}x${height}:${cellH}:${charset}`;
     let s = sim.current;
 
     if (!s || s.key !== key) {
@@ -87,7 +85,7 @@ const MatrixTest = () => {
         prevRow: new Array(cols).fill(-1),
         prevChar: new Array(cols).fill(''),
       };
-      ctx.fillStyle = bg;
+      ctx.fillStyle = '#000';
       ctx.fillRect(0, 0, width, height);
     }
 
@@ -95,19 +93,16 @@ const MatrixTest = () => {
     s.last = t;
     if (paused) return;
 
-    const [br, bgG, bb] = hexToRgb(bg);
     s.fadeAcc += dt;
     if (s.fadeAcc >= FADE_INTERVAL) {
       const alpha = 1 - Math.exp(-s.fadeAcc / TRAILS[trail]);
-      ctx.fillStyle = `rgba(${br}, ${bgG}, ${bb}, ${alpha})`;
+      ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
       ctx.fillRect(0, 0, width, height);
-      if (br + bgG + bb === 0) {
-        // 8-bit alpha blending stalls a few levels above black; color-burn floors that residue to 0.
-        ctx.globalCompositeOperation = 'color-burn';
-        ctx.fillStyle = 'rgb(246, 246, 246)';
-        ctx.fillRect(0, 0, width, height);
-        ctx.globalCompositeOperation = 'source-over';
-      }
+      // 8-bit alpha blending stalls a few levels above black; color-burn floors that residue to 0.
+      ctx.globalCompositeOperation = 'color-burn';
+      ctx.fillStyle = 'rgb(246, 246, 246)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.globalCompositeOperation = 'source-over';
       s.fadeAcc = 0;
     }
 
@@ -124,12 +119,17 @@ const MatrixTest = () => {
       const x = i * cellW + cellW / 2;
 
       for (let r = s.prevRow[i] + 1; r <= row; r++) {
-        if (r < 0 || r >= s.rows) continue;
+        if (r < 0) continue;
         if (heads && s.prevChar[i] && s.prevRow[i] >= 0 && r === s.prevRow[i] + 1) {
-          ctx.fillStyle = bg;
+          ctx.fillStyle = '#000';
           ctx.fillRect(i * cellW, s.prevRow[i] * cellH, cellW, cellH);
           ctx.fillStyle = color;
           ctx.fillText(s.prevChar[i], x, s.prevRow[i] * cellH);
+        }
+        if (r >= s.rows) {
+          s.prevChar[i] = '';
+          s.prevRow[i] = r;
+          continue;
         }
         const ch = chars[Math.floor(Math.random() * chars.length)];
         ctx.fillStyle = heads && r === row ? '#f0fff4' : color;
@@ -234,7 +234,14 @@ const MatrixTest = () => {
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          mixBlendMode: 'lighten',
+        }}
       />
     </TestShell>
   );

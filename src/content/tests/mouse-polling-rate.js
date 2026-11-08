@@ -4,12 +4,12 @@ export default {
   category: 'motion',
   name: 'Mouse Polling Rate Test',
   shortName: 'Mouse Polling',
-  badges: ['New'],
+  badges: [],
   summary: 'Estimate your mouse’s polling rate (125–8000 Hz) from the movement events your browser receives.',
   seo: {
     title: 'Mouse Polling Rate Test — Check 1000Hz, 4000Hz & 8000Hz Online',
     description:
-      'Free mouse polling rate checker. Move your mouse in circles to see the Hz your browser receives — live, average, and max — using coalesced and raw pointer events. Includes why input lag can’t be measured in a browser.',
+      'Free mouse polling rate checker. Move your mouse in circles to see the live, average, and max Hz your browser receives, from 125 Hz up to 8000 Hz.',
   },
   inlineTool: () => import('../../tools/MousePollingTool'),
   page: {
@@ -27,10 +27,10 @@ export default {
             ul: [
               '**pointermove events** — what ordinary web pages see. Browsers usually bundle mouse movement into one event per display frame, so this tops out near your [refresh rate](/refresh-rate) (60–240 Hz), however fast the mouse is.',
               '**Coalesced samples** — `getCoalescedEvents()` returns every individual report that was bundled into each pointermove event. This is the number to trust in most browsers.',
-              '**pointerrawupdate** — Chrome and Edge only. Delivers reports as soon as they arrive, without waiting for the next frame. When available it’s used as the main reading.',
+              '**pointerrawupdate** — mainly Chromium browsers such as Chrome and Edge, on secure (HTTPS) pages. Delivers reports as soon as they arrive, without waiting for the next frame. When available it’s used as the main reading.',
             ],
           },
-          'The **histogram** groups the gaps between reports by the nearest standard polling rate. A healthy 1000 Hz mouse puts most samples in the 1000 Hz row.',
+          'The **histogram** groups the gaps between reports by the nearest standard polling rate. A healthy 1000 Hz mouse puts most samples in the 1000 Hz row. Browsers round event timestamps (to roughly 0.1–1 ms), so at 4000–8000 Hz individual gaps can’t be timed exactly and the histogram spreads out; the Avg and Max readings average over many reports and stay accurate.',
         ],
       },
       {
@@ -41,7 +41,7 @@ export default {
             ol: [
               'Set the polling rate you want to check in the mouse’s software (or with its button / switch).',
               'Move the mouse in quick, continuous circles inside the box for 3–5 seconds. Small, slow movements send fewer reports, because many mice only report when they’ve actually moved.',
-              'Read **Max** for the best sustained rate and **Avg** for the overall picture. Press **Reset** between settings.',
+              'Read **Max** for the best sustained rate (measured over a fraction of a second of continuous movement) and **Avg** for the overall picture. Press **Reset** between settings.',
             ],
           },
           'Expect a reading a little under the setting, e.g. 950–1000 for 1000 Hz. At 4000 and 8000 Hz, browsers, USB hubs, and CPU load often limit what arrives, so readings vary more. A wired connection or the 8K dongle plugged straight into the PC (not a hub) helps.',
@@ -92,7 +92,7 @@ export default {
       bad: [
         'A 1000 Hz mouse reading near 125 Hz in every source — it may be in a low-power or office mode.',
         'Readings that collapse when you move fast — a wireless interference, USB hub, or receiver-placement problem.',
-        'Samples spread across many histogram rows at a high setting — the PC or USB port can’t keep up.',
+        'Samples spread across many histogram rows at 1000 Hz or below — the PC, USB port, or wireless link can’t keep up (some spread at 4000–8000 Hz is normal timestamp rounding).',
       ],
     },
     tips: [

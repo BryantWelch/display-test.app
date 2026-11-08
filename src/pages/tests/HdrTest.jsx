@@ -127,7 +127,9 @@ const HdrTest = () => {
     setLabels(DEFAULTS.labels);
   };
 
-  const step = (dir) => setColor((c) => (c + dir + COLORS.length) % COLORS.length);
+  const step = (dir) => {
+    if (mode === 'inset') setColor((c) => (c + dir + COLORS.length) % COLORS.length);
+  };
   const cycleMode = () => setMode((m) => MODES[(MODES.findIndex((x) => x.value === m) + 1) % MODES.length].value);
 
   const shortcuts = [
@@ -144,7 +146,7 @@ const HdrTest = () => {
   let view;
   if (mode === 'grid') {
     view = (
-      <Grid $labels={labels} aria-label="Primary and secondary colors in sRGB, Display P3, and Rec. 2020">
+      <Grid $labels={labels} role="img" aria-label="Primary and secondary colors in sRGB, Display P3, and Rec. 2020">
         <span />
         {SPACES.map((s) => (
           <span key={s.id}>{labels ? s.label : null}</span>
@@ -162,7 +164,7 @@ const HdrTest = () => {
   } else if (mode === 'inset') {
     view = (
       <Inset $outer={cmp.outer(rgb)} $inner={cmp.inner(rgb)} onClick={() => step(1)}>
-        <div aria-label={`${cmp.innerLabel} ${COLORS[color].name} square on ${cmp.outerLabel} background`} />
+        <div role="img" aria-label={`${cmp.innerLabel} ${COLORS[color].name} square on ${cmp.outerLabel} background`} />
         {labels ? (
           <Caption>
             {COLORS[color].name}: {cmp.innerLabel} square inside {cmp.outerLabel}. Visible square = your screen and

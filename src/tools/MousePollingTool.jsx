@@ -174,6 +174,7 @@ function freshState() {
     last: { move: null, coalesced: null, raw: null },
     stats: { move: emptyStats(), coalesced: emptyStats(), raw: emptyStats() },
     bins: RATES.map(() => 0),
+    dupes: 0,
     pointerType: null,
   };
 }
@@ -189,7 +190,7 @@ function rateFrom(times) {
       sum += dt;
     }
   }
-  return n >= 5 && sum > 0 ? (n / sum) * 1000 : 0;
+  return { hz: n >= 5 && sum > 0 ? (n / sum) * 1000 : 0, span: sum };
 }
 
 function nearestRateIndex(dt) {
@@ -210,6 +211,7 @@ const MousePollingTool = () => {
   const [view, setView] = useState(() => ({
     stats: freshState().stats,
     bins: RATES.map(() => 0),
+    dupes: 0,
     pointerType: null,
     active: false,
   }));
@@ -243,7 +245,10 @@ const MousePollingTool = () => {
         if (dt >= 0 && dt < GAP_MS) {
           st.count += 1;
           st.activeMs += dt;
-          if (source === best() && dt > 0) d.bins[nearestRateIndex(dt)] += 1;
+          if (source === best()) {
+            if (dt > 0) d.bins[nearestRateIndex(dt)] += 1;
+            else d.dupes += 1;
+          }
         }
       }
       d.last[source] = t;
@@ -277,7 +282,9 @@ const MousePollingTool = () => {
     };
     const onRaw = (e) => {
       lastInput = performance.now();
-      record('raw', e.timeStamp);
+      const list = support.coalesced ? e.getCoalescedEvents() : [];
+      if (list.length) for (const c of list) record('raw', c.timeStamp);
+      else record('raw', e.timeStamp);
     };
 
     area.addEventListener('pointermove', onMove);
@@ -299,13 +306,15 @@ const MousePollingTool = () => {
         const d = data.current;
         for (const src of ['move', 'coalesced', 'raw']) {
           const st = d.stats[src];
-          st.current = active ? rateFrom(d.times[src]) : 0;
-          if (st.current > st.max) st.max = st.current;
+          const win = active ? rateFrom(d.times[src]) : { hz: 0, span: 0 };
+          st.current = win.hz;
+          if (win.span >= WINDOW_MS / 2 && st.current > st.max) st.max = st.current;
           st.avg = st.count >= 20 && st.activeMs > 0 ? (st.count / st.activeMs) * 1000 : 0;
         }
         setView({
           stats: JSON.parse(JSON.stringify(d.stats)),
           bins: d.bins.slice(),
+          dupes: d.dupes,
           pointerType: d.pointerType,
           active,
           best: best(),
@@ -327,24 +336,25 @@ const MousePollingTool = () => {
     data.current = freshState();
     const canvas = canvasRef.current;
     canvas?.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    setView({ stats: freshState().stats, bins: RATES.map(() => 0), pointerType: null, active: false });
+    setView({ stats: freshState().stats, bins: RATES.map(() => 0), dupes: 0, pointerType: null, active: false });
   };
 
   const bestId = view.best || (support.coalesced ? 'coalesced' : 'move');
   const best = view.stats[bestId];
   const binTotal = view.bins.reduce((a, b) => a + b, 0);
   const binMax = Math.max(1, ...view.bins);
+  const coarse = view.dupes > 20 && view.dupes > (binTotal + view.dupes) * 0.1;
   const started = view.stats.move.count > 0;
 
   return (
     <div>
-      <Area ref={areaRef} aria-label="Mouse polling capture area">
+      <Area ref={areaRef} role="group" aria-label="Mouse polling capture area">
         <canvas ref={canvasRef} aria-hidden="true" />
         {!started ? <p>Move your mouse in fast, steady circles inside this box.</p> : null}
       </Area>
 
       <Results>
-        <Big aria-live="polite">
+        <Big>
           <strong>{fmtHz(best.current || best.avg)}</strong>
           <span>
             {best.current ? 'Hz right now' : best.avg ? 'Hz average (keep moving for live)' : 'Hz — start moving'}
@@ -399,6 +409,12 @@ const MousePollingTool = () => {
             </li>
           ))}
         </ol>
+        {coarse ? (
+          <Note>
+            This browser rounds event timestamps, so many reports share the same time and the histogram can’t
+            separate them at this rate. The Avg and Max readings still count every report.
+          </Note>
+        ) : null}
       </Histogram>
 
       <ButtonRow style={{ marginTop: '1rem' }}>
@@ -409,7 +425,7 @@ const MousePollingTool = () => {
 
       <Note>
         ★ marks the most detailed source this browser offers. Plain pointermove events are usually batched to your
-        display’s refresh rate, so they top out near 60–240 Hz; coalesced samples and pointerrawupdate expose the
+        display’s refresh rate, so they top out near that rate; coalesced samples and pointerrawupdate expose the
         individual reports in between. Expect the estimate to read a little under the mouse’s setting.
       </Note>
     </div>

@@ -20,22 +20,38 @@ function median(values) {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
-/** Summarize a list of frame intervals (ms). */
+/**
+ * Summarize a list of frame intervals (ms). The median alone is biased when timestamps are
+ * coarsened (e.g. to 1 ms), so the period is refined by averaging intervals that land near a
+ * whole number of refreshes. Jitter excludes dropped frames, which are counted separately.
+ */
 export function summarizeIntervals(intervals) {
   if (intervals.length < 5) return null;
-  const med = median(intervals);
-  const hz = 1000 / med;
-  const mean = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-  const variance = intervals.reduce((a, b) => a + (b - mean) ** 2, 0) / intervals.length;
-  const dropped = intervals.filter((d) => d > med * 1.5).length;
+  let period = median(intervals);
+  for (let pass = 0; pass < 2; pass += 1) {
+    let total = 0;
+    let frames = 0;
+    for (const ms of intervals) {
+      const k = Math.round(ms / period);
+      if (k >= 1 && k <= 3 && Math.abs(ms - k * period) <= period * 0.35) {
+        total += ms;
+        frames += k;
+      }
+    }
+    if (frames) period = total / frames;
+  }
+  const steady = intervals.filter((ms) => ms <= period * 1.5);
+  const mean = steady.reduce((a, b) => a + b, 0) / steady.length;
+  const variance = steady.reduce((a, b) => a + (b - mean) ** 2, 0) / steady.length;
+  const hz = 1000 / period;
   return {
     hz,
     snappedHz: snapToCommonRate(hz),
-    frameMs: med,
+    frameMs: period,
     jitterMs: Math.sqrt(variance),
     minMs: Math.min(...intervals),
     maxMs: Math.max(...intervals),
-    dropped,
+    dropped: intervals.length - steady.length,
     samples: intervals.length,
   };
 }
@@ -53,7 +69,17 @@ export function measureRefreshRate({ durationMs = 1500, warmupFrames = 20 } = {}
     let last = null;
     let frames = 0;
     let start = null;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(fallback);
+      resolve(summarizeIntervals(intervals));
+    };
+    // rAF stops in hidden tabs, so don't leave the promise pending forever.
+    const fallback = setTimeout(finish, durationMs + 3000);
     const tick = (t) => {
+      if (done) return;
       frames += 1;
       if (frames > warmupFrames) {
         if (start === null) start = t;
@@ -61,7 +87,7 @@ export function measureRefreshRate({ durationMs = 1500, warmupFrames = 20 } = {}
         last = t;
       }
       if (start !== null && t - start >= durationMs) {
-        resolve(summarizeIntervals(intervals));
+        finish();
         return;
       }
       requestAnimationFrame(tick);
@@ -102,6 +128,7 @@ export function monitorFrames({ windowSize = 240, updateMs = 250, onUpdate }) {
 
   const onVisibility = () => {
     last = null;
+    intervals.length = 0;
   };
   document.addEventListener('visibilitychange', onVisibility);
 

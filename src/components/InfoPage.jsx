@@ -1,5 +1,5 @@
-import { Suspense, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Suspense, use, useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Breadcrumbs from './Breadcrumbs';
 import AdSlot from './AdSlot';
@@ -10,12 +10,13 @@ import ErrorBoundary from './ErrorBoundary';
 import { Page, Eyebrow, H1, Lead, Meta, Prose, Button, Badge, Card, ArrowRight } from './ui';
 import { Blocks, Inline } from '../lib/markup';
 import { enterTestFullscreen } from '../utils/fullscreen';
+import { recordResult, RESULT_LABELS } from '../utils/checkupStore';
 import {
   getCategory,
-  getLazyTool,
   getRelatedTests,
   hasFullscreen,
   infoPath,
+  loadTool,
   prefetchTest,
   testPath,
   tests,
@@ -36,10 +37,15 @@ const Badges = styled.div`
 
 const Actions = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
   margin-top: 1.5rem;
+`;
+
+const SeeLink = styled.a`
+  color: var(--accent);
+  font-weight: 550;
 `;
 
 const Layout = styled.div`
@@ -113,6 +119,26 @@ const ToolCard = styled(Card)`
   margin-bottom: 2rem;
   padding: 1.5rem;
   min-height: 220px;
+`;
+
+const CheckupPrompt = styled.div`
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+
+  p {
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
 `;
 
 const LookFor = styled.section`
@@ -190,18 +216,22 @@ const NextUp = styled(Link)`
   }
 `;
 
+function LoadedTool({ test }) {
+  const Tool = use(loadTool(test));
+  return <Tool />;
+}
+
 /** Inline tools are interactive and browser-only, so they mount after hydration. */
 function InlineTool({ test }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const Tool = getLazyTool(test);
   const fallback = <p style={{ color: 'var(--text-subtle)' }}>Loading tool…</p>;
   return (
     <ToolCard as="section" aria-label={`${test.name} tool`}>
       <ErrorBoundary label="tool" resetKey={test.slug}>
-        {mounted && Tool ? (
+        {mounted ? (
           <Suspense fallback={fallback}>
-            <Tool />
+            <LoadedTool test={test} />
           </Suspense>
         ) : (
           fallback
@@ -218,92 +248,29 @@ const SETUP_TIPS = [
   'Set browser zoom to 100%.',
 ];
 
-const InfoPage = ({ test: entry }) => {
-  const navigate = useNavigate();
+function FullIntro({ entry }) {
+  const test = useFullEntry(entry);
+  const text = test.page?.intro || test.summary;
+  if (!text) return null;
+  return (
+    <Lead>
+      <Inline text={text} />
+    </Lead>
+  );
+}
+
+function InfoDetails({ entry }) {
   const test = useFullEntry(entry);
   const { page } = test;
-  const category = getCategory(test.category);
   const related = getRelatedTests(test);
-  const meta = getRouteMeta(infoPath(test));
-  const fullscreen = hasFullscreen(test);
-
   const sameCategory = tests.filter((t) => t.category === test.category);
   const idx = sameCategory.findIndex((t) => t.slug === test.slug);
   const next = sameCategory[idx + 1] || related[0];
-
-  const start = async () => {
-    try {
-      await enterTestFullscreen();
-    } catch {
-      // Fullscreen can be refused (iOS, iframes); the test still works windowed.
-    }
-    navigate(testPath(test));
-  };
-
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: test.name,
-    description: meta.description,
-    url: `${SITE.url}${infoPath(test)}`,
-    applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any (web browser)',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    isAccessibleForFree: true,
-    ...(page.lastReviewed ? { dateModified: page.lastReviewed } : {}),
-  };
-
   const sections = page.sections || [];
   const adAfter = Math.min(1, sections.length - 1);
 
   return (
-    <Page>
-      <JsonLd data={schema} />
-      <Breadcrumbs items={meta.breadcrumbs} />
-      <Header>
-        {category ? <Eyebrow>{category.label}</Eyebrow> : null}
-        <H1>{page.title || test.name}</H1>
-        {test.badges?.length ? (
-          <Badges>
-            {test.badges.map((b) => (
-              <Badge key={b} $tone={b === 'New' ? 'new' : undefined}>
-                {b}
-              </Badge>
-            ))}
-          </Badges>
-        ) : null}
-        <Lead>
-          <Inline text={page.intro} />
-        </Lead>
-        {test.photosensitive ? (
-          <Warning role="note">
-            <strong>Photosensitivity warning:</strong> this test flashes or flickers rapidly. Skip it if
-            you are sensitive to flashing lights.
-          </Warning>
-        ) : null}
-        {fullscreen ? (
-          <Actions>
-            <Button
-              type="button"
-              onClick={start}
-              onMouseEnter={() => prefetchTest(test)}
-              onFocus={() => prefetchTest(test)}
-            >
-              {page.startLabel || `Start ${test.shortName || test.name}`}
-              <ArrowRight />
-            </Button>
-            {page.lookFor ? (
-              <a href="#what-to-look-for" style={{ color: 'var(--accent)' }}>
-                What you should see
-              </a>
-            ) : null}
-          </Actions>
-        ) : null}
-        {page.lastReviewed ? <Meta>Last reviewed {page.lastReviewed}</Meta> : null}
-      </Header>
-
-      {test.inlineTool ? <InlineTool test={test} /> : null}
-
+    <>
       <Layout>
         <div>
           <Prose>
@@ -424,6 +391,115 @@ const InfoPage = ({ test: entry }) => {
         </Sidebar>
       </Layout>
       <AdSlot slot="belowContent" margin="3rem 0 0" />
+    </>
+  );
+}
+
+const InfoPage = ({ test: entry }) => {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const { page } = entry;
+  const category = getCategory(entry.category);
+  const meta = getRouteMeta(infoPath(entry));
+  const fullscreen = hasFullscreen(entry);
+  const checkupMode = new URLSearchParams(search).has('checkup') && Boolean(entry.checkup);
+
+  useEffect(() => {
+    prefetchTest(entry);
+  }, [entry]);
+
+  const answerCheckup = (result) => {
+    recordResult(entry.slug, result);
+    navigate('/checkup');
+  };
+
+  const start = async () => {
+    try {
+      await enterTestFullscreen();
+    } catch {
+      // Fullscreen can be refused (iOS, iframes); the test still works windowed.
+    }
+    navigate(testPath(entry));
+  };
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: entry.name,
+    description: meta.description,
+    url: `${SITE.url}${infoPath(entry)}`,
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Any (web browser)',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    isAccessibleForFree: true,
+    ...(page.lastReviewed ? { dateModified: page.lastReviewed } : {}),
+  };
+
+  return (
+    <Page>
+      <JsonLd data={schema} />
+      <Breadcrumbs items={meta.breadcrumbs} />
+      <Header>
+        {category ? <Eyebrow>{category.label}</Eyebrow> : null}
+        <H1>{page.title || entry.name}</H1>
+        {entry.badges?.length ? (
+          <Badges>
+            {entry.badges.map((b) => (
+              <Badge key={b} $tone={b === 'New' ? 'new' : undefined}>
+                {b}
+              </Badge>
+            ))}
+          </Badges>
+        ) : null}
+        <Suspense fallback={entry.summary ? <Lead>{entry.summary}</Lead> : null}>
+          <FullIntro entry={entry} />
+        </Suspense>
+        {entry.photosensitive ? (
+          <Warning role="note">
+            <strong>Photosensitivity warning:</strong> this test flashes or flickers rapidly. Skip it if
+            you are sensitive to flashing lights.
+          </Warning>
+        ) : null}
+        {fullscreen ? (
+          <Actions>
+            <Button
+              type="button"
+              onClick={start}
+              onMouseEnter={() => prefetchTest(entry)}
+              onFocus={() => prefetchTest(entry)}
+            >
+              {page.startLabel || `Start ${entry.shortName || entry.name}`}
+              <ArrowRight />
+            </Button>
+            {page.lookFor ? <SeeLink href="#what-to-look-for">What you should see</SeeLink> : null}
+          </Actions>
+        ) : null}
+        {page.lastReviewed ? <Meta>Last reviewed {page.lastReviewed}</Meta> : null}
+      </Header>
+
+      {checkupMode ? (
+        <CheckupPrompt>
+          <p>
+            <strong>Checkup:</strong> {entry.checkup.question}
+          </p>
+          <div className="row">
+            {['pass', 'minor', 'fail'].map((result) => (
+              <Button key={result} type="button" $variant="secondary" onClick={() => answerCheckup(result)}>
+                {RESULT_LABELS[result]}
+              </Button>
+            ))}
+            <Button type="button" $variant="ghost" onClick={() => navigate('/checkup')}>
+              Back to checkup
+            </Button>
+          </div>
+        </CheckupPrompt>
+      ) : null}
+
+      {entry.inlineTool ? <InlineTool test={entry} /> : null}
+
+      <Suspense fallback={<p style={{ color: 'var(--text-subtle)', margin: '0 0 2rem' }}>Loading…</p>}>
+        <InfoDetails entry={entry} />
+      </Suspense>
     </Page>
   );
 };

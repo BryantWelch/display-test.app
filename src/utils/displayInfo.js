@@ -70,15 +70,30 @@ const gcd = (a, b) => (b ? gcd(b, a % b) : a);
 
 export function aspectLabel(w, h) {
   if (!w || !h) return null;
+  const portrait = h > w;
+  const long = portrait ? h : w;
+  const short = portrait ? w : h;
   const known = [
     [16, 9], [16, 10], [21, 9], [32, 9], [4, 3], [5, 4], [3, 2], [64, 27], [43, 18], [12, 5],
   ];
-  const ratio = w / h;
-  for (const [a, b] of known) {
-    if (Math.abs(ratio - a / b) < 0.02) return a === 64 ? '21:9 (64:27)' : a === 43 ? '21:9 (43:18)' : a === 12 ? '21:9 (12:5)' : `${a}:${b}`;
+  const ratio = long / short;
+  let best = null;
+  let bestDiff = 0.02;
+  for (const k of known) {
+    const diff = Math.abs(ratio - k[0] / k[1]);
+    if (diff < bestDiff) [best, bestDiff] = [k, diff];
   }
-  const d = gcd(w, h);
-  return `${w / d}:${h / d}`;
+  let a;
+  let b;
+  if (best) [a, b] = best;
+  else {
+    const d = gcd(long, short);
+    [a, b] = [long / d, short / d];
+    if (a > 50) return portrait ? `1:${ratio.toFixed(2)}` : `${ratio.toFixed(2)}:1`;
+  }
+  const label = portrait ? `${b}:${a}` : `${a}:${b}`;
+  const ultrawide = a === 64 || a === 43 || (a === 12 && b === 5);
+  return ultrawide ? `${portrait ? '9:21' : '21:9'} (${label})` : label;
 }
 
 /** Subscribe to changes when the window moves between monitors or settings change. */

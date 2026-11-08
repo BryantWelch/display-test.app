@@ -48,10 +48,11 @@ function drawText(ctx, x, y, width, rowH, fontPx) {
 
 function drawLinePairs(ctx, { pad, y, width, height, fontPx }) {
   const labelH = Math.round(fontPx * 1.8);
+  const topGap = Math.round(labelH / 2);
   const gap = Math.max(4, Math.round(fontPx * 0.6));
   const cols = LINE_PAIRS.length;
   const cellW = Math.floor((width - pad * 2 - gap * (cols - 1)) / cols);
-  const blockH = Math.min(Math.floor((height - y - pad - labelH * 3) / 2), cellW * 2);
+  const blockH = Math.min(Math.floor((height - y - pad - topGap - labelH * 3) / 2), cellW * 2);
   if (cellW < 8 || blockH < 8) return;
 
   ctx.font = `${fontPx}px ${FONT}`;
@@ -62,7 +63,7 @@ function drawLinePairs(ctx, { pad, y, width, height, fontPx }) {
     { title: 'Horizontal 1-px lines — blur here (but not above) means 4:2:0', vertical: false },
   ];
 
-  y += labelH / 2;
+  y += topGap;
   ctx.fillStyle = '#d1d5db';
   LINE_PAIRS.forEach(([name], i) => {
     ctx.fillText(name, pad + i * (cellW + gap), Math.round(y + labelH / 2));
@@ -142,9 +143,11 @@ const ChromaTest = () => {
           <Section>
             <h3>How to read it</h3>
             <Hint style={{ marginTop: 0 }}>
-              Vertical colored lines merge into one flat color under 4:2:2 and 4:2:0. Horizontal colored lines only
-              merge under 4:2:0. White/black lines carry no color and should stay sharp in every mode — if they blur
-              too, the problem is scaling or sharpness, not chroma.
+              Vertical colored lines lose their separate colors and blend into one muddy tint under 4:2:2 and 4:2:0
+              (faint light/dark stripes may remain). Horizontal colored lines only blend under 4:2:0. White/black lines
+              carry no color and should stay sharp in every mode — if they blur too, the problem is scaling or
+              sharpness, not chroma. On Windows, Chrome and Edge add ClearType’s red and blue edges to the text rows
+              even in 4:4:4; judge those rows against the white-on-black row, and trust the line pairs.
             </Hint>
           </Section>
           <Section>

@@ -4,7 +4,7 @@ export default {
   category: 'clarity',
   name: 'Chroma Subsampling Test (4:4:4)',
   shortName: 'Chroma 4:4:4',
-  badges: ['New'],
+  badges: [],
   summary: 'Check whether your TV or monitor shows full 4:4:4 color or blurs colored text with 4:2:2 / 4:2:0.',
   seo: {
     title: 'Chroma Subsampling Test — Check 4:4:4 vs 4:2:2 vs 4:2:0 | TV as Monitor',
@@ -19,7 +19,7 @@ export default {
   page: {
     title: 'Chroma Subsampling Test (4:4:4)',
     intro:
-      'Colored text looks smeared on your TV-as-monitor even though everything else is sharp? That’s chroma subsampling. This pixel-exact chart shows whether your display is receiving full **4:4:4** color, or **4:2:2** / **4:2:0**, and the fixes below cover every major GPU and TV brand.',
+      'Colored text looks smeared on your TV-as-monitor even though everything else is sharp? That’s chroma subsampling. This pixel-exact chart shows whether your display is receiving full **4:4:4** color, or **4:2:2** / **4:2:0**, and the fixes below cover the major GPU and TV brands.',
     startLabel: 'Start chroma test',
     lastReviewed: '2026-11-07',
     sections: [
@@ -50,12 +50,12 @@ export default {
               'Set the display to its native resolution and **100% or 200% scaling** so the chart maps 1:1 to panel pixels. Turn off TV sharpness and noise reduction.',
               'Click **Start chroma test** and sit close to the screen.',
               'Compare the colored rows with the **white on black** and **black on white** rows at the top. In 4:4:4 every row is equally crisp.',
-              'Look at the line pairs. If the **vertical** colored lines melt into a flat color but the **horizontal** ones stay striped, the signal is **4:2:2**. If both melt, it’s **4:2:0**.',
+              'Look at the line pairs. If the **vertical** colored lines lose their separate colors and blend into one muddy tint (faint light/dark stripes may remain) but the **horizontal** ones keep both colors, the signal is **4:2:2**. If both blend, it’s **4:2:0**.',
               'If the white/black lines also blur, the issue is scaling, overscan, or sharpness processing rather than chroma — check the [test patterns](/test-patterns) page.',
             ],
           },
           {
-            note: 'Red on blue, blue on red, and magenta on green are the most sensitive rows. Dark blue text on black is naturally hard to read on any display — compare it with the same row after a settings change rather than judging it alone.',
+            note: 'Red on blue, blue on red, and magenta on green are the most sensitive rows. Dark blue text on black is naturally hard to read on any display — compare it with the same row after a settings change rather than judging it alone. On Windows, Chrome and Edge draw this text with ClearType, so thin red and blue edges can show even in 4:4:4, including on the white-on-black row. Subsampling is when the colored rows are worse than that row. The line pairs are drawn as pixels, not text, so ClearType doesn’t affect them.',
           },
         ],
       },
@@ -70,7 +70,7 @@ export default {
               '**HDR.** Turning on HDR increases bit depth, which often pushes the link over its limit and triggers subsampling.',
               '**Driver defaults.** GPUs sometimes pick YCbCr 4:2:2 or 4:2:0 automatically over HDMI, especially with TVs whose EDID advertises it.',
               '**Adapters, docks, and long cables.** A DisplayPort-to-HDMI adapter or USB-C dock limited to HDMI 2.0 can force subsampling at high refresh rates.',
-              '**Game consoles.** Xbox and PlayStation output 4:2:0/4:2:2 for video and many games by default; that’s normal and not a problem for games.',
+              '**Game consoles.** Xbox and PlayStation can switch to YCbCr 4:2:2 or 4:2:0 for video playback and for 4K HDR over HDMI 2.0; that’s normal and hard to notice in games and movies.',
             ],
           },
         ],
@@ -86,6 +86,7 @@ export default {
               '**AMD:** AMD Software → Settings → Display → **Pixel Format** → **RGB 4:4:4 Full RGB** (or YCbCr 4:4:4).',
               '**Intel:** Intel Graphics Command Center / Intel Arc Control → Display → Color → set **RGB** or **YCbCr 4:4:4** output.',
               '**macOS:** Macs choose the format automatically. Use a DisplayPort/USB-C or HDMI 2.1-capable connection, and if the TV still shows 4:2:2, try lowering refresh rate or turning off HDR.',
+              'If you choose **Full** range RGB, set the TV’s black level to match (LG **Black Level: High**, Samsung **HDMI Black Level: Normal**) or shadows will crush — check with the [black level test](/black-level).',
               'If 4:4:4 isn’t offered, lower refresh rate (for example 4K120 → 4K60), turn off HDR, or drop to 8-bit color — and use a certified **Ultra High Speed HDMI** cable on an HDMI 2.1 port.',
             ],
           },
@@ -107,12 +108,12 @@ export default {
       good: [
         'Every colored text row is as sharp as the white-on-black row.',
         'All 1-pixel line pairs show clear stripes when you look closely.',
-        'Thin red, blue, and purple text has clean edges with no colored smudging.',
+        'Thin red, blue, and purple text is no more fringed than the white-on-black row.',
       ],
       bad: [
         'Red on blue or magenta on green text is blurry or smeared while gray text is sharp — 4:2:2 or 4:2:0.',
-        'Vertical colored lines merge into one color but horizontal lines stay striped — 4:2:2.',
-        'Both vertical and horizontal colored lines merge — 4:2:0.',
+        'Vertical colored lines blend into one muddy tint but horizontal lines keep both colors — 4:2:2.',
+        'Both vertical and horizontal colored lines blend — 4:2:0.',
         'Even white/black lines blur — check scaling, overscan, and TV sharpness instead.',
       ],
     },

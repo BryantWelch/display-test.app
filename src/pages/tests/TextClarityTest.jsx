@@ -63,7 +63,7 @@ const Fill = styled.div`
 
 const Columns = styled.div`
   height: 100%;
-  padding: 2.5rem 3rem;
+  padding: 4.5rem 3rem 2.5rem;
   column-width: 32em;
   column-gap: 3em;
   column-fill: auto;
@@ -164,7 +164,7 @@ const Warning = styled.p`
 
 const SampleGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   margin-top: 0.75rem;
 
@@ -214,7 +214,7 @@ const CanvasBox = styled.div`
 
 const TileRow = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
   margin-top: 0.75rem;
 
@@ -304,7 +304,12 @@ function drawTile(ctx, { width, height }, kind) {
       if (kind === 'white-lines') rgb = x % 2 === 0 ? [255, 255, 255] : [0, 0, 0];
       else if (kind === 'black-lines') rgb = x % 2 === 0 ? [0, 0, 0] : [255, 255, 255];
       else if (kind === 'rgb-columns') rgb = [[255, 0, 0], [0, 255, 0], [0, 0, 255]][x % 3];
-      else rgb = x % 4 === 0 && y % 4 === 0 ? [255, 255, 255] : [0, 0, 0];
+      else if (kind === 'checker') rgb = (x + y) % 2 === 0 ? [255, 255, 255] : [0, 0, 0];
+      else if (kind === 'edges') {
+        const band = Math.floor((x * 5) / width);
+        const inner = y >= height / 4 && y < (height * 3) / 4;
+        rgb = inner && band === 1 ? [0, 0, 0] : inner && band === 3 ? [255, 255, 255] : [128, 128, 128];
+      } else rgb = x % 4 === 0 && y % 4 === 0 ? [255, 255, 255] : [0, 0, 0];
       const p = (y * width + x) * 4;
       d[p] = rgb[0];
       d[p + 1] = rgb[1];
@@ -318,8 +323,10 @@ function drawTile(ctx, { width, height }, kind) {
 const TILES = [
   { kind: 'white-lines', caption: '1px white lines on black' },
   { kind: 'black-lines', caption: '1px black lines on white' },
+  { kind: 'checker', caption: '1px checkerboard' },
   { kind: 'rgb-columns', caption: '1px red / green / blue columns' },
   { kind: 'dots', caption: 'Single white pixels' },
+  { kind: 'edges', caption: 'Edges on gray (sharpness halos)' },
 ];
 
 const LAYOUT_ROWS = [
@@ -404,8 +411,10 @@ function FringingView({ family, weight, fontTick }) {
         <p>
           With a magnifier or a phone camera in macro / 2–3× zoom mode, these tiles reveal the physical
           subpixel layout: three vertical stripes per pixel on most LCDs, a triangle of dots on QD-OLED, and
-          four stripes including a white one on WOLED. At normal distance the line tiles should look like an
-          even gray, not shimmer or show bands.
+          four stripes including a white one on WOLED. At normal distance the line and checkerboard tiles
+          should look like an even gray, not shimmer or show bands. On the edge tile, a bright or dark
+          outline hugging the black and white blocks is overshoot from the monitor’s sharpness setting:
+          lower sharpness until it disappears.
         </p>
         <TileRow>
           {TILES.map((t) => (
@@ -482,10 +491,20 @@ const TextClarityTest = () => {
   }, [family, weight]);
 
   useEffect(() => {
-    const update = () => setDpr(window.devicePixelRatio || 1);
+    let mq;
+    const update = () => {
+      const value = window.devicePixelRatio || 1;
+      setDpr(value);
+      mq?.removeEventListener('change', update);
+      mq = window.matchMedia?.(`(resolution: ${value}dppx)`);
+      mq?.addEventListener('change', update);
+    };
     update();
     window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      mq?.removeEventListener('change', update);
+    };
   }, []);
 
   const handleReset = () => {
@@ -504,10 +523,16 @@ const TextClarityTest = () => {
   };
 
   const shortcuts = [
-    { key: 'ArrowUp', label: 'Larger text', action: () => setSize((s) => Math.min(72, s + 1)) },
-    { key: 'ArrowDown', label: 'Smaller text', action: () => setSize((s) => Math.max(8, s - 1)) },
+    ...(view === 'text'
+      ? [
+          { key: 'ArrowUp', label: 'Larger text', action: () => setSize((s) => Math.min(72, s + 1)) },
+          { key: 'ArrowDown', label: 'Smaller text', action: () => setSize((s) => Math.max(8, s - 1)) },
+        ]
+      : []),
     { key: 'v', label: 'Next view', action: () => cycle(VIEWS, view, setView) },
-    { key: 'c', label: 'Next color scheme', action: () => cycle(SCHEMES, scheme, setScheme) },
+    ...(view !== 'fringing'
+      ? [{ key: 'c', label: 'Next color scheme', action: () => cycle(SCHEMES, scheme, setScheme) }]
+      : []),
   ];
 
   const textStyle = {
@@ -517,10 +542,7 @@ const TextClarityTest = () => {
     letterSpacing: `${letterSpacing}px`,
     color: colors.fg,
   };
-  const devicePx = (s) => {
-    const v = s * dpr;
-    return Number.isInteger(v) ? String(v) : v.toFixed(1);
-  };
+  const devicePx = (s) => String(Math.round(s * dpr * 100) / 100);
 
   return (
     <TestShell

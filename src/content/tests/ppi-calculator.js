@@ -4,12 +4,12 @@ export default {
   category: 'utilities',
   name: 'PPI Calculator',
   shortName: 'PPI Calculator',
-  badges: ['New'],
+  badges: [],
   summary: 'Pixel density, dot pitch, physical size, and “retina” distance for any screen.',
   seo: {
     title: 'PPI Calculator — Pixels Per Inch, Dot Pitch & Retina Distance',
     description:
-      'Calculate PPI (pixel density) from resolution and screen size. Get dot pitch, width and height in inches and cm, aspect ratio, retina viewing distance, and recommended scaling. Pre-filled with your screen.',
+      'Calculate PPI from resolution and screen size. Get dot pitch, width and height in inches and cm, retina viewing distance, and suggested display scaling.',
   },
   inlineTool: () => import('../../tools/PpiCalculator'),
   page: {
@@ -66,7 +66,7 @@ export default {
               ],
             },
           },
-          'Most people sit 50–80 cm from a desktop monitor. If you sit closer than the retina distance you may see individual pixels or slightly jagged text, which is why 27″ 1440p looks fine at arm’s length but a 27″ 1080p can look soft.',
+          'Most people sit 50–80 cm from a desktop monitor. Closer than the retina distance, you may notice individual pixels or slightly jagged text. It’s a guideline rather than a hard cutoff: 27″ 1440p (80 cm) looks fine to most people at arm’s length, while 27″ 1080p (107 cm) often looks soft.',
         ],
       },
       {
@@ -110,7 +110,7 @@ export default {
       {
         question: 'Does higher PPI use more GPU power?',
         answer:
-          'Resolution does, not PPI. A 27″ 4K and a 32″ 4K are equally demanding to render. Higher-PPI screens at the same size usually mean more pixels, so games need more GPU power — but the desktop is usually fine.',
+          'Resolution does, not PPI. A 27″ 4K and a 32″ 4K are equally demanding to render. At the same size, higher PPI means more pixels, so games need more GPU power — but the desktop is usually fine.',
       },
     ],
   },

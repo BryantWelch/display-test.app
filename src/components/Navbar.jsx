@@ -33,13 +33,13 @@ const Logo = styled(Link)`
   align-items: center;
   gap: 0.6rem;
   font-weight: 750;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   letter-spacing: -0.01em;
   margin-right: auto;
 
   img {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
   }
 `;
 
@@ -110,27 +110,94 @@ const Cta = styled(Link)`
   }
 `;
 
+const menuLabel = `
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+`;
+
+const menuLink = `
+  display: block;
+  padding: 0.28rem 0.45rem;
+  margin-left: -0.45rem;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.35;
+
+  &:hover,
+  &.active {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+`;
+
 const Mega = styled.div`
   position: absolute;
-  top: calc(var(--nav-height) - 0.25rem);
+  top: calc(var(--nav-height) + 0.5rem);
   left: 50%;
   transform: translateX(-50%);
-  width: min(1100px, calc(100vw - 2rem));
+  width: min(980px, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--nav-height) - 1.5rem);
+  overflow: auto;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: 1.5rem;
+  padding: 0.7rem;
+`;
+
+const Featured = styled(NavLink)`
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem 1rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+
+  &:hover {
+    background: var(--surface-3);
+  }
+
+  .kicker {
+    ${menuLabel}
+    color: var(--accent);
+  }
+
+  .name {
+    font-weight: 650;
+    color: var(--text);
+  }
+
+  .summary {
+    flex: 1 1 16rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+`;
+
+const Columns = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.25rem 1.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  > div {
+    min-width: 0;
+    padding: 0.35rem 0.85rem 0.55rem;
+  }
+
+  > div + div {
+    border-left: 1px solid var(--border);
+  }
 
   h3 {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-subtle);
-    margin-bottom: 0.4rem;
+    ${menuLabel}
+    color: var(--accent);
+    margin: 0.7rem 0 0.35rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border);
   }
 
   ul {
@@ -138,18 +205,34 @@ const Mega = styled.div`
   }
 
   a {
-    display: block;
-    padding: 0.3rem 0.4rem;
-    margin-left: -0.4rem;
-    border-radius: 6px;
-    color: var(--text-muted);
-    font-size: 0.95rem;
+    ${menuLink}
+  }
+`;
+
+const FunRow = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.85rem;
+  margin-top: 0.15rem;
+  padding: 0.55rem 0.85rem 0.3rem;
+  border-top: 1px solid var(--border);
+
+  h3 {
+    ${menuLabel}
+    color: var(--accent);
+    margin: 0;
   }
 
-  a:hover,
-  a.active {
-    color: var(--text);
-    background: var(--surface-2);
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1rem 0.15rem;
+    list-style: none;
+  }
+
+  a {
+    ${menuLink}
   }
 `;
 
@@ -248,9 +331,14 @@ const Chevron = () => (
   </svg>
 );
 
-const TestColumns = ({ onNavigate }) =>
-  testsByCategory.map((category) => (
-    <div key={category.id}>
+const categoryById = Object.fromEntries(testsByCategory.map((category) => [category.id, category]));
+const startTest = categoryById.start?.tests[0];
+const funCategory = categoryById.fun;
+const MENU_COLUMNS = [['defects'], ['color'], ['motion', 'clarity'], ['utilities']];
+
+const CategoryBlock = ({ category, onNavigate }) =>
+  category?.tests.length ? (
+    <section>
       <h3>{category.label}</h3>
       <ul>
         {category.tests.map((t) => (
@@ -261,7 +349,47 @@ const TestColumns = ({ onNavigate }) =>
           </li>
         ))}
       </ul>
-    </div>
+    </section>
+  ) : null;
+
+const TestMenu = ({ onNavigate }) => (
+  <>
+    {startTest ? (
+      <Featured to={infoPath(startTest)} onClick={onNavigate}>
+        <span className="kicker">{categoryById.start.label}</span>
+        <span className="name">{startTest.shortName || startTest.name}</span>
+        <span className="summary">{startTest.summary}</span>
+      </Featured>
+    ) : null}
+    <Columns>
+      {MENU_COLUMNS.map((ids) => (
+        <div key={ids.join('-')}>
+          {ids.map((id) => (
+            <CategoryBlock key={id} category={categoryById[id]} onNavigate={onNavigate} />
+          ))}
+        </div>
+      ))}
+    </Columns>
+    {funCategory?.tests.length ? (
+      <FunRow>
+        <h3>{funCategory.label}</h3>
+        <ul>
+          {funCategory.tests.map((t) => (
+            <li key={t.slug}>
+              <NavLink to={infoPath(t)} onClick={onNavigate}>
+                {t.shortName || t.name}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </FunRow>
+    ) : null}
+  </>
+);
+
+const TestColumns = ({ onNavigate }) =>
+  testsByCategory.map((category) => (
+    <CategoryBlock key={category.id} category={category} onNavigate={onNavigate} />
   ));
 
 const Navbar = () => {
@@ -319,7 +447,7 @@ const Navbar = () => {
     <Bar>
       <Inner aria-label="Main">
         <Logo to="/" aria-label="Display Test home">
-          <img src={tvLogo} alt="" width="30" height="30" />
+          <img src={tvLogo} alt="" width="36" height="36" />
           Display Test
         </Logo>
 
@@ -335,8 +463,8 @@ const Navbar = () => {
               Tests <Chevron />
             </MenuToggle>
             {megaOpen ? (
-              <Mega id={megaId}>
-                <TestColumns onNavigate={close} />
+              <Mega id={megaId} aria-label="Tests">
+                <TestMenu onNavigate={close} />
               </Mega>
             ) : null}
           </li>

@@ -14,18 +14,10 @@ import Checkup from './pages/Checkup';
 import NotFound from './pages/NotFound';
 import { getTest, getGuide, getLazyTest, hasFullscreen, infoPath } from './registry';
 
-const PageFallback = () => <div style={{ minHeight: '100vh' }} aria-busy="true" />;
-
 const InfoRoute = () => {
   const { slug } = useParams();
   const test = getTest(slug);
-  return test ? (
-    <Suspense fallback={<PageFallback />}>
-      <InfoPage test={test} />
-    </Suspense>
-  ) : (
-    <NotFound />
-  );
+  return test ? <InfoPage test={test} /> : <NotFound />;
 };
 
 const TestRoute = () => {
@@ -35,7 +27,24 @@ const TestRoute = () => {
   const Test = getLazyTest(test);
   return (
     <ErrorBoundary label="test" resetKey={slug} backHref={infoPath(test)}>
-      <Suspense fallback={<div style={{ position: 'fixed', inset: 0, background: '#000' }} />}>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: '#000',
+              color: '#fff',
+              display: 'grid',
+              placeItems: 'center',
+              font: '600 1.25rem/1.4 Inter, system-ui, sans-serif',
+            }}
+            aria-busy="true"
+          >
+            {test.name}
+          </div>
+        }
+      >
         <Test />
       </Suspense>
     </ErrorBoundary>
@@ -45,13 +54,7 @@ const TestRoute = () => {
 const GuideRoute = () => {
   const { slug } = useParams();
   const guide = getGuide(slug);
-  return guide ? (
-    <Suspense fallback={<PageFallback />}>
-      <GuidePage guide={guide} />
-    </Suspense>
-  ) : (
-    <NotFound />
-  );
+  return guide ? <GuidePage guide={guide} /> : <NotFound />;
 };
 
 const App = () => (

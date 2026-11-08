@@ -4,12 +4,12 @@ export default {
   category: 'color',
   name: 'White Saturation Test',
   shortName: 'White Clipping',
-  badges: ['New'],
+  badges: [],
   summary: 'Near-white patches 235–254 on pure white to catch clipped highlights from contrast or range settings.',
   seo: {
     title: 'White Saturation Test — Check Highlight Clipping & Contrast | Free',
     description:
-      'Free full-screen white clipping test. See whether near-white highlight detail is lost because contrast is too high, the HDMI range is wrong, or a vivid / dynamic mode is stretching the image.',
+      'Free full-screen white clipping test. See if near-white highlight detail is lost to high contrast, an HDMI RGB range mismatch, or a vivid / dynamic mode.',
   },
   testSeo: {
     title: 'White Saturation Test — Fullscreen',
@@ -28,7 +28,7 @@ export default {
         id: 'what-it-shows',
         heading: 'What this test shows',
         blocks: [
-          'The screen is filled with pure white (255) and patches are placed at 235, 236 … 254 (or 215–254). Below them are near-white reference bars and a one-step ramp up to 255.',
+          'The screen is filled with pure white (255) and patches are placed at 235, 236 … 254 (or 215–254 with the wider range). Below them are near-white reference bars and a one-step ramp up to 255.',
           {
             ul: [
               '**Good** — you can tell most patches apart from the background, with only the last two or three (252–254) hard to see.',
@@ -51,7 +51,7 @@ export default {
               '**Sharpness and “detail enhancers”** can add halos and make the top steps look uneven.',
             ],
           },
-          'The **background 235** option simulates video white. Values above it (245, 254) are “whiter than white”: a TV set to limited range may show them identical to 235, which is correct for video.',
+          'The **background 235** option simulates video white. Values above it (245, 254) are “whiter than white”: a TV set to limited range may show them identical to 235, which is acceptable for video.',
         ],
       },
       {
@@ -73,7 +73,7 @@ export default {
         id: 'limits',
         heading: 'What a browser can and can’t tell you',
         blocks: [
-          'This test checks whether the display distinguishes near-white codes, not how bright white is. A browser can’t read luminance, and on Windows with HDR or Advanced Color enabled, SDR white is remapped before it reaches the panel. Test in SDR mode for clean results. Laptop and phone panels with automatic brightness or content-adaptive contrast can change the result between seconds — turn those off.',
+          'This test checks whether the display distinguishes near-white codes, not how bright white is. A browser can’t read luminance, and on Windows with HDR or Advanced Color enabled, SDR white is remapped before it reaches the panel. Test in SDR mode for clean results. Laptop and phone panels with automatic brightness or content-adaptive contrast can change the result from second to second — turn those off. A calibration (ICC) profile, or a GPU set to output limited range, can also merge neighboring near-white steps before they reach the display.',
         ],
       },
     ],
@@ -117,7 +117,7 @@ export default {
       {
         question: 'How many patches should I be able to see?',
         answer:
-          'On a well-adjusted display, nearly all of them. Not seeing 253–254 is common and fine. If 245 and below disappear, contrast is too high or the range is mismatched.',
+          'On a well-adjusted display, nearly all of them. Not seeing 253–254 is common and fine. If everything from about 245 up blends into the background, contrast is too high or the range is mismatched.',
       },
       {
         question: 'Does contrast or brightness control white?',
@@ -132,7 +132,7 @@ export default {
       {
         question: 'Why do patches look tinted?',
         answer:
-          'If one color channel reaches its maximum before the others, near-white shades shift toward the remaining colors. Lowering contrast or choosing a different color temperature preset usually fixes it.',
+          'If one color channel reaches its maximum before the others, the top steps differ from white only in the other channels, so they take on that channel’s tint (pinkish if red clips first). Lowering contrast or choosing a different color temperature preset usually fixes it.',
       },
     ],
   },

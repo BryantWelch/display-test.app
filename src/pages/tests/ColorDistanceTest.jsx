@@ -119,10 +119,17 @@ const ColorDistanceTest = () => {
   const labelColor = isLight(bgRgb) ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
 
   const setChannelValue = (c, v) => setTarget(toHex({ ...target, [c]: clamp(v) }));
-  const nudgeAll = (delta) =>
+  const nudgeDiff = (delta) =>
     setFg((hex) => {
       const c = toRgb(hex);
-      return toHex({ r: c.r + delta, g: c.g + delta, b: c.b + delta });
+      const same = CHANNELS.every((k) => c[k] === bgRgb[k]);
+      const away = isLight(bgRgb) ? -1 : 1;
+      const next = {};
+      for (const k of CHANNELS) {
+        const s = Math.sign(c[k] - bgRgb[k]);
+        next[k] = delta > 0 ? c[k] + (same ? away : s) : c[k] - s;
+      }
+      return toHex(next);
     });
   const swap = () => {
     setBg(fg);
@@ -156,11 +163,15 @@ const ColorDistanceTest = () => {
 
   const shortcuts = [
     { key: 'm', label: 'Switch mode', action: () => setMode((m) => (m === 'pair' ? 'staircase' : 'pair')) },
-    { key: 's', label: 'Swap colors', action: swap },
-    { key: 'ArrowUp', label: 'Patch +1 (all channels)', action: () => nudgeAll(1) },
-    { key: 'ArrowDown', label: 'Patch −1 (all channels)', action: () => nudgeAll(-1) },
-    { key: 'l', label: 'Show / hide step labels', action: () => setShowLabels((v) => !v) },
+    ...(mode === 'pair'
+      ? [
+          { key: 's', label: 'Swap colors', action: swap },
+          { key: 'ArrowUp', label: 'Larger difference (1 step)', action: () => nudgeDiff(1) },
+          { key: 'ArrowDown', label: 'Smaller difference (1 step)', action: () => nudgeDiff(-1) },
+        ]
+      : [{ key: 'l', label: 'Show / hide step labels', action: () => setShowLabels((v) => !v) }]),
   ];
+  const anyClipped = STEPS.some((n) => stepColor(n).clipped);
 
   const diff = CHANNELS.map((c) => `${c.toUpperCase()} ${signed(fgRgb[c] - bgRgb[c])}`).join(' · ');
 
@@ -312,6 +323,12 @@ const ColorDistanceTest = () => {
                   Each patch differs from the background by 1, 2, 3, 4, 6 or 8 code values. Shuffle, count the
                   patches you can see, then reveal the labels. Near black and near white are the hardest.
                 </Hint>
+                {anyClipped && (
+                  <Hint>
+                    Some steps hit the 0–255 limit and are clipped, so they can’t differ by the full amount. Switch
+                    the direction or pick a different base color.
+                  </Hint>
+                )}
               </Section>
             </>
           )}
@@ -320,7 +337,7 @@ const ColorDistanceTest = () => {
     >
       <Stage>
         {mode === 'pair' ? (
-          <Patch style={{ background: fg }} aria-label="Patch color" />
+          <Patch role="img" style={{ background: fg }} aria-label="Patch color" />
         ) : (
           <Staircase>
             {order.map((n) => {

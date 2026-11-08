@@ -4,12 +4,12 @@ export default {
   category: 'motion',
   name: 'Refresh Rate Test',
   shortName: 'Refresh Rate',
-  badges: ['New', 'Popular'],
+  badges: ['Popular'],
   summary: 'Check your monitor’s real refresh rate (Hz) live, with a frame-time graph and dropped-frame count.',
   seo: {
     title: 'Refresh Rate Test — Is My Monitor Really 144Hz? Check Hz Online',
     description:
-      'Free refresh rate test: see the real Hz your monitor is running at (60, 120, 144, 165, 240 Hz+), with a live frame-time graph. Find out why a 144Hz monitor shows 60Hz and how to fix it.',
+      'Free refresh rate test: see the real Hz your monitor runs at (60, 144, 240 Hz+) with a live frame-time graph, and fix a 144Hz monitor stuck at 60Hz.',
   },
   inlineTool: () => import('../../tools/RefreshRateTool'),
   checkup: { step: 10, question: 'Does the measured refresh rate match what your monitor is advertised at?' },
@@ -23,11 +23,12 @@ export default {
         id: 'how-it-works',
         heading: 'How a browser measures refresh rate',
         blocks: [
-          'Browsers draw a new frame once per display refresh. This page times every one of those frames and takes the median interval: 6.94 ms per frame means 144 Hz, 4.17 ms means 240 Hz. The big number is snapped to the nearest standard rate. The smaller figure is the raw measurement — 143.98 Hz on a “144 Hz” monitor is normal.',
+          'Browsers draw a new frame once per display refresh. This page times every one of those frames over the last 240 and works out the average refresh interval, ignoring stalls: 6.94 ms per frame means 144 Hz, 4.17 ms means 240 Hz. The big number is snapped to the nearest standard rate when the measurement is within 3% of one. The smaller figure is the raw measurement — 143.98 Hz on a “144 Hz” monitor is normal.',
+          'Because it times the browser, it can only see as many frames as the browser draws. Browser frame caps, energy saver modes, and background tabs lower the number even if the monitor itself runs faster. It also can’t see frames the monitor drops after they leave the graphics card.',
           {
             ul: [
-              '**Frame time** — the median time between frames.',
-              '**Jitter** — how much frame times vary. Under about 0.5 ms is very steady.',
+              '**Frame time** — the measured time per refresh.',
+              '**Jitter** — how much normal frame times vary (dropped frames are counted separately). Under about 0.5 ms is very steady.',
               '**Dropped** — frames that took more than 1.5× as long as usual. A few while the page loads or you scroll are normal.',
               '**Graph** — the last 240 frames. A flat line is ideal; red spikes are late or dropped frames.',
             ],
@@ -39,16 +40,16 @@ export default {
         id: 'stuck-at-60',
         heading: 'Why does my 144 Hz monitor show 60 Hz?',
         blocks: [
-          'If the test reads 60 Hz on a high-refresh monitor, the browser is almost always telling the truth: the display really is running at 60 Hz. Work through these in order:',
+          'If the test reads 60 Hz on a high-refresh monitor, the display is usually really running at 60 Hz, or something is capping the browser. Work through these in order:',
           {
             ol: [
-              '**The refresh rate isn’t set.** Windows often defaults new monitors to 60 Hz. Go to Settings → System → Display → Advanced display → **Choose a refresh rate** and pick the highest option.',
-              '**Cable or port can’t carry it.** DisplayPort 1.4 handles 1440p at 240 Hz and 4K at 144 Hz (with DSC). HDMI 2.0 tops out around 1440p at 144 Hz and 4K at 60 Hz. For 4K above 60 Hz over HDMI you need HDMI 2.1 on both ends and an Ultra High Speed cable. Old, long, or adapter cables often limit you to 60 Hz.',
+              '**The refresh rate isn’t set.** Windows often defaults new monitors to 60 Hz. In Windows 11, go to Settings → System → Display → Advanced display → **Choose a refresh rate** and pick the highest fixed rate. “Dynamic” rates idle at 60 Hz on the desktop. In Windows 10 it’s Settings → System → Display → Advanced display settings → **Refresh rate**.',
+              '**Cable or port can’t carry it.** DisplayPort 1.4 handles 1440p at 240 Hz, and 4K at 144 Hz with DSC. HDMI 2.0 tops out around 1440p at 144 Hz and 4K at 60 Hz. For 4K above 60 Hz over HDMI you need HDMI 2.1 on both ends and an Ultra High Speed cable. Some monitors only reach their top rate over DisplayPort, so check the manual. Old, long, or adapter cables often limit you to 60 Hz.',
               '**Plugged into the wrong output.** On a desktop with a graphics card, the cable must go into the card, not the motherboard’s video ports. Laptops may route some ports through the integrated GPU, which may not support high refresh.',
               '**Laptop on battery.** Battery saver, “Dynamic refresh rate”, and many vendor power profiles drop the panel to 60 Hz when unplugged. Plug in and select a performance profile.',
               '**Browser throttling.** Energy saver modes in Chrome and Edge, low-power mode on phones, and background tabs all limit frame rates. Turn energy saver off and keep this tab in front.',
-              '**Multiple monitors.** The test measures the monitor the browser window is on. With mixed refresh rates (60 Hz + 144 Hz), move the window to the fast screen and press **Restart measurement**. Some older setups lock every screen to the slowest one.',
-              '**Safari.** Safari limits web pages to 60 fps on most Macs and external displays. ProMotion MacBook Pros and iPads can go to 120 Hz. Chrome and Firefox on macOS follow the display rate.',
+              '**Multiple monitors.** The test measures the monitor the browser window is on. With mixed refresh rates (60 Hz + 144 Hz), move the window to the fast screen and press **Restart measurement**. Some older setups lock every screen to the slowest one. If it still reads the other screen’s rate, try making the fast monitor your main display.',
+              '**Safari, iPhone, and iPad.** Safari limits web pages to 60 fps by default, even on 120 Hz ProMotion screens and fast external monitors. Every browser on iPhone and iPad uses Safari’s engine, so they read 60 Hz too. Chrome and Firefox on macOS follow the display rate.',
             ],
           },
           'If the test reads an odd number such as 72 Hz, 100 Hz, or 30 Hz, check for a custom resolution, a TV “PC mode”, or a power-saving mode that halves the frame rate.',
@@ -79,7 +80,7 @@ export default {
               ],
             },
           },
-          'You only get the full benefit when fps matches or exceeds Hz. A game running at 70 fps on a 144 Hz monitor shows each frame about twice. With VRR that still looks smooth, but motion is no clearer than at 70 Hz. Higher refresh rates also reduce motion blur, because each frame is held on screen for less time. See it for yourself in the [motion blur & ghosting test](/response-time).',
+          'You only get the full benefit when fps matches or exceeds Hz. Without VRR, a game running at 70 fps on a 144 Hz monitor holds each frame for about two refreshes, unevenly, which causes judder or tearing. With VRR the monitor slows to 70 Hz to match, which looks smooth, but motion is no clearer than at 70 Hz. Higher refresh rates also reduce motion blur, because each frame is held on screen for less time. See it for yourself in the [motion blur & ghosting test](/response-time).',
         ],
       },
       {
@@ -91,7 +92,7 @@ export default {
               '**macOS:** System Settings → Displays → select the monitor → **Refresh rate**. ProMotion displays show “ProMotion” — leave it on for up to 120 Hz.',
               '**Linux (GNOME/KDE):** Settings → Displays → Refresh Rate. On X11 you can also run `xrandr` to list modes and `xrandr --output DP-1 --mode 2560x1440 --rate 165` to set one.',
               '**NVIDIA Control Panel:** Display → Change resolution → Refresh rate. **AMD Software:** Settings → Display. Custom resolutions created here can override Windows.',
-              '**Android / iPhone:** high refresh is usually under Display → Motion smoothness (Android) or ProMotion is automatic (iPhone Pro). Low Power Mode caps it to 60 Hz.',
+              '**Android / iPhone:** on Android, high refresh is under Display → Motion smoothness or Smooth Display. On iPhone Pro, ProMotion is automatic, but web pages are capped at 60 fps, so this test reads 60 Hz there. Low Power Mode and battery saver cap the screen at 60 Hz.',
               '**TVs and consoles:** enable 120 Hz output in the console’s video settings, and use an HDMI 2.1 port on the TV (often only some ports support it). See [using a TV as a monitor](/guides/tv-as-monitor).',
             ],
           },
@@ -141,7 +142,7 @@ export default {
       {
         question: 'Can my browser show more than 60 fps?',
         answer:
-          'Yes. Chrome, Edge, and Firefox follow your display’s refresh rate, up to 500 Hz and beyond. Safari limits most pages to 60 fps, except on ProMotion devices.',
+          'Yes. Chrome, Edge, and Firefox on desktop and Android follow your display’s refresh rate, up to 500 Hz and beyond. Safari, and every browser on iPhone and iPad, limits pages to 60 fps by default, even on ProMotion screens.',
       },
       {
         question: 'Is a higher refresh rate always better?',

@@ -7,9 +7,9 @@ export default {
   badges: ['Popular'],
   summary: 'Cycle full-screen solid colors to spot dead, stuck, and hot pixels.',
   seo: {
-    title: 'Dead Pixel Test — Find Dead & Stuck Pixels in 30 Seconds | Free',
+    title: 'Dead Pixel Test — Find Dead, Stuck & Hot Pixels Free Online',
     description:
-      'Free full-screen dead pixel checker for LCD, OLED, laptop, and gaming monitors. Cycle solid colors with arrow keys to find dead, stuck, or hot pixels — no download.',
+      'Free full-screen dead pixel test for LCD, OLED, laptop, and phone screens. Step through solid colors to find dead, stuck, or hot pixels — no download.',
   },
   testSeo: {
     title: 'Dead Pixel Test — Fullscreen',
@@ -47,7 +47,7 @@ export default {
             ol: [
               'Wipe the screen with a dry microfiber cloth — dust looks exactly like a dead pixel.',
               'Dim the room lights and sit at your normal distance.',
-              'Click **Start dead pixel test**. Use **← / →** or **Space**, or click/tap the screen, to step through colors — or turn on auto-cycle (0.5–5 s per color).',
+              'Click **Start dead pixel test**. Use **← / →** or **Space**, or click/tap the screen, to step through colors — or turn on auto-cycle (**A**, 0.5–5 s per color). Use **Custom color** to check any other shade.',
               'On each color, scan the screen in rows: left to right, top to bottom. Spend the most time on **white**, **black**, **red**, **green**, and **blue**.',
               'If you find something, step through every color to classify it, and photograph it on the color where it’s most visible.',
             ],
@@ -99,7 +99,7 @@ export default {
     panelNotes: [
       { panel: 'IPS / VA / TN (LCD)', note: 'Stuck subpixels are the most common defect. A soft cloth press sometimes helps but can damage the panel.' },
       { panel: 'OLED / QD-OLED', note: 'Defects are rarer but can’t be massaged. Some brands treat any bright defect as a fault. Fringing around text is normal subpixel layout, not dead pixels.' },
-      { panel: 'Mini-LED', note: 'Dark halos around bright objects are local dimming, not pixels — test dead pixels with local dimming off.' },
+      { panel: 'Mini-LED', note: 'Glowing halos around bright objects on dark backgrounds (blooming) come from local dimming, not pixels. Local dimming can also hide stuck pixels on black, so test with it off.' },
     ],
     whenToReturn: [
       'Inside the retailer return window: return for **any** defect that bothers you — this is far easier than a warranty claim.',
@@ -108,7 +108,7 @@ export default {
       'Outside the return window: check the manufacturer’s pixel policy and photograph the defect on the color where it’s clearest.',
     ],
     tips: [
-      'Run at native resolution with no OS scaling so one test pixel = one panel pixel.',
+      'Go fullscreen so the taskbar and browser toolbars don’t hide the edges and corners.',
       'Turn off local dimming / dynamic contrast — they can hide hot pixels.',
       'Retest after a 15–20 minute warm-up; some stuck pixels only show when warm.',
       'Use a phone camera at 2–3× zoom to confirm a suspected pixel.',
@@ -121,7 +121,7 @@ export default {
       {
         question: 'What is the difference between a dead pixel and a stuck pixel?',
         answer:
-          'A dead pixel stays black because it isn’t receiving power. A stuck pixel stays lit in one color because one or more subpixels are always on. Stuck pixels can sometimes be revived with a pixel-flashing tool; dead pixels are permanent.',
+          'A dead pixel stays dark because it is no longer being driven (on older TN panels a dead pixel can instead stay bright). A stuck pixel stays lit in one color because one or more subpixels are always on. Stuck pixels can sometimes be revived with a pixel-flashing tool; dead pixels are permanent.',
       },
       {
         question: 'How many dead pixels are acceptable on a new monitor?',
@@ -136,7 +136,7 @@ export default {
       {
         question: 'Does this work on phones and TVs?',
         answer:
-          'Yes. Open the test in the device’s browser and go fullscreen. On phones, turn off auto-brightness; on TVs, use the TV’s own browser or cast a fullscreen tab.',
+          'Yes. Open the test in the device’s browser; it goes fullscreen where the browser allows it (iPhone Safari keeps its toolbars, so check the edges separately). On phones, turn off auto-brightness; on TVs, use the TV’s own browser or cast a fullscreen tab.',
       },
     ],
   },

@@ -4,12 +4,12 @@ export default {
   category: 'utilities',
   name: 'Screen Size & Viewing Distance Calculator',
   shortName: 'Screen Size Calculator',
-  badges: ['New'],
+  badges: [],
   summary: 'Width, height, and area from diagonal and aspect ratio — compare two screens and find the right viewing distance.',
   seo: {
-    title: 'Screen Size Calculator — Width, Height & Viewing Distance (TV & Monitor)',
+    title: 'Screen Size Calculator — Width, Height & Viewing Distance',
     description:
-      'Convert a screen’s diagonal and aspect ratio to width, height, and area in inches or cm. Compare two screens to scale, match ultrawide and 16:9 heights, and get THX and SMPTE viewing distances.',
+      'Convert a TV or monitor’s diagonal and aspect ratio to width, height, and area in inches or cm. Compare two screens to scale and get THX and SMPTE viewing distances.',
   },
   inlineTool: () => import('../../tools/ScreenSizeCalculator'),
   page: {
@@ -30,11 +30,11 @@ export default {
                 ['24″ 16:9', '53.1 cm / 20.9″', '29.9 cm / 11.8″'],
                 ['27″ 16:9', '59.8 cm / 23.5″', '33.6 cm / 13.2″'],
                 ['32″ 16:9', '70.8 cm / 27.9″', '39.8 cm / 15.7″'],
-                ['34″ 21:9 (3440 × 1440)', '79.7 cm / 31.4″', '33.4 cm / 13.1″'],
+                ['34″ 21:9 (3440 × 1440)', '79.7 cm / 31.4″', '33.3 cm / 13.1″'],
                 ['49″ 32:9', '119.8 cm / 47.2″', '33.7 cm / 13.3″'],
                 ['55″ 16:9 TV', '121.8 cm / 47.9″', '68.5 cm / 27.0″'],
                 ['65″ 16:9 TV', '143.9 cm / 56.7″', '80.9 cm / 31.9″'],
-                ['77″ 16:9 TV', '170.5 cm / 67.1″', '95.9 cm / 37.7″'],
+                ['77″ 16:9 TV', '170.5 cm / 67.1″', '95.9 cm / 37.8″'],
               ],
             },
           },
@@ -51,10 +51,10 @@ export default {
               'A **34″ 21:9** ultrawide is as tall as a **26.8″ 16:9** — think “a 27″ monitor with extra width on both sides.”',
               'A **49″ 32:9** super ultrawide is as tall as a **27.1″ 16:9** — two 27″ monitors side by side, without the bezel in the middle.',
               'A **38″ 21:9** (3840 × 1600) is about as tall as a **30″ 16:9**.',
-              'At the same diagonal, **16:10** is about 6% taller than 16:9 — more vertical room for documents and code.',
+              'At the same diagonal, **16:10** is about 8% taller than 16:9 — more vertical room for documents and code.',
             ],
           },
-          'Choose **Overlap** in the calculator to see how much extra width you get at the same height.',
+          'Compare a 34″ 21:9 with a 27″ 16:9 and choose **Overlap** in the calculator to see how much extra width you get at nearly the same height.',
         ],
       },
       {
@@ -66,7 +66,7 @@ export default {
             ul: [
               '**THX: about 40°.** Immersive, cinema-like. For a 16:9 screen this is roughly **1.2 × the diagonal** — about 1.7 m from a 55″ TV or 2 m from a 65″.',
               '**SMPTE: at least 30°.** The long-standing minimum for film and TV, roughly **1.6 × the diagonal** — about 2.3 m from a 55″ or 2.7 m from a 65″.',
-              '**Desk monitors** are usually viewed much wider — 45–60° is normal at arm’s length (50–75 cm for 24–27″). Larger monitors push you back: a 32″ is comfortable around 65–100 cm.',
+              '**Desk monitors** are usually viewed much wider — 40–60° is normal at arm’s length (50–75 cm for 24–27″). Larger monitors push you back: a 32″ is comfortable around 65–100 cm.',
             ],
           },
           {
@@ -91,7 +91,7 @@ export default {
           {
             ol: [
               'Measure from your seat to the wall or desk position where the screen will go.',
-              'Set **Your distance** in the calculator and try screen sizes until the field of view lands between 30° and 40° for a TV, or around 45–55° for a desk monitor.',
+              'Set **Your distance** in the calculator and try screen sizes until the field of view lands between 30° and 40° for a TV, or around 40–60° for a desk monitor.',
               'Check physical fit: compare the width against your TV stand or desk, and leave space for the stand and bezel.',
             ],
           },

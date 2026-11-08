@@ -4,12 +4,12 @@ export default {
   category: 'motion',
   name: 'Frame Skipping Test',
   shortName: 'Frame Skipping',
-  badges: ['New'],
+  badges: [],
   summary: 'Light one square per frame and photograph it to catch a monitor that silently drops frames.',
   seo: {
     title: 'Frame Skipping Test — Check If Your Monitor Drops Frames | Free',
     description:
-      'Free online frame skipping test. One square lights per refresh — take a slow-shutter photo to see whether your monitor (especially an overclocked one) really shows every frame.',
+      'Free frame skipping test. One square lights per refresh; a slow-shutter photo shows whether your monitor (especially an overclocked one) displays every frame.',
   },
   testSeo: {
     title: 'Frame Skipping Test — Fullscreen',
@@ -57,8 +57,9 @@ export default {
               rows: [
                 ['One unbroken run of evenly lit squares', 'No frame skipping — every frame was displayed.'],
                 ['Regular gaps (e.g. every 4th or 5th square dark)', 'The monitor is skipping frames. The real refresh rate is lower than the setting.'],
-                ['Two squares half-lit side by side', 'The shutter opened or closed mid-frame — normal at the ends of the run.'],
+                ['A dimmer square at the start or end of the run', 'The shutter opened or closed partway through that frame. This is normal.'],
                 ['One square clearly brighter than its neighbours', 'The browser delivered a frame late, so that square stayed lit for two refreshes. Check the dropped-frame count in the panel and retake the photo.'],
+                ['A single gap next to a brighter square', 'A one-off hiccup in the browser or compositor, not the monitor. Retake the photo: real frame skipping repeats at the same interval in every shot.'],
                 ['Every square lit evenly', 'The exposure was longer than the whole grid cycle — use a faster shutter or more squares.'],
               ],
             },
@@ -75,7 +76,7 @@ export default {
             ul: [
               'Lower the custom refresh rate until the photo shows no gaps. That is the true maximum for your panel.',
               'Try **reduced blanking** timings (CVT-RB / CVT-RB2) in your custom resolution tool. They lower the pixel clock and sometimes avoid skipping.',
-              'Use the monitor’s officially supported refresh rates. Out-of-spec overclocks aren’t covered by warranty.',
+              'Use the monitor’s officially supported refresh rates. Out-of-spec overclocks aren’t guaranteed to work and may not be covered by warranty.',
               'If an **advertised** refresh rate skips frames, that’s a defect — contact the seller.',
             ],
           },
@@ -90,7 +91,7 @@ export default {
       ],
       bad: [
         'Dark squares at a regular interval inside the lit run — the monitor is skipping frames.',
-        'A run noticeably shorter than expected (e.g. 6 squares at a “75 Hz” setting) — the panel is really running slower.',
+        'Fewer lit squares than the run spans (e.g. 6 lit across 7–8 positions at a “75 Hz” setting) — the panel is really running slower.',
         'The status never turns green — the browser itself is dropping frames; close other apps and retry.',
       ],
     },
@@ -117,7 +118,7 @@ export default {
       {
         question: 'What shutter speed should I use?',
         answer:
-          '1/10 s is a good default. It captures about a tenth of a second of frames, which is enough to see a pattern without wrapping around the grid. On 240 Hz and up, use more squares, or a 1/15–1/20 s shutter if the run wraps.',
+          '1/10 s is a good default. It captures about a tenth of a second of frames, which is enough to see a pattern without wrapping around the grid at the default 60 squares, even at 500 Hz. If the run does wrap (fewer squares, or a slower shutter), choose more squares or use 1/20 s.',
       },
       {
         question: 'Does frame skipping happen at the monitor’s default refresh rate?',

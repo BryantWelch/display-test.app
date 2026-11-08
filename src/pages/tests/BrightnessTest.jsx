@@ -65,7 +65,13 @@ function windowGeometry(width, height, sizePct, shape, position) {
   const bottom = position === 'bl' || position === 'br';
   const x = left ? inset : right ? width - w - inset : Math.round((width - w) / 2);
   const y = top ? inset : bottom ? height - h - inset : Math.round((height - h) / 2);
-  return { x: Math.max(0, x), y: Math.max(0, y), w, h, areaPct: (area / total) * 100 };
+  return {
+    x: Math.max(0, Math.min(x, width - w)),
+    y: Math.max(0, Math.min(y, height - h)),
+    w,
+    h,
+    areaPct: (area / total) * 100,
+  };
 }
 
 const BrightnessTest = () => {
@@ -140,6 +146,7 @@ const BrightnessTest = () => {
               options={SIZES.map((s) => ({ value: s, label: `${s}%` }))}
             />
             <Hint>HDR peak brightness is usually quoted for a 10% window; full-screen (100%) brightness is often much lower.</Hint>
+            <Hint>To set SDR brightness, choose 100% and match the white to a sheet of paper under your room light.</Hint>
           </Section>
 
           <Section>
@@ -150,7 +157,7 @@ const BrightnessTest = () => {
               columns={5}
               options={[100, 75, 50, 25, 10].map((v) => ({ value: v, label: `${v}%` }))}
             />
-            <Slider label="Signal level" value={level} min={0} max={100} onChange={setLevel} format={(v) => `${v}% (${code(v)})`} />
+            <Slider label="Window signal level" value={level} min={0} max={100} onChange={setLevel} format={(v) => `${v}% (${code(v)})`} />
           </Section>
 
           <Section>
@@ -161,7 +168,7 @@ const BrightnessTest = () => {
               columns={4}
               options={[0, 5, 10, 25].map((v) => ({ value: v, label: `${v}%` }))}
             />
-            <Slider label="Signal level" value={background} min={0} max={100} onChange={setBackground} format={(v) => `${v}% (${code(v)})`} />
+            <Slider label="Background signal level" value={background} min={0} max={100} onChange={setBackground} format={(v) => `${v}% (${code(v)})`} />
           </Section>
 
           <Section>
@@ -191,6 +198,7 @@ const BrightnessTest = () => {
     >
       <canvas
         ref={canvasRef}
+        role="img"
         aria-label="White window pattern"
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
       />

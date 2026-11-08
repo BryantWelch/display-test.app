@@ -9,6 +9,7 @@ import TestShell, {
   ButtonRow,
   Hint,
 } from '../../components/TestShell';
+import { useWakeLock } from '../../hooks/useWakeLock';
 
 const PALETTE = [
   '#38bdf8',
@@ -129,6 +130,16 @@ const parseGrid = (key, portrait) => {
   return portrait ? { cols: b, rows: a } : { cols: a, rows: b };
 };
 
+const fillCell = (ctx, cov, c, r) => {
+  const x0 = Math.round(c * cov.cw);
+  const y0 = Math.round(r * cov.ch);
+  ctx.fillRect(x0 + 1, y0 + 1, Math.round((c + 1) * cov.cw) - x0 - 1, Math.round((r + 1) * cov.ch) - y0 - 1);
+};
+
+// Browsers report 0.5 while a contact is active on hardware without pressure sensing.
+const formatPressure = ({ type, pressure }) =>
+  !pressure || (type !== 'pen' && pressure === 0.5) ? '—' : pressure.toFixed(2);
+
 const lowestFreeSlot = (map) => {
   const used = new Set([...map.values()].map((p) => p.slot));
   let s = 0;
@@ -156,6 +167,8 @@ const TouchscreenTest = () => {
   const lastStatsAt = useRef(0);
   const lastActive = useRef(0);
 
+  useWakeLock(true);
+
   const { cols, rows } = parseGrid(gridKey, size.h > size.w);
   const layoutKey = `${cols}x${rows}`;
   const hitSet = hits.key === layoutKey ? hits.set : new Set();
@@ -177,30 +190,31 @@ const TouchscreenTest = () => {
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let c = 1; c < cov.cols; c += 1) {
-      ctx.moveTo(c * cov.cell + 0.5, 0);
-      ctx.lineTo(c * cov.cell + 0.5, h);
+      ctx.moveTo(Math.round(c * cov.cw) + 0.5, 0);
+      ctx.lineTo(Math.round(c * cov.cw) + 0.5, h);
     }
     for (let r = 1; r < cov.rows; r += 1) {
-      ctx.moveTo(0, r * cov.cell + 0.5);
-      ctx.lineTo(w, r * cov.cell + 0.5);
+      ctx.moveTo(0, Math.round(r * cov.ch) + 0.5);
+      ctx.lineTo(w, Math.round(r * cov.ch) + 0.5);
     }
     ctx.stroke();
     ctx.fillStyle = COVERAGE_FILL;
     for (let i = 0; i < cov.data.length; i += 1) {
-      if (cov.data[i]) {
-        const c = i % cov.cols;
-        const r = Math.floor(i / cov.cols);
-        ctx.fillRect(c * cov.cell + 1, r * cov.cell + 1, cov.cell - 1, cov.cell - 1);
-      }
+      if (cov.data[i]) fillCell(ctx, cov, i % cov.cols, Math.floor(i / cov.cols));
     }
   }, []);
 
   const resetCoverage = useCallback(() => {
     const { w, h } = live.current.size;
-    const cellCols = Math.max(1, Math.ceil(w / cellSize));
-    const cellRows = Math.max(1, Math.ceil(h / cellSize));
+    if (!w || !h) {
+      coverage.current = null;
+      return;
+    }
+    const cellCols = Math.max(1, Math.round(w / cellSize));
+    const cellRows = Math.max(1, Math.round(h / cellSize));
     coverage.current = {
-      cell: cellSize,
+      cw: w / cellCols,
+      ch: h / cellRows,
       cols: cellCols,
       rows: cellRows,
       data: new Uint8Array(cellCols * cellRows),
@@ -234,8 +248,8 @@ const TouchscreenTest = () => {
   const markCell = (x, y) => {
     const cov = coverage.current;
     if (!cov) return;
-    const c = Math.floor(x / cov.cell);
-    const r = Math.floor(y / cov.cell);
+    const c = Math.floor(x / cov.cw);
+    const r = Math.floor(y / cov.ch);
     if (c < 0 || r < 0 || c >= cov.cols || r >= cov.rows) return;
     const i = r * cov.cols + c;
     if (cov.data[i]) return;
@@ -243,19 +257,20 @@ const TouchscreenTest = () => {
     cov.count += 1;
     const ctx = paintRef.current.getContext('2d');
     ctx.fillStyle = COVERAGE_FILL;
-    ctx.fillRect(c * cov.cell + 1, r * cov.cell + 1, cov.cell - 1, cov.cell - 1);
+    fillCell(ctx, cov, c, r);
   };
 
   // Only bridge small gaps: a large jump between events can mean a dead strip, which must stay unpainted.
   const markSegment = (x0, y0, x1, y1) => {
     const cov = coverage.current;
     if (!cov) return;
+    const cell = Math.min(cov.cw, cov.ch);
     const dist = Math.hypot(x1 - x0, y1 - y0);
-    if (dist > cov.cell * 3) {
+    if (dist > cell * 3) {
       markCell(x1, y1);
       return;
     }
-    const steps = Math.max(1, Math.ceil(dist / (cov.cell / 2)));
+    const steps = Math.max(1, Math.ceil(dist / (cell / 2)));
     for (let s = 1; s <= steps; s += 1) {
       markCell(x0 + ((x1 - x0) * s) / steps, y0 + ((y1 - y0) * s) / steps);
     }
@@ -452,10 +467,14 @@ const TouchscreenTest = () => {
   // Track TestShell's H toggle so the restore button matches its state.
   useEffect(() => {
     const onKey = (e) => {
-      if (e.ctrlKey || e.metaKey || e.altKey || e.key?.toLowerCase() !== 'h') return;
+      const key = e.key?.toLowerCase();
+      if (e.ctrlKey || e.metaKey || e.altKey || (key !== 'h' && key !== '?' && key !== '/')) return;
       const t = e.target;
-      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
-      setChromeHidden((v) => !v);
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) {
+        return;
+      }
+      if (key === 'h') setChromeHidden((v) => !v);
+      else setChromeHidden(false);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -516,7 +535,10 @@ const TouchscreenTest = () => {
             {mode === 'coverage' ? (
               <>
                 <Segmented label="Cell size" options={CELL_SIZES} value={cellSize} onChange={setCellSize} columns={3} />
-                <Hint>Drag slowly over every part of the screen. Cells that never turn green are dead zones.</Hint>
+                <Hint>
+                  Tap Hide controls first so the panel doesn’t cover part of the screen, then drag slowly over every
+                  part. Cells that never turn green are dead zones.
+                </Hint>
               </>
             ) : null}
             {mode === 'grid' ? (
@@ -549,7 +571,7 @@ const TouchscreenTest = () => {
                 ['Active now', String(stats.active)],
                 ['Max simultaneous', String(stats.max)],
                 ['Total touches', String(stats.total)],
-                ['Device reports', maxPoints ? `${maxPoints} touch points` : 'No touch support'],
+                ['Device reports', maxPoints ? `${maxPoints} touch points` : 'None reported'],
                 ...(mode === 'coverage' ? [['Coverage', pct]] : []),
                 ...(mode === 'grid' ? [['Grid cells', `${gridDone} / ${gridTotal}`]] : []),
               ]}
@@ -564,7 +586,7 @@ const TouchscreenTest = () => {
                   ['Input', last.type],
                   ['Position', `${Math.round(last.x)}, ${Math.round(last.y)}`],
                   ['Contact size', `${Math.round(last.w)} × ${Math.round(last.h)} px`],
-                  ['Pressure', last.pressure ? last.pressure.toFixed(2) : '—'],
+                  ['Pressure', formatPressure(last)],
                 ]}
               />
             </Section>

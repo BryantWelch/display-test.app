@@ -4,12 +4,12 @@ export default {
   category: 'utilities',
   name: 'Screen Ruler',
   shortName: 'Screen Ruler',
-  badges: ['New'],
+  badges: [],
   summary: 'An actual-size on-screen ruler in cm and inches, calibrated with any bank card.',
   seo: {
-    title: 'Online Ruler (Actual Size) — Calibrated Screen Ruler in cm, mm & Inches',
+    title: 'Online Ruler (Actual Size) — Calibrated Screen Ruler in cm & Inches',
     description:
-      'A real-size ruler on your screen. Calibrate in seconds with a credit card, then measure in centimeters, millimeters, or inches — and find your screen’s physical size and diagonal. Free.',
+      'A real-size ruler on your screen. Calibrate in seconds with a bank card, measure in cm, mm, or inches, and find your screen’s physical size and diagonal.',
   },
   inlineTool: () => import('../../tools/ScreenRuler'),
   page: {
@@ -45,9 +45,9 @@ export default {
           'Things that break calibration:',
           {
             ul: [
-              '**Browser zoom.** Anything other than 100% scales the ruler. The tool warns you if zoom or scaling has changed since you saved.',
+              '**Browser zoom.** Anything other than 100% scales the ruler. In Chrome, Edge, and Firefox the tool warns you if zoom or scaling has changed since you saved; Safari doesn’t report zoom, so check it yourself.',
               '**Changing OS display scaling** or resolution — recalibrate afterwards.',
-              '**Moving the window to another monitor.** Each screen needs its own calibration.',
+              '**Moving the window to another monitor.** Each screen needs its own calibration, and only one is saved per browser, so recalibrate when you switch.',
             ],
           },
           'Carefully calibrated, the ruler is usually accurate to within about 1%. For anything critical, use a physical ruler.',
@@ -79,7 +79,7 @@ export default {
     tips: [
       'Set browser zoom to 100% before calibrating.',
       'Look straight at the card — viewing at an angle makes edges appear offset.',
-      'Calibrate each monitor separately.',
+      'Recalibrate whenever you switch monitors.',
       'On phones and small tablets, turn the card upright to fit.',
     ],
     related: ['ppi-calculator', 'screen-size-calculator', 'screen-resolution', 'text-clarity'],

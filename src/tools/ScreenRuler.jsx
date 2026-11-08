@@ -1,13 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Button, ButtonRow, Hint, Segmented, Slider } from '../components/testControls';
+import { onDisplayChange } from '../utils/displayInfo';
 
 const STORAGE_KEY = 'displaytest.screenRuler.v1';
 const CARD_W_MM = 85.6;
 const CARD_H_MM = 53.98;
 const CARD_RADIUS_MM = 3.18;
 const CSS_DEFAULT_PX_PER_MM = 96 / 25.4;
-const MIN_PX_PER_MM = 2;
+const MIN_PX_PER_MM = 1;
 const MAX_PX_PER_MM = 12;
 
 function loadCalibration() {
@@ -159,7 +160,8 @@ function Ruler({ width, pxPerMm, unit }) {
   const labels = [];
   if (unit === 'cm') {
     const count = Math.floor(width / pxPerMm);
-    for (let mm = 0; mm <= count; mm += 1) {
+    const stepMm = pxPerMm >= 3 ? 1 : 5;
+    for (let mm = 0; mm <= count; mm += stepMm) {
       const x = mm * pxPerMm + 0.5;
       const len = mm % 10 === 0 ? 30 : mm % 5 === 0 ? 20 : 11;
       ticks.push(<line key={mm} x1={x} x2={x} y1={0} y2={len} />);
@@ -173,7 +175,7 @@ function Ruler({ width, pxPerMm, unit }) {
     }
   } else {
     const pxPerIn = pxPerMm * 25.4;
-    const div = pxPerIn / 16 >= 4 ? 16 : 8;
+    const div = pxPerIn / 16 >= 4 ? 16 : pxPerIn / 8 >= 4 ? 8 : 4;
     const count = Math.floor((width / pxPerIn) * div);
     for (let i = 0; i <= count; i += 1) {
       const x = (i / div) * pxPerIn + 0.5;
@@ -198,10 +200,10 @@ function Ruler({ width, pxPerMm, unit }) {
       style={{ display: 'block', background: '#f8fafc' }}
     >
       <g stroke="#0f172a" strokeWidth="1">{ticks}</g>
-      <g fill="#0f172a" fontSize="13" fontFamily="var(--font-mono)" fontWeight="600">
+      <g fill="#0f172a" fontSize="13" fontWeight="600" style={{ fontFamily: 'var(--font-mono)' }}>
         {labels}
       </g>
-      <text x={6} y={66} fill="#475569" fontSize="11" fontFamily="var(--font-sans)">
+      <text x={6} y={66} fill="#475569" fontSize="11" style={{ fontFamily: 'var(--font-sans)' }}>
         {unit === 'cm' ? 'cm' : 'in'}
       </text>
     </svg>
@@ -214,20 +216,39 @@ const ScreenRuler = () => {
   const [unit, setUnit] = useState('cm');
   const [diagInput, setDiagInput] = useState('');
   const [width, setWidth] = useState(0);
+  const [rulerWidth, setRulerWidth] = useState(0);
   const [dpr, setDpr] = useState(currentDpr);
+  const [screenSize, setScreenSize] = useState(() => ({ w: window.screen.width, h: window.screen.height }));
   const areaRef = useRef(null);
+  const rulerRef = useRef(null);
   const diagId = useId();
 
   useEffect(() => {
     const el = areaRef.current;
-    if (!el) return undefined;
+    const rulerEl = rulerRef.current;
+    if (!el || !rulerEl) return undefined;
     const ro = new ResizeObserver(() => {
       setWidth(Math.floor(el.getBoundingClientRect().width));
+      setRulerWidth(Math.floor(rulerEl.getBoundingClientRect().width));
       setDpr(currentDpr());
     });
     ro.observe(el);
+    ro.observe(rulerEl);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(
+    () =>
+      onDisplayChange(() => {
+        setDpr(currentDpr());
+        setScreenSize((prev) =>
+          prev.w === window.screen.width && prev.h === window.screen.height
+            ? prev
+            : { w: window.screen.width, h: window.screen.height }
+        );
+      }),
+    []
+  );
 
   const cardW = CARD_W_MM * pxPerMm;
   const cardH = CARD_H_MM * pxPerMm;
@@ -247,7 +268,7 @@ const ScreenRuler = () => {
   const fromDiagonal = () => {
     const d = Number(diagInput);
     if (!(d > 0)) return;
-    const value = clamp(Math.hypot(window.screen.width, window.screen.height) / (d * 25.4));
+    const value = clamp(Math.hypot(screenSize.w, screenSize.h) / (d * 25.4));
     setPxPerMm(value);
     save(value, 'diagonal');
   };
@@ -262,12 +283,14 @@ const ScreenRuler = () => {
     setPxPerMm(CSS_DEFAULT_PX_PER_MM);
   };
 
-  const screenWmm = window.screen.width / pxPerMm;
-  const screenHmm = window.screen.height / pxPerMm;
+  const screenWmm = screenSize.w / pxPerMm;
+  const screenHmm = screenSize.h / pxPerMm;
   const diagIn = Math.hypot(screenWmm, screenHmm) / 25.4;
-  const physicalW = Math.round(window.screen.width * dpr);
+  const physicalW = Math.round(screenSize.w * dpr);
   const ppi = physicalW / (screenWmm / 25.4);
-  const rulerLen = width / pxPerMm;
+  const rulerLen = rulerWidth / pxPerMm;
+  const isDefault = Math.abs(pxPerMm - CSS_DEFAULT_PX_PER_MM) < 1e-6;
+  const clipped = width > 0 && boxW > width;
 
   return (
     <div>
@@ -290,6 +313,7 @@ const ScreenRuler = () => {
             Match your card to this box
           </Card>
         </CardArea>
+        {clipped ? <Hint>The box is wider than this space, so match the card’s top and bottom edges only.</Hint> : null}
         <Slider
           label="Card size"
           value={Number(pxPerMm.toFixed(3))}
@@ -316,9 +340,14 @@ const ScreenRuler = () => {
             Your browser zoom or display scaling changed since you calibrated. Reset zoom to 100%, or recalibrate.
           </Status>
         ) : null}
-        {!saved ? (
+        {!saved && isDefault ? (
           <Status role="status" $tone="warning">
             Not calibrated yet — sizes below assume the CSS standard of 96 px per inch, which is rarely exact.
+          </Status>
+        ) : null}
+        {!isSaved && !stale && !(!saved && isDefault) ? (
+          <Status role="status" $tone="warning">
+            Not saved yet — click Save calibration to keep this size.
           </Status>
         ) : null}
 
@@ -360,7 +389,9 @@ const ScreenRuler = () => {
           value={unit}
           onChange={setUnit}
         />
-        <RulerWrap>{width > 0 ? <Ruler width={width + 32} pxPerMm={pxPerMm} unit={unit} /> : null}</RulerWrap>
+        <RulerWrap ref={rulerRef}>
+          {rulerWidth > 0 ? <Ruler width={rulerWidth} pxPerMm={pxPerMm} unit={unit} /> : null}
+        </RulerWrap>
         <Hint>
           This ruler is {unit === 'cm' ? `${(rulerLen / 10).toFixed(1)} cm` : `${(rulerLen / 25.4).toFixed(2)} in`} long
           in this window. Place small objects against the screen at the left edge.
@@ -396,8 +427,10 @@ const ScreenRuler = () => {
           </div>
         </Results>
         <Hint>
-          Calculated from the screen size your browser reports ({window.screen.width} × {window.screen.height} CSS px).
-          Accuracy depends on your calibration — within a few percent is typical.
+          Calculated from the screen size your browser reports ({screenSize.w} × {screenSize.h} CSS px).
+          {saved || !isDefault
+            ? ' Accuracy depends on your calibration — within a few percent is typical.'
+            : ' Until you calibrate, these assume 96 px per inch and are only a rough guess.'}
         </Hint>
       </Panel>
     </div>

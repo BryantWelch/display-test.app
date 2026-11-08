@@ -78,14 +78,27 @@ const ContrastTest = () => {
         {
           key: 'ArrowUp',
           label: 'More squares / bigger box',
-          action: () => (mode === 'checker' ? setGrid((g) => Math.min(64, g + 1)) : setBoxArea((a) => Math.min(50, a + 1))),
+          action: () => {
+            if (mode === 'checker') setGrid((g) => Math.min(64, g + 1));
+            else if (!isChecker) setBoxArea((a) => Math.min(50, a + 1));
+          },
         },
         {
           key: 'ArrowDown',
           label: 'Fewer squares / smaller box',
-          action: () => (mode === 'checker' ? setGrid((g) => Math.max(2, g - 1)) : setBoxArea((a) => Math.max(1, a - 1))),
+          action: () => {
+            if (mode === 'checker') setGrid((g) => Math.max(2, g - 1));
+            else if (!isChecker) setBoxArea((a) => Math.max(1, a - 1));
+          },
         },
-        { key: 'i', label: 'Swap black and white squares', action: () => setInvert((v) => !v) },
+        {
+          key: 'i',
+          label: 'Swap black and white',
+          action: () => {
+            if (isChecker) setInvert((v) => !v);
+            else setMode((m) => (m === 'box' ? 'inverse' : 'box'));
+          },
+        },
       ]}
       controls={
         <>
@@ -139,7 +152,7 @@ const ContrastTest = () => {
         </>
       }
     >
-      <PixelCanvas draw={draw} deps={[draw]} aria-label="Contrast pattern" />
+      <PixelCanvas draw={draw} deps={[draw]} aria-label="Contrast pattern" role="img" />
     </TestShell>
   );
 };

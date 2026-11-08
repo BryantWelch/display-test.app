@@ -4,12 +4,12 @@ export default {
   category: 'utilities',
   name: 'White Screen',
   shortName: 'White Screen',
-  badges: ['New'],
+  badges: [],
   summary: 'A full-screen white page for cleaning, finding dust, lighting, and checking your display.',
   seo: {
     title: 'White Screen — Full-Screen White Page (with Cleaning Lock) | Free',
     description:
-      'Open a pure white full screen in one click. Use it to spot dust and dead pixels, clean your monitor with touches locked, check uniformity, or as a soft light source. Free, no download.',
+      'Pure white full screen in one click. Spot dust and dead pixels, clean your monitor with touches locked, check uniformity, or use it as a soft light. Free, no download.',
   },
   testSeo: {
     title: 'White Screen — Fullscreen',
@@ -31,8 +31,8 @@ export default {
             ul: [
               '**Finding dust and smudges.** A bright, even background makes fingerprints, streaks, and dust specks stand out, so you know where to wipe.',
               '**Cleaning.** Turn on the **cleaning lock** before you wipe: taps, clicks, and keys are ignored, so a touchscreen or a stray key press won’t open something mid-wipe.',
-              '**Dead pixel checks.** A dead pixel shows as a sharp black dot on white. For a full check of all colors, use the [dead pixel test](/dead-pixel).',
-              '**Uniformity at a glance.** Dim corners, a yellow or pink tint on one side, or a darker band are easier to see on white. The [uniformity test](/uniformity) uses gray levels that show this better.',
+              '**Dead pixel checks.** A dead pixel shows as a sharp black dot on white; a dead subpixel shows as a tiny colored dot (for example magenta when green is missing). For a full check of all colors, use the [dead pixel test](/dead-pixel).',
+              '**Uniformity at a glance.** Dim corners, a yellow or pink tint on one side, or a darker band are easier to see on white. Mid and dark grays show clouding and the dirty screen effect better — the [uniformity test](/uniformity) has them.',
               '**A light source.** On a laptop or spare monitor, white makes a quick fill light for video calls, a ring-light substitute, or a light box for tracing. Pick **warm white** for a softer, less blue light.',
             ],
           },
@@ -46,9 +46,9 @@ export default {
             ol: [
               'Open the white screen and look at it from an angle — dust and streaks show up best with light glancing across the surface.',
               'Click **Lock screen for cleaning** (or press **L**). The controls disappear and input is ignored.',
-              'Wipe gently with a dry microfiber cloth, in one direction. For greasy marks, lightly dampen the cloth with distilled water — never spray liquid onto the screen.',
-              'Check again on white, then switch to the [black screen](/black-screen) — some smudges only show on dark backgrounds.',
+              'Wipe gently with a dry microfiber cloth, in one direction. For greasy marks, lightly dampen the cloth with distilled water — never spray liquid onto the screen. For a wetter clean, turn the display off first.',
               'Hold **Esc** for 2 seconds to unlock. On a touchscreen, press and hold any corner for 3 seconds.',
+              'Check again on white, then pick **Black** in the controls (or open the [black screen](/black-screen)) — some smudges only show on dark backgrounds.',
             ],
           },
           {
@@ -61,11 +61,12 @@ export default {
         id: 'light',
         heading: 'Using the screen as a light',
         blocks: [
-          'A monitor at full brightness puts out around 250–400 nits, enough for a soft key light at arm’s length on a video call. For tracing, place thin paper over a tablet or laptop held flat.',
+          'A typical LCD monitor at full brightness puts out around 250–400 nits, enough for a soft fill light at arm’s length on a video call. OLEDs are dimmer on a full white screen because automatic brightness limiting (ABL) caps full-screen brightness. For tracing, lay thin paper over a tablet held flat, press lightly, and turn on the cleaning lock so your hand doesn’t tap anything.',
           {
             ul: [
               'Use **warm white** for a less clinical, less blue light, or pick a custom tint.',
-              'Raise the display’s own brightness setting for more light — the **level** slider only dims the color in software.',
+              'Raise the display’s own brightness setting for more light — the **signal level** slider only dims the color in software.',
+              '**Keep screen awake** is on by default here, so the display doesn’t go to sleep while you’re using it as a light.',
               'In a dark room, a full white screen is harsh. Lower the level or the monitor brightness rather than staring into it.',
             ],
           },
@@ -75,7 +76,7 @@ export default {
         id: 'colors',
         heading: 'Other colors',
         blocks: [
-          'The same page can show black, red, green, blue, 50% gray, warm white, or any custom hex color. Use the arrow keys to step through them. Solid **red**, **green**, and **blue** are useful for finding stuck subpixels; **50% gray** is the best single color for spotting uneven backlighting.',
+          'The same page can show black, red, green, blue, 50% gray, warm white, or any custom hex color. Use the left and right arrow keys (or Space) to step through them; up and down change the level. Solid **red**, **green**, and **blue** are useful for finding stuck subpixels; **50% gray** shows uneven backlighting and the dirty screen effect better than white.',
         ],
       },
     ],
@@ -84,6 +85,7 @@ export default {
         'An even white from corner to corner, with only a slight falloff at the very edges.',
         'Specks that move or disappear when you wipe — that’s dust, not the panel.',
         'A slight color shift when you look from an angle (normal for IPS and VA).',
+        'OLED: full white looks dimmer than small white areas — that’s brightness limiting (ABL), not a fault.',
       ],
       bad: [
         'A sharp black dot that stays put after cleaning (possible dead pixel — confirm with the [dead pixel test](/dead-pixel)).',
@@ -92,7 +94,7 @@ export default {
       ],
     },
     tips: [
-      'Turn the display off or lock the screen before wiping with any moisture.',
+      'Wipe with a dry microfiber cloth; turn the display off before using any moisture.',
       'Look across the screen at an angle to see dust and streaks.',
       'Use the cleaning lock on touchscreens and laptops so wiping doesn’t click anything.',
       'Lower the level in a dark room — full white at night is harsh.',

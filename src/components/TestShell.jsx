@@ -246,8 +246,17 @@ const keyLabel = (k) =>
   ({ ArrowLeft: '←', ArrowRight: '→', ArrowUp: '↑', ArrowDown: '↓', ' ': 'Space', Escape: 'Esc' })[k] ||
   (k.length === 1 ? k.toUpperCase() : k);
 
+const NON_TEXT_INPUTS = ['checkbox', 'radio', 'button', 'submit', 'reset'];
+
 const isTyping = (el) =>
-  el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+  el &&
+  ((el.tagName === 'INPUT' && !NON_TEXT_INPUTS.includes(el.type)) ||
+    el.tagName === 'TEXTAREA' ||
+    el.tagName === 'SELECT' ||
+    el.isContentEditable);
+
+const isActivatable = (el) =>
+  el instanceof Element && !!el.closest('button, a, summary, input[type="checkbox"], input[type="radio"]');
 
 /**
  * Shared fullscreen test chrome: exit, auto-fading control panel, keyboard shortcuts,
@@ -259,6 +268,7 @@ const isTyping = (el) =>
  *   shortcuts: [{ key: 'ArrowRight' | ['ArrowRight','d'], label: 'Next color', action: () => {} }]
  *   photosensitive: show a consent screen before rendering children (also read from registry)
  *   hideCursor: hide the mouse cursor while chrome is faded (default true)
+ *   revealOnMove: show faded chrome on plain mouse movement (default true); clicks, taps and keys always do
  *   guide: override registry guidance { good: [], bad: [] }
  */
 const TestShell = ({
@@ -272,6 +282,7 @@ const TestShell = ({
   shortcuts = [],
   photosensitive,
   hideCursor = true,
+  revealOnMove = true,
   guide,
   style,
   className,
@@ -293,7 +304,7 @@ const TestShell = ({
   const panelRef = useRef(null);
   const toastTimer = useRef(null);
 
-  const { isVisible: activityVisible } = useAutoFade(4000, panelActive || showHelp);
+  const { isVisible: activityVisible } = useAutoFade(4000, panelActive || showHelp, revealOnMove);
   const visible = consented && !hiddenByUser && activityVisible;
   const handleExit = useExitTest(onBeforeExit);
 
@@ -321,6 +332,7 @@ const TestShell = ({
     const onKey = (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (isTyping(e.target) && e.key !== 'Escape') return;
+      if ((e.key === ' ' || e.key === 'Enter') && isActivatable(e.target)) return;
       const custom = shortcutsRef.current.find((s) =>
         (Array.isArray(s.key) ? s.key : [s.key]).some((k) => k.toLowerCase() === e.key.toLowerCase())
       );

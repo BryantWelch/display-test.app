@@ -4,12 +4,12 @@ export default {
   category: 'defects',
   name: 'Stuck Pixel Fixer',
   shortName: 'Stuck Pixel Fixer',
-  badges: ['New', 'Popular'],
+  badges: ['Popular'],
   summary: 'A draggable, rapidly flashing square that can sometimes revive stuck pixels. Includes a timer and auto-stop.',
   seo: {
     title: 'Stuck Pixel Fixer — Free Online Tool to Unstick Pixels',
     description:
-      'Free online stuck pixel fixer. Drag a flashing noise square over a stuck red, green, or blue pixel and run it for 10–30 minutes with a timer. Honest odds, safety tips, and what to do if it fails.',
+      'Free stuck pixel fixer: drag a flashing square over a stuck pixel and run it on a timer. Honest odds, safety tips, and what to do if it doesn’t work.',
   },
   testSeo: {
     title: 'Stuck Pixel Fixer — Fullscreen',
@@ -32,7 +32,7 @@ export default {
             ul: [
               '**Stuck pixel** — stays lit in one color (red, green, blue, or a mix) because a subpixel’s liquid crystal or transistor is stuck in one state. **Sometimes fixable.**',
               '**Hot pixel** — always bright white. Occasionally responds the same way as a stuck pixel.',
-              '**Dead pixel** — always black because it gets no power or has a broken connection. **Not fixable** by any software.',
+              '**Dead pixel** — always black (on most panels) because it gets no power or has a broken connection. **Not fixable** by any software.',
             ],
           },
           'Not sure which you have? Use the [dead pixel test](/dead-pixel) first: a pixel that changes nothing on any color, and is black on white, is dead.',
@@ -71,7 +71,7 @@ export default {
           { warning: 'This tool flashes rapidly changing colors. Don’t use it if you or anyone nearby has photosensitive epilepsy or is sensitive to flashing light. Look away or leave the room while it runs.' },
           {
             ul: [
-              'Flashing can’t harm an LCD or OLED panel. On OLED, running one small area at full white for hours adds a tiny amount of uneven wear, so stick to the timer.',
+              'Flashing can’t harm an LCD or OLED panel. On OLED, driving one small area hard for hours adds a tiny amount of uneven wear, so stick to the timer.',
               'Pressing or rubbing the screen is a common tip, but it can create more dead pixels, damage touch layers, and void warranties. We don’t recommend it.',
               'The page keeps the screen awake while the timer runs, then stops automatically.',
             ],
@@ -92,7 +92,7 @@ export default {
     },
     panelNotes: [
       { panel: 'IPS / VA / TN (LCD)', note: 'Stuck subpixels are most common here and the most likely to respond to flashing.' },
-      { panel: 'OLED / QD-OLED', note: 'Stuck pixels are rarer and less likely to respond. Keep runs short and use the timer.' },
+      { panel: 'OLED / QD-OLED', note: 'Stuck pixels are rarer and less likely to respond. Keep runs short and use the timer. Running the display’s built-in pixel or panel refresh is worth trying first.' },
       { panel: 'Phones and laptops', note: 'Works the same way. Disable auto-lock or rely on the wake lock, and keep the device plugged in.' },
     ],
     whenToReturn: [

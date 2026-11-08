@@ -94,7 +94,7 @@ export const PATTERNS = [
     id: 'wedge',
     category: 'check',
     name: 'Resolution wedge',
-    help: 'Lines should stay separate down to pitch 2 (1px on, 1px off) and merge only below it. Moiré or color fringes before pitch 2 indicate scaling, sharpening, or chroma subsampling.',
+    help: 'Lines should stay separate down to pitch 2 (1px on, 1px off) and merge only below it. Fine stair-steps between the numbered pitches are normal for 1px lines; blur, gray mush, or color fringes before pitch 2 indicate scaling, sharpening, or chroma subsampling.',
     variants: [
       { value: 'h', label: 'Horizontal' },
       { value: 'v', label: 'Vertical' },
@@ -124,7 +124,7 @@ export const PATTERNS = [
     id: 'bars-h',
     category: 'color',
     name: 'Color bars (horizontal)',
-    help: 'Bars should be vivid and evenly bright with sharp boundaries. Continuous mode should blend smoothly with no bands or jumps.',
+    help: 'Bars should be vivid and fully saturated with sharp boundaries (yellow and cyan naturally look brighter than blue). Continuous mode should blend smoothly with no bands or jumps.',
     variants: opts([3, 6, 12, 'cont'], (v) => (v === 'cont' ? 'Continuous' : String(v))),
     draw: (ctx, w, h, v) => g.colorBars(ctx, w, h, v, 'h'),
   },

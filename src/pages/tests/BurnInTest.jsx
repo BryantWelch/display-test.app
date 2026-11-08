@@ -29,7 +29,7 @@ const MODES = [
 
 const REFRESH_PATTERNS = [
   { value: 'bar', label: 'White bar', title: 'A full-height white bar slowly crossing black' },
-  { value: 'invert', label: 'Inverted', title: 'Negative of the retention pattern' },
+  { value: 'invert', label: 'Inverted', title: 'Static negative of the retention pattern' },
   { value: 'cycle', label: 'Color cycle', title: 'Slow, smooth full-screen hue cycle' },
 ];
 
@@ -258,7 +258,7 @@ const BurnInTest = () => {
     } else {
       statusItems = [['Status', 'Revealing on 50% gray'], ['Time since pattern', sinceDone]];
       statusHint =
-        'A faint outline that fades within a few minutes is normal temporary image retention. One that never fades after the panel’s own refresh cycle is burn-in.';
+        'A faint outline that fades within a few minutes is normal temporary image retention. A few minutes of static content can’t cause burn-in, so a stubborn ghost should still clear with varied content or the panel’s own compensation cycle.';
     }
   } else if (mode === 'refresher') {
     if (phase === 'idle') {
@@ -307,7 +307,7 @@ const BurnInTest = () => {
               <Readout items={[['Showing', CHECK_COLORS[colorIndex].name]]} />
               <Hint>
                 Look for shapes that match things you leave on screen: taskbar, browser tabs, game HUDs, channel
-                logos, news tickers. Dark gray shows OLED burn-in best; solid red, green, and blue reveal which
+                logos, news tickers. The grays show OLED burn-in best; solid red, green, and blue reveal which
                 subpixel color has worn. Sit back a little and let your eyes move — ghosts are often easier to see
                 in peripheral vision.
               </Hint>
@@ -333,7 +333,10 @@ const BurnInTest = () => {
               <h3>Refresher</h3>
               <Segmented label="Pattern" options={REFRESH_PATTERNS} value={refreshPattern} onChange={setRefreshPattern} columns={3} />
               <Segmented label="Duration" options={REFRESH_MINUTES} value={refreshMinutes} onChange={setRefreshMinutes} columns={5} />
-              <Hint>All patterns move or change slowly — there is no fast flashing.</Hint>
+              <Hint>
+                Nothing flashes quickly: the bar and hue cycle change slowly, and Inverted is a static negative of the
+                retention pattern. On OLED, keep sessions short — bright content adds a little wear too.
+              </Hint>
             </Section>
           ) : null}
 

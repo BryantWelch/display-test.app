@@ -9,7 +9,8 @@ const Field = styled.div`
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center;
+  overflow-y: auto;
   gap: clamp(1rem, 4vh, 2.5rem);
   padding: clamp(4rem, 9vh, 5.5rem) clamp(0.75rem, 4vw, 3rem) clamp(1.5rem, 5vh, 3rem);
   font-family: var(--font-mono);
@@ -146,7 +147,7 @@ const BARS = {
 
 const BAR_CAPTIONS = {
   0: 'PLUGE-style bars. Full-range PC black is 0, so no “below black” bar exists — 5 should be faintly visible.',
-  16: 'PLUGE: 12 is below video black. On a limited-range display 12 should vanish into the background; 20 should be just visible.',
+  16: 'PLUGE layout around video black 16. Browsers send full-range values, so 12 should be faintly darker than the background. If 12, 16, and the background all merge into pure black, the display is clipping below 16.',
 };
 
 const DEFAULTS = { span: 20, background: 0, labels: true };
@@ -196,7 +197,7 @@ const BlackLevelTest = () => {
               items={[
                 ['Background', background === 0 ? '0 (full-range black)' : '16 (video black)'],
                 ['Patches', `${patches[0]}–${patches[patches.length - 1]}`],
-                ['Good result', `visible from ${background + 2}–${background + 5}`],
+                ['Good result', background === 0 ? 'visible from 2–5' : '12 bar just darker than background'],
               ]}
             />
             <Hint>

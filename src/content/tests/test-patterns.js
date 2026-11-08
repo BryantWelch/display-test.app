@@ -7,9 +7,9 @@ export default {
   badges: [],
   summary: '24 pixel-exact patterns for sharpness, overscan, geometry, gamma, and scaling — drawn live at your native resolution.',
   seo: {
-    title: 'Monitor Test Patterns — Sharpness, Overscan, Geometry & Gamma | Free',
+    title: 'Monitor Test Patterns: Sharpness, Overscan & Gamma (Free)',
     description:
-      'Free full-screen monitor test patterns drawn at your exact device resolution: sharpness/overshoot, overscan & aspect, resolution wedges, 1px lines, checkerboards, gamma, clipping, and color bars.',
+      'Free fullscreen monitor test patterns drawn at your exact resolution: sharpness, overscan, aspect, 1px lines, checkerboards, gamma, clipping, and color bars.',
   },
   testSeo: {
     title: 'Test Patterns — Fullscreen',
@@ -43,7 +43,7 @@ export default {
             ol: [
               'Set your display to its native resolution and turn off any “demo”, “dynamic”, or store picture mode.',
               'Click **Start test patterns** and go fullscreen. Check the readout: the canvas size should match your screen, and **Pixel-exact** should say Yes.',
-              'Pick a category (**Check**, **Color**, **Geometry**) and a pattern. Use **← / →** to step through patterns and **↑ / ↓** to switch variants (for example, checker size). **I** inverts black/white patterns.',
+              'Pick a category (**Check**, **Color**, **Geometry**, or keys **1**–**3**) and a pattern. Use **← / →** to step through patterns and **↑ / ↓** to switch variants (for example, checker size). **I** inverts black/white patterns.',
               'Read the one-line “What to look for” note under each pattern, then look at the screen from your normal distance and up close.',
               'Change one monitor setting at a time (sharpness, scaling/aspect, picture mode) and recheck the same pattern.',
             ],
@@ -59,7 +59,7 @@ export default {
               '**Overscan & aspect** — a white border on the outermost pixel, colored frames at 1–5% inset, a true circle inside a true square, and a center crosshair. If the white border is missing on any side, the display is cropping (overscan). If the circle looks oval, the picture is stretched.',
               '**Sharpness / overshoot** — 1px and 2px line pairs, a 1px checker, black and white blocks, and isolated 1px lines on mid-gray. Sharpening shows up as a thin bright or dark halo hugging each edge; too little sharpness (or scaling) turns line pairs into soft gray.',
               '**Edge lines** — eight 1px frames, 2px apart, at the screen edge. Count them on every side.',
-              '**Resolution wedge** and **star** — lines that converge until they can no longer be separated. Lines should stay distinct down to a pitch of 2 (1px on, 1px off). Moiré or colored fringes earlier than that point to scaling, sharpening, or chroma subsampling.',
+              '**Resolution wedge** and **star** — lines that converge until they can no longer be separated. Lines should stay distinct down to a pitch of 2 (1px on, 1px off). Fine stair-stepping between the numbered pitches is normal for 1px lines; blur or colored fringes earlier than pitch 2 point to scaling, sharpening, or chroma subsampling.',
               '**1px pattern tiles** — 24 tiles of 1px lines, grids, dots, and checkers. Each should look like a flat, even texture.',
             ],
           },
@@ -85,7 +85,7 @@ export default {
         blocks: [
           {
             ul: [
-              '**Color bars** (3, 6, 12, or continuous; horizontal or vertical) — saturated hues with crisp boundaries. Continuous bars should show no bands.',
+              '**Color bars** (3, 6, 12, or continuous; horizontal or vertical) — fully saturated hues with crisp boundaries. Yellow and cyan naturally look brighter than blue; continuous bars should show no bands.',
               '**4,096 color patches** — 16 levels each of red, green, and blue. Neighboring cells should all be distinct.',
               '**Random color / gray noise** (1–16px blocks) — seeded so it looks the same every time. Fine noise reveals sharpening, smearing, and the grainy texture of matte coatings.',
               '**RGB triangle** — a linear blend of red, green, and blue (solid or wireframe) for spotting banding and uneven processing.',
@@ -130,7 +130,7 @@ export default {
         '1px lines and checkers look crisp and even, with every line the same brightness.',
         'The outermost white border is visible on all four sides; the circle is round and the square is square.',
         'Black and white edges on gray meet cleanly, with no outline.',
-        'Ramps and bars blend smoothly; every ring in the clipping targets is visible.',
+        'Ramps and continuous bars blend smoothly; every ring in the clipping targets is visible.',
       ],
       bad: [
         'Bright or dark halos along edges — sharpening or overshoot (try lowering **Sharpness**).',

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Fullscreen canvas whose backing store matches *device* pixels, so a 1px line in `draw`
@@ -13,7 +13,13 @@ import { useEffect, useRef, useState } from 'react';
  * For animation, pass `animate` = (ctx, info, timestamp) => void; it runs every rAF.
  */
 export function usePixelCanvas({ draw, animate, deps = [] }) {
-  const canvasRef = useRef(null);
+  // State, not a ref, so sizing starts when the canvas mounts. Stuck Pixel Fixer
+  // only renders its canvas after the photosensitivity gate, which is too late
+  // for an effect that already ran on the first commit.
+  const [canvas, setCanvas] = useState(null);
+  const setCanvasRef = useCallback((node) => {
+    setCanvas(node);
+  }, []);
   const [info, setInfo] = useState({ width: 0, height: 0, dpr: 1, exact: true });
   const drawRef = useRef(draw);
   const animateRef = useRef(animate);
@@ -21,10 +27,10 @@ export function usePixelCanvas({ draw, animate, deps = [] }) {
   animateRef.current = animate;
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
     const apply = (width, height, exact) => {
+      if (!width || !height) return;
       const dpr = window.devicePixelRatio || 1;
       if (canvas.width !== width) canvas.width = width;
       if (canvas.height !== height) canvas.height = height;
@@ -65,20 +71,19 @@ export function usePixelCanvas({ draw, animate, deps = [] }) {
       return () => window.removeEventListener('resize', onResize);
     }
     return () => ro.disconnect();
-  }, []);
+  }, [canvas]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     if (!canvas || !info.width || !info.height || !drawRef.current) return;
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.imageSmoothingEnabled = false;
     drawRef.current(ctx, info);
+    // deps is the caller's list of values that should redraw the frame.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [info, ...deps]);
+  }, [canvas, info, ...deps]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     if (!canvas || !info.width || !animateRef.current) return undefined;
     const ctx = canvas.getContext('2d', { alpha: false });
     let raf = 0;
@@ -89,9 +94,9 @@ export function usePixelCanvas({ draw, animate, deps = [] }) {
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [info, !!animate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [canvas, info, !!animate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { canvasRef, info };
+  return { canvasRef: setCanvasRef, info };
 }
 
 const fullStyle = {

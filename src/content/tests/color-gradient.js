@@ -9,7 +9,7 @@ export default {
   seo: {
     title: 'Color Banding Test — Pixel-Exact Gradient Test for Monitors | Free',
     description:
-      'Check your monitor for color banding with pixel-exact 0–255 gradients: gray, RGB, CMY and custom ramps, dark and light ranges stretched full-screen, stepped mode and level labels. Learn 8-bit vs 6-bit+FRC vs 10-bit.',
+      'Check your monitor for color banding with pixel-exact 0–255 gradients: gray, RGB, CMY and custom ramps, stretched dark and light ranges, and level labels. Learn 8-bit vs 6-bit+FRC.',
   },
   testSeo: {
     title: 'Color Banding & Gradient Test — Fullscreen',
@@ -33,7 +33,7 @@ export default {
             ul: [
               '**True 8-bit panel**: shows all 256 levels directly. Steps are very faint; a gray ramp looks smooth from a normal distance.',
               '**6-bit + FRC**: the panel can only show 64 levels and fakes the in-between ones by rapidly flickering neighboring levels (frame rate control, a form of temporal dithering). Usually looks smooth, but you may see shimmer or fine crawling noise in dark ramps up close.',
-              '**8-bit + FRC / true 10-bit**: 1,024 levels per channel. This only matters for 10-bit content (HDR video, some pro apps); a web page is 8-bit, so this test can’t reveal the extra precision.',
+              '**8-bit + FRC / true 10-bit**: 1,024 levels per channel. This only matters for 10-bit content (HDR video, some pro apps); this test draws 8-bit values and browsers normally output pages at 8 bits, so it can’t reveal the extra precision.',
               '**Spatial dithering**: GPUs and some displays add a fixed noise pattern to hide steps. It looks like fine grain instead of bands — that’s working as intended.',
             ],
           },
@@ -43,14 +43,14 @@ export default {
         id: 'how-it-works',
         heading: 'How this test works',
         blocks: [
-          'CSS gradients are interpolated and sometimes dithered by the browser, so they can hide (or invent) banding. This test draws each level as an exact integer-wide band of a single code value on a device-pixel canvas, so what you see is what your display does with those 256 values.',
+          'CSS gradients are interpolated and sometimes dithered by the browser, so they can hide (or invent) banding. This test draws each level as a solid band of whole device pixels holding a single code value (bands differ by at most one pixel when the screen size isn’t a multiple of the level count), so what you see is what your display does with those 256 values.',
           {
             ol: [
               'Use your normal picture mode at native resolution, with OS scaling at 100% (or 200%) if possible.',
               'Click **Start banding test**. Begin with the **Gray** full-range ramp and view it from your normal distance.',
               'Switch to **Dark 0–64** — dark tones are where banding is most visible. The range is stretched across the screen so each level is wide enough to see.',
               'Try **Red, Green, Blue** and **Gray + RGB** to look for tints or uneven steps in one channel.',
-              'Turn on **Steps** (e.g. 32) to see what deliberate banding looks like, then compare with **Every level**.',
+              'Set **Steps** to a value such as 32 to see what deliberate banding looks like, then switch back to **Every level**.',
               'Enable **level labels** (L) to note exactly where a jump or crush happens.',
             ],
           },
@@ -78,7 +78,8 @@ export default {
         blocks: [
           {
             ul: [
-              'Remove software color adjustments first: ICC profiles applied through the GPU lookup table, Night Light, NVIDIA/AMD digital vibrance and brightness/contrast sliders can all drop levels on 8-bit outputs.',
+              'Remove software color adjustments first: ICC profiles applied through the GPU lookup table, Night Light, NVIDIA/AMD digital vibrance and brightness/contrast sliders can all drop levels on 8-bit outputs. A heavily corrected display profile can also add slight steps when the browser color-manages the page to it.',
+              'If Windows HDR (or macOS EDR) is on, SDR content like this page is converted into the HDR signal, which can add steps or tints in dark ramps. Compare with HDR off before blaming the panel.',
               'Make sure the PC and display agree on **RGB full** range (or both on limited). A mismatch crushes or lifts the ends and can add steps.',
               'Set output to **10-bit** (or 8-bit with dithering) in the GPU panel when your display supports it — the GPU can then dither its own adjustments.',
               'Avoid extreme picture settings: maxed contrast, sharpness, or “dynamic” modes stretch the levels you have.',
@@ -133,12 +134,12 @@ export default {
       {
         question: 'What causes color banding on monitors?',
         answer:
-          'Common causes are reduced bit depth (6-bit panels, 6-bit output), software color adjustments applied in 8 bits, a full/limited RGB range mismatch, aggressive picture processing, and compressed content. Many of these are settings problems rather than panel defects.',
+          'Common causes are reduced bit depth (6-bit panels, 6-bit output), software color adjustments applied in 8 bits, a full/limited RGB range mismatch, SDR content being converted for an HDR desktop, aggressive picture processing, and compressed content. Many of these are settings problems rather than panel defects.',
       },
       {
         question: 'Can this test tell if my monitor is 10-bit?',
         answer:
-          'No. A web page renders in 8 bits per channel, so it can’t show the extra levels of a 10-bit panel. It can show whether your display handles 8-bit content cleanly. Check the manufacturer’s spec sheet and your GPU’s output settings for 10-bit support.',
+          'No. This test draws 8-bit values and browsers normally output web pages at 8 bits per channel, so it can’t show the extra levels of a 10-bit panel. It can show whether your display handles 8-bit content cleanly. Check the manufacturer’s spec sheet and your GPU’s output settings for 10-bit support.',
       },
       {
         question: 'What is 6-bit + FRC?',

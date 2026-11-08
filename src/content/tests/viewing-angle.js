@@ -7,9 +7,9 @@ export default {
   badges: [],
   summary: 'Color patches and gray steps to check color, gamma, and contrast shift as you move off-axis.',
   seo: {
-    title: 'Viewing Angle Test — Check Color & Gamma Shift (IPS vs VA vs TN vs OLED)',
+    title: 'Viewing Angle Test — Color & Gamma Shift (IPS, VA, TN, OLED)',
     description:
-      'Free full-screen viewing angle test. Color patches, gray bars, and near-black steps show color shift, VA gamma washout, TN inversion, and IPS glow as you move off-center.',
+      'Free full-screen viewing angle test. Color patches, gray steps, and a gamma-match pattern show color shift, VA gamma washout, TN inversion, and IPS glow as you move off-center.',
   },
   testSeo: {
     title: 'Viewing Angle Test — Fullscreen',
@@ -27,7 +27,7 @@ export default {
         id: 'what-is',
         heading: 'What viewing angle actually affects',
         blocks: [
-          'The “178°” on spec sheets only means contrast stays above 10:1 at that angle — a very low bar. What you actually notice off-axis is:',
+          'The “178°” on spec sheets only means contrast stays above a threshold (usually 10:1, sometimes 5:1) at that angle — a very low bar that says nothing about color or gamma. What you actually notice off-axis is:',
           {
             ul: [
               '**Gamma shift** — mid-tones get brighter or darker, so images look washed out or too contrasty.',
@@ -50,6 +50,7 @@ export default {
               'On **Patches**, note how white, the grays, and the skin-tone patch look head-on. Then move **horizontally**: lean or slide left and right about 30–45°, keeping your eye height the same.',
               'Return to center, then move **vertically**: stand up and crouch down. Vertical shift is usually stronger than horizontal on VA and much stronger on TN.',
               'Switch to **Gray bars** (→) and **Near-black** to see gamma shift and shadow detail change as you move.',
+              'On **Gamma match**, note how well the solid patches blend into the fine lines around them head-on (step back if you can see the lines), then repeat the moves. Patches turning lighter or darker than their surround is gamma shift.',
               'Finally sit normally and compare the patches at the edges of the screen with the ones in the center.',
             ],
           },
@@ -74,7 +75,7 @@ export default {
         id: 'interpret',
         heading: 'Using the results',
         blocks: [
-          'Viewing angle is a property of the panel technology, not a defect — two units of the same model will behave the same way. Use the test to decide whether a display suits **how you sit**:',
+          'Viewing angle is a property of the panel technology, not a defect — two units of the same model should behave about the same. Use the test to decide whether a display suits **how you sit**:',
           {
             ul: [
               'Solo desktop use, sitting centered: mild shift rarely matters, except on large flat VA or TN where edge shift is visible from your seat.',
@@ -91,6 +92,7 @@ export default {
       good: [
         'Patches keep roughly the same color and brightness as you move 30° or so left and right.',
         'Gray bars stay in order (each step lighter than the last) from every position.',
+        'Gamma match patches stay close to their line surround as you move.',
         'IPS: some corner glow on dark content from an angle. OLED: a slight tint on white off-axis.',
       ],
       bad: [
@@ -130,7 +132,7 @@ export default {
       {
         question: 'How do I test my monitor’s viewing angles?',
         answer:
-          'Start the test, note how the white, gray, and skin-tone patches look head-on, then move your head left and right, and then up and down. Watch for tint, washout, darkening, and changes in the gray steps. Check horizontal and vertical separately.',
+          'Start the test, note how the white, gray, and skin-tone patches look head-on, then move your head left and right, and then up and down. Watch for tint, washout, darkening, and changes in the gray steps, and use the Gamma match pattern to see mid-tones shift against a fixed reference. Check horizontal and vertical separately.',
       },
       {
         question: 'Which panel type has the best viewing angles?',

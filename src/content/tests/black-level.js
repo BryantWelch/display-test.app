@@ -4,19 +4,19 @@ export default {
   category: 'color',
   name: 'Black Level Test',
   shortName: 'Black Level',
-  badges: ['New'],
+  badges: [],
   summary: 'Near-black patches and PLUGE bars to catch crushed or washed-out blacks and HDMI range mismatches.',
   seo: {
     title: 'Black Level Test — Check Black Crush & HDMI RGB Range | Free',
     description:
-      'Free full-screen black level (PLUGE) test. See whether near-black shadow detail is crushed or washed out, and fix HDMI full vs limited RGB range mismatches on PC, console, and TV.',
+      'Free full-screen black level test. See if shadow detail is crushed or washed out, and fix HDMI full vs limited RGB range mismatches on PC, console, and TV.',
   },
   testSeo: {
     title: 'Black Level Test — Fullscreen',
     description: 'Near-black patches 1–40 on pure black, PLUGE bars, and a step ramp.',
   },
   load: () => import('../../pages/tests/BlackLevelTest'),
-  checkup: { step: 50, question: 'Can you see at least levels 3-5 above black, without the black background looking gray?' },
+  checkup: { step: 50, question: 'Can you see at least levels 3–5 above black, without the black background looking gray?' },
   page: {
     title: 'Black Level & Black Crush Test',
     intro:
@@ -28,7 +28,7 @@ export default {
         id: 'what-it-shows',
         heading: 'What this test shows',
         blocks: [
-          'The test fills the screen with pure black (code value 0 of 255) and places patches at 1, 2, 3 … up to 20 or 40 on top of it. Below them are PLUGE-style reference bars and a one-step ramp.',
+          'The test fills the screen with pure black (code value 0 of 255) and places patches at 1, 2, 3 … up to 20 or 40 on top of it. Below them are PLUGE-style reference bars and a ramp that climbs one code value per step.',
           {
             ul: [
               '**Crushed blacks** — the first several patches are invisible. Shadow detail in games and films disappears into a black blob.',
@@ -55,7 +55,7 @@ export default {
               ],
             },
           },
-          'The **background 16** option simulates video black. With it, the PLUGE bar at 12 is “below black”: on a correctly set limited-range TV it disappears into the background; if you can see it, the chain is passing full-range values. In full-range PC RGB nothing exists below 0, so the 0-background bars only go upward.',
+          'The **16 · Video black** background borrows the broadcast PLUGE layout, where black is 16 and a bar at 12 sits just below it. A browser, though, always sends full-range PC values (your GPU rescales them if it outputs limited range), so on a correctly matched chain 16 is a dark gray and the 12 bar is faintly darker than it. If the background, the 12 bar, and the 16 bar all merge into the same pure black, the display is clipping everything at or below 16: the crushed mismatch from the table above. With the 0 background nothing exists below black, so those bars only go upward.',
           { note: 'Whichever range you choose, set **both ends** to match. Changing only one side is how the mismatch happens in the first place.' },
         ],
       },
@@ -67,7 +67,7 @@ export default {
           {
             ul: [
               '**NVIDIA:** NVIDIA Control Panel → Display → Change resolution → “Use NVIDIA color settings” → Output dynamic range: **Full**. Older drivers default to Limited on HDMI when a TV-style resolution (like 1080p/4K at 60 Hz) is used.',
-              '**AMD:** AMD Software → Settings → Display → Pixel Format: **RGB 4:4:4 Full RGB**. “RGB 4:4:4 Limited RGB” or YCbCr modes can wash blacks out.',
+              '**AMD:** AMD Software → Settings → Display → Pixel Format: **RGB 4:4:4 Pixel Format PC Standard (Full RGB)**. The “Studio (Limited RGB)” option or YCbCr modes can wash blacks out.',
               '**Intel:** Intel Graphics Command Center → Display → Color → Quantization Range: **Full**.',
               'Then set the monitor’s own option (“HDMI black level”, “RGB range”, “Black level”) to **Full / High / Normal** to match. DisplayPort connections are almost always full range already.',
             ],
@@ -76,12 +76,34 @@ export default {
           {
             ul: [
               '**PlayStation 5:** Settings → Screen and Video → Video Output → RGB Range: Automatic usually works; force **Full** for a PC monitor, **Limited** if the TV clips.',
-              '**Xbox Series X|S:** Settings → General → TV & display options → Video fidelity → Color space: **Standard (recommended)** for TVs; PC RGB only if the display is set to full range too.',
+              '**Xbox Series X|S:** Settings → General → TV & display options → Video fidelity & overscan → Color space: **Standard (recommended)** for TVs; PC RGB only if the display is set to full range too.',
               '**Nintendo Switch:** System Settings → TV Output → RGB Range: Automatic, or match the display manually.',
             ],
           },
           { h3: 'TVs' },
-          'Look for **HDMI Black Level** (Samsung: Low / Normal), **Black Level** (LG: Low / High), or **RGB Range** (Sony: Auto / Full / Limited). The names are confusing — “Low” often means limited, “High/Normal” often means full. Use this test to check rather than trusting the label.',
+          'Look for **HDMI Black Level** (Samsung: Low / Normal), **Black Level** (LG: Low / High), or **HDMI Video Range** (Sony: Auto / Full / Limited). The names are confusing — “Low” often means limited, “High/Normal” often means full. Use this test to check rather than trusting the label.',
+        ],
+      },
+      {
+        id: 'brightness',
+        heading: 'Brightness, backlight, and gamma',
+        blocks: [
+          'Once the range matches, the remaining near-black controls are easy to mix up:',
+          {
+            ul: [
+              'On most **TVs**, **Brightness** (Sony: **Black level**) doesn’t make the whole picture brighter. It shifts black up or down. Too low crushes the first patches; too high turns the background gray. Overall light output is a separate **Backlight**, **OLED Light**, or **Peak brightness** control.',
+              'On most **PC monitors**, **Brightness** is the backlight. Shadow controls go by names like **Black Equalizer**, **Black Stabilizer**, or **Shadow Boost**, and they lift dark tones rather than black itself.',
+              '**Gamma** also moves near-black. A higher gamma (2.4 or BT.1886) darkens the first few steps; a lower one (2.0) lifts them. If the background is black but patches 1–8 stay hidden with the range set correctly, check gamma before touching brightness. See the [gamma test](/gamma).',
+            ],
+          },
+          {
+            ol: [
+              'Set the RGB range on both ends and pick a standard, movie, or sRGB picture mode.',
+              'Use the 0 background. On a TV, lower **Brightness** until the first several patches disappear, then raise it a step at a time until patches 2–3 are just visible.',
+              'If the background itself starts to look gray, step back down. That is raised black, and it costs contrast everywhere.',
+            ],
+          },
+          'Room light matters too. Reflections on the screen can be brighter than patches 1–3, so even a perfect display hides them in daylight. Set black level in a dim room. If you mostly watch in a bright one, a slightly higher setting is a reasonable trade-off.',
         ],
       },
       {
@@ -111,18 +133,19 @@ export default {
       good: [
         'The background is as dark as your panel gets — not visibly gray.',
         'Patches become visible somewhere around 2–5 and every patch after that is a little brighter.',
-        'With background 16: the 12 bar disappears and the 20 bar is just visible.',
+        'With background 16: the background is a dark gray, the 12 bar is faintly darker than it, and the 20 bar is faintly lighter.',
       ],
       bad: [
         'Patches 1–8 or more are invisible: blacks are crushed (often full-range signal into a limited-range display).',
         'Every patch is easy to see and the background looks dark gray: washed out (often limited-range signal into a full-range display).',
+        'With background 16, the background and the 12 and 16 bars all look like the same pure black: the display is clipping everything at or below 16.',
         'Patches out of order, blotchy, or tinted: near-black uniformity or processing issues.',
       ],
     },
     panelNotes: [
       { panel: 'OLED / QD-OLED', note: 'Perfect 0 black. Levels 1–3 can be invisible or slightly blotchy — that’s near-black handling, not crush, if 4–5 and up are visible.' },
       { panel: 'IPS', note: 'Expect every patch to be visible but black to glow gray in the dark. Lowering brightness helps black depth without hiding patches.' },
-      { panel: 'VA', note: 'Deep blacks; low patches may shift slightly with viewing angle (“black crush” off-center). Sit straight on.' },
+      { panel: 'VA', note: 'Deep blacks, but gamma shifts with viewing angle: the lowest patches can look crushed straight on and lift into view off-center. Judge from straight in front of the screen center.' },
       { panel: 'Mini-LED / FALD', note: 'Local dimming can switch zones off under the black background and hide the lowest patches. Test with local dimming on and off.' },
     ],
     whenToReturn: [
@@ -153,7 +176,7 @@ export default {
       {
         question: 'Why does my black look gray?',
         answer:
-          'Either the source is sending limited range to a display expecting full (raise the range to Full on the GPU or set the display to Limited), brightness / black level is too high, or it’s an IPS or edge-lit panel whose native black glows in a dark room.',
+          'Either the source is sending limited range to a display expecting full (set the GPU output to Full, or the display to Limited), brightness / black level is too high, or it’s an IPS or edge-lit panel whose native black glows in a dark room.',
       },
       {
         question: 'Why can’t I see patch 1 or 2 on my OLED?',
@@ -163,7 +186,7 @@ export default {
       {
         question: 'Is this the same as a PLUGE pattern?',
         answer:
-          'It uses the same idea. Broadcast PLUGE puts bars slightly below and above video black (16). PCs using full-range RGB have no values below black, so the default view only shows bars above 0; switch the background to 16 to see a true below-black bar.',
+          'It uses the same idea. Broadcast PLUGE puts bars slightly below and above video black (16), and you set a TV’s brightness until the below-black bar just disappears. A browser always sends full-range PC values with nothing below 0, so the default view only shows bars above black. The 16 background recreates the PLUGE layout, but here the 12 bar should stay faintly visible; if it vanishes, the display is clipping below 16. For a true PLUGE calibration, play a PLUGE pattern from a video file or disc in the TV’s own player.',
       },
     ],
   },

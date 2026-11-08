@@ -9,7 +9,7 @@ export default {
   seo: {
     title: 'Monitor Contrast Test — Checkerboard & Black Depth Check | Free',
     description:
-      'Judge your monitor’s real-world contrast by eye with black-and-white checkerboards, an ANSI 4×4 pattern, and white-box-on-black windows. See black depth, IPS glow, blooming, and flare — and learn what contrast ratio numbers mean.',
+      'Judge your monitor’s contrast by eye with black-and-white checkerboards, an ANSI 4×4 pattern, and white box windows. Spot gray blacks, IPS glow, and blooming.',
   },
   testSeo: {
     title: 'Checkerboard Contrast Test — Fullscreen',
@@ -28,6 +28,7 @@ export default {
         heading: 'Contrast ratio, and what a browser can’t measure',
         blocks: [
           '**Contrast ratio** is the luminance of full white divided by the luminance of full black, e.g. 300 nits ÷ 0.3 nits = 1000:1. It needs a light meter or colorimeter to measure — a web page can only send pixel values, it can’t read how much light comes back out of the screen.',
+          'Measured with a full white screen and then a full black screen, it’s called **full-on/full-off** contrast. **ANSI contrast** measures white and black on screen at the same time, on a 4×4 checkerboard, so it includes light spilling between areas and is usually lower.',
           'What you *can* see is the result: whether black looks black or dark gray, how much light leaks from bright areas into dark ones, and how the screen behaves with mixed content. That’s what this test is for.',
           {
             table: {
@@ -53,7 +54,7 @@ export default {
               'Use your normal picture mode, and dim the room — contrast differences are much easier to see in the dark.',
               'Click **Start contrast test**. The default is an 8×8 checkerboard of pure black (0) and pure white (255).',
               'Look at the black squares: do they stay black next to white ones, or turn gray? Try 2×2 for big areas and 16×16 or more for fine mixes.',
-              'Switch to **ANSI 4×4**, the pattern reviewers measure for “ANSI contrast”. Notice how much darker the black squares look than in the full-screen [black screen](/black-screen) test.',
+              'Switch to **ANSI 4×4**, the pattern reviewers measure for “ANSI contrast”. Compare its black squares with the full-screen [black screen](/black-screen) test: on most LCDs they look a little lighter, because some light from the white squares spills into them.',
               'Try **White box** (a small white window on black) to look for blooming and haloing, then **Black box** to see how black holds up when the rest of the screen is bright.',
             ],
           },
@@ -66,11 +67,11 @@ export default {
           {
             ul: [
               '**Black squares look gray in a dark room** (LCD): that’s the panel’s native black level — normal for IPS, less so for VA. Compare panels side by side rather than against a number.',
-              '**Black squares near white ones look lighter than those far away**: internal reflections (flare) in the panel or a glossy coating scattering light.',
+              '**Black looks lighter right next to white than farther away** (easiest to see around the white box): flare — light scattering inside the panel layers or in a matte anti-glare coating.',
               '**Halos or glowing “clouds” around white squares or the white box**: local-dimming blooming (Mini-LED, FALD) — the backlight zone is lit even though the pixels are black.',
               '**Black squares darker in a 2×2 checker than at 16×16** on Mini-LED: dimming zones can’t follow small squares, so busy patterns show much lower contrast than full-screen ones.',
               '**Corners or edges glowing, especially off-angle**: IPS glow or backlight bleed — confirm with the [black level](/black-level) and [uniformity](/uniformity) tests.',
-              '**Whites dimming as the pattern gets more white**: automatic brightness limiting (ABL), typical on OLED — explore it with the [white window test](/brightness).',
+              '**Whites dimming as more of the screen turns white** (for example, shrinking the black box): automatic brightness limiting (ABL), typical on OLED — explore it with the [white window test](/brightness).',
             ],
           },
         ],
@@ -81,8 +82,9 @@ export default {
         blocks: [
           {
             ul: [
-              'Set **Brightness** (black level) with the [black level test](/black-level) so near-black detail is visible but black isn’t lifted.',
-              'Set **Contrast** with the [white saturation test](/white-saturation) so bright details don’t clip.',
+              'On an LCD monitor, **Brightness** usually sets the backlight, which raises black and white together. Lower it to what’s comfortable for your room — in the dark, a dimmer backlight means darker blacks.',
+              'Check shadow detail with the [black level test](/black-level) so near-black detail is visible but black isn’t lifted (on TVs, this control is usually called **Brightness** or **Black level**).',
+              'Set **Contrast** with the [white saturation test](/white-saturation). It sets the white level of the signal, not the panel’s contrast ratio: too high clips bright details instead of adding contrast.',
               'Match the PC and display RGB range (full/full or limited/limited) — a mismatch turns black into dark gray.',
               'On Mini-LED displays, try different local dimming levels: higher gives deeper blacks but more blooming.',
               'Reduce glare: light falling on the screen raises perceived black more than any panel difference.',
@@ -95,7 +97,7 @@ export default {
     lookFor: {
       good: [
         'Black squares look clearly darker than the room around the screen (in a dim room).',
-        'Black squares look equally dark across the screen, whether next to white or not.',
+        'Black looks equally dark across the screen — center, corners, and right next to white.',
         'Edges between squares are crisp with no glow spilling into the black.',
         'OLED: black squares are fully off, indistinguishable from the bezel.',
       ],
@@ -158,6 +160,11 @@ export default {
         question: 'Can I improve my monitor’s contrast?',
         answer:
           'You can make the most of it by setting brightness and contrast correctly, matching RGB range, reducing glare, and tuning local dimming if available. You can’t exceed the panel’s native contrast through settings.',
+      },
+      {
+        question: 'Does the monitor’s Contrast setting change its contrast ratio?',
+        answer:
+          'Not really. On most displays **Contrast** scales the signal to set how bright white is. Turning it up past the panel’s limit doesn’t make blacks deeper — it clips the brightest shades into flat white, which the [white saturation test](/white-saturation) shows. Turning it well down dims white and slightly lowers the effective ratio. The native ratio is fixed by the panel.',
       },
     ],
   },

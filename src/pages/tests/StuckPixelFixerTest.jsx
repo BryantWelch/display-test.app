@@ -13,7 +13,7 @@ import { formatTime, useWakeLock } from '../../hooks/useWakeLock';
 import { usePixelCanvas } from '../../components/PixelCanvas';
 
 const NOISE = [
-  { value: 'pixel', label: 'Per-pixel', title: 'Every device pixel gets a random color each frame' },
+  { value: 'pixel', label: 'Per-pixel', title: 'Every device pixel gets a random color on each change' },
   { value: 'block', label: 'Blocks', title: 'Random 4×4 blocks' },
   { value: 'cycle', label: 'Solid cycle', title: 'Whole square cycles red, green, blue, white, black' },
 ];
@@ -50,6 +50,11 @@ const clampPos = (pos, size) => {
     x: Math.round(Math.min(Math.max(0, pos.x), Math.max(0, w - size))),
     y: Math.round(Math.min(Math.max(0, pos.y), Math.max(0, h - size))),
   };
+};
+
+const maxSize = () => {
+  const { w, h } = viewport();
+  return Math.max(MIN_SIZE, Math.min(MAX_SIZE, w, h));
 };
 
 const DEFAULTS = { size: 120, noise: 'pixel', rate: 0, minutes: 10, full: false };
@@ -101,12 +106,14 @@ const StuckPixelFixerTest = () => {
     const f = frame.current;
     if (!f.tile) {
       f.tile = document.createElement('canvas');
-      f.tile.width = TILE;
-      f.tile.height = TILE;
       f.small = document.createElement('canvas');
     }
     const block = settings.current.noise === 'block' ? Math.max(2, Math.round(4 * dpr)) : 1;
     const cells = Math.ceil(TILE / block);
+    if (f.tile.width !== cells * block) {
+      f.tile.width = cells * block;
+      f.tile.height = cells * block;
+    }
     const target = block === 1 ? f.tile : f.small;
     if (target.width !== cells) {
       target.width = cells;
@@ -137,8 +144,8 @@ const StuckPixelFixerTest = () => {
       return;
     }
     const tile = fillTile(dpr);
-    for (let y = 0; y < height; y += TILE) {
-      for (let x = 0; x < width; x += TILE) ctx.drawImage(tile, x, y);
+    for (let y = 0; y < height; y += tile.height) {
+      for (let x = 0; x < width; x += tile.width) ctx.drawImage(tile, x, y);
     }
   };
 
@@ -162,7 +169,7 @@ const StuckPixelFixerTest = () => {
 
   const resize = useCallback(
     (next) => {
-      const s = Math.round(Math.min(MAX_SIZE, Math.max(MIN_SIZE, next)));
+      const s = Math.round(Math.min(maxSize(), Math.max(MIN_SIZE, next)));
       setSize(s);
       setPos((p) => clampPos({ x: p.x + (size - s) / 2, y: p.y + (size - s) / 2 }, s));
     },
@@ -195,7 +202,7 @@ const StuckPixelFixerTest = () => {
     if (d.kind === 'move') {
       setPos(clampPos({ x: d.pos.x + dx, y: d.pos.y + dy }, size));
     } else {
-      const s = Math.round(Math.min(MAX_SIZE, Math.max(MIN_SIZE, d.size + Math.max(dx, dy))));
+      const s = Math.round(Math.min(maxSize(), Math.max(MIN_SIZE, d.size + Math.max(dx, dy))));
       setSize(s);
       setPos(clampPos(d.pos, s));
     }
@@ -286,7 +293,7 @@ const StuckPixelFixerTest = () => {
                 label="Size"
                 value={size}
                 min={MIN_SIZE}
-                max={MAX_SIZE}
+                max={maxSize()}
                 step={4}
                 onChange={resize}
                 format={(v) => `${v} × ${v} px`}

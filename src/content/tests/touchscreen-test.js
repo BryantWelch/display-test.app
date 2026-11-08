@@ -4,12 +4,12 @@ export default {
   category: 'utilities',
   name: 'Touchscreen Test',
   shortName: 'Touchscreen',
-  badges: ['New'],
+  badges: [],
   summary: 'Check multi-touch, dead zones, and ghost touches on any touchscreen.',
   seo: {
     title: 'Touchscreen Test — Multi-Touch, Dead Zones & Ghost Touch Checker',
     description:
-      'Free online touchscreen test for phones, tablets, laptops, and touch monitors. See every finger, count simultaneous touches, paint coverage to find dead zones, and spot ghost touches.',
+      'Free online touchscreen test for phones, tablets, and touch monitors. Count simultaneous touches, paint coverage to find dead zones, and spot ghost touches.',
   },
   testSeo: {
     title: 'Touchscreen Test — Fullscreen',
@@ -34,7 +34,7 @@ export default {
               '**Tap grid** — tap each cell of a grid once. Cells turn green when they register. Good for a quick, systematic pass, especially near edges and corners.',
             ],
           },
-          'Use the browser’s fullscreen mode so the edges of the panel are part of the test area. On phones, system gestures at the very edges (back, home) may still be handled by the OS first.',
+          'Use the browser’s fullscreen mode so the edges of the panel are part of the test area, and tap **Hide controls** before painting so the control panel doesn’t cover part of the screen (**Show controls** brings it back). On phones, system gestures at the very edges (back, home) may still be handled by the OS first.',
         ],
       },
       {
@@ -44,7 +44,7 @@ export default {
           'A dead zone is an area where the digitizer doesn’t detect touch. It’s usually a strip along one axis (a failed sensor line) or a patch where the screen was pressed or cracked.',
           {
             ol: [
-              'Choose **Coverage** and a fine or medium cell size.',
+              'Choose **Coverage** and a fine or medium cell size, then tap **Hide controls**.',
               'Drag one finger slowly in horizontal rows across the whole screen, then in vertical columns.',
               'Look for cells that stay dark, or lines in **Draw** mode that break at the same spot every time.',
               'Retry the area slowly. If it never registers, it’s a hardware fault, not a missed swipe.',
@@ -68,19 +68,21 @@ export default {
               'A damaged digitizer, or a case pressing on the edge of the display.',
             ],
           },
-          '**Palm rejection** is handled by the OS and app, not the browser. Resting your palm here will show it as a touch — that’s expected. To test it, use a drawing app with a stylus and rest your hand as you normally would.',
+          '**Palm rejection** is handled by the OS and app, not the browser. Resting your palm here will usually show up as a touch — that’s expected. To test it, use a drawing app with a stylus and rest your hand as you normally would.',
         ],
       },
       {
         id: 'multi-touch',
         heading: 'How many touches can it detect?',
         blocks: [
-          'Place fingers on the screen one at a time and watch **Max simultaneous**. Most phones and tablets track 10 points; many touch monitors and laptops track 10, older or cheaper panels 2–5. **Device reports** shows what the browser says the hardware supports.',
+          'Place fingers on the screen one at a time and watch **Max simultaneous**. Most Android phones and tablets track 10 points, and iPhones track 5 — a sixth finger drops the touches already down. Older iPads track 11; recent ones track more, around 17. Touch laptops and monitors usually track 10, older or cheaper panels 2–5. Apple doesn’t publish these limits. **Device reports** shows the number the browser exposes, which is only a hint: some browsers report a fixed or capped value, so trust what you actually measure.',
           {
             table: {
               head: ['Device type', 'Typical touch points'],
               rows: [
-                ['Phones and tablets', '5–10 (most current models: 10)'],
+                ['Android phones and tablets', '10 (some budget models 5)'],
+                ['iPhone', '5'],
+                ['iPad', '11 on older models; recent models around 17'],
                 ['Windows 2-in-1s and touch laptops', '10'],
                 ['Portable / desktop touch monitors', '10 (some budget models 2–5)'],
                 ['Large interactive displays', '20–40'],
@@ -118,7 +120,7 @@ export default {
     lookFor: {
       good: [
         'One circle per finger that follows smoothly, with no lag spikes or jumps.',
-        'Max simultaneous matches the device’s spec (often 10).',
+        'Max simultaneous matches the device (often 10; 5 on iPhone; past 11 on a recent iPad).',
         'Coverage and tap grid turn fully green, including edges and corners.',
         'Nothing appears while the screen isn’t being touched.',
       ],
@@ -155,7 +157,7 @@ export default {
       {
         question: 'How many fingers does my screen support?',
         answer:
-          'Put fingers down one at a time and watch **Max simultaneous**. **Device reports** shows the number of touch points the browser says the hardware supports, which is usually accurate on modern devices.',
+          'Put fingers down one at a time and watch **Max simultaneous** — that is what your screen actually tracked. **Device reports** shows the number of touch points the browser exposes; it is often right, but some browsers report a fixed or capped value.',
       },
       {
         question: 'Does this work with a stylus or mouse?',

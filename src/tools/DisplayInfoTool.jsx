@@ -305,6 +305,7 @@ const DisplayInfoTool = () => {
   const [refresh, setRefresh] = useState({ state: 'idle', result: null });
   const [copied, setCopied] = useState(null);
   const measuring = useRef(false);
+  const copiedTimer = useRef(null);
   const lastSig = useRef(signature(info));
 
   const measure = useCallback(async () => {
@@ -342,12 +343,15 @@ const DisplayInfoTool = () => {
     return () => clearInterval(id);
   }, [update]);
 
+  useEffect(() => () => clearTimeout(copiedTimer.current), []);
+
   const groups = buildGroups(info, refresh, ua);
 
   const copy = async () => {
     const ok = await copyText(reportText(groups));
     setCopied(ok ? 'Copied to clipboard' : 'Copy failed — select and copy manually');
-    setTimeout(() => setCopied(null), 2500);
+    clearTimeout(copiedTimer.current);
+    copiedTimer.current = setTimeout(() => setCopied(null), 2500);
   };
 
   const scaled = info.dpr !== 1;
@@ -372,11 +376,9 @@ const DisplayInfoTool = () => {
           <Button type="button" $variant="primary" onClick={copy}>
             Copy report
           </Button>
-          {copied ? (
-            <Status role="status" aria-live="polite">
-              {copied}
-            </Status>
-          ) : null}
+          <Status role="status" aria-live="polite">
+            {copied}
+          </Status>
         </ButtonRow>
       </Hero>
 
@@ -393,8 +395,9 @@ const DisplayInfoTool = () => {
             <strong>{fmtSize(info.cssWidth, info.cssHeight)}</strong>.
           </>
         )}{' '}
-        This is the resolution Windows or macOS is <em>sending</em> — if the OS is set to a non-native mode, your
-        panel’s native resolution can be higher. Browser zoom other than 100% also changes these numbers.
+        This is the resolution your operating system is <em>rendering</em> — if it is set to a non-native mode or a
+        macOS scaled “looks like” mode, your panel’s native resolution can differ. Browser zoom other than 100% also
+        changes these numbers.
       </Explain>
 
       <Grid>

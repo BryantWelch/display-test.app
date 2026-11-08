@@ -74,7 +74,7 @@ const FrameSkippingTest = () => {
     }
 
     const statusY = y0 - Math.round(44 * dpr);
-    ctx.font = `700 ${Math.round(18 * dpr)}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+    ctx.font = `700 ${Math.round(Math.min(18 * dpr, W / 26))}px system-ui, -apple-system, "Segoe UI", sans-serif`;
     ctx.fillStyle = paused ? '#94a3b8' : st.ready ? '#22c55e' : '#f59e0b';
     const status = paused
       ? 'Paused'
@@ -123,7 +123,7 @@ const FrameSkippingTest = () => {
                 ['Refresh rate', stats.hz ? `${stats.snapped} Hz (${stats.hz.toFixed(1)})` : 'Measuring…'],
                 ['Frame-time jitter', stats.hz ? `${stats.jitter.toFixed(2)} ms` : '—'],
                 ['Browser dropped frames', String(stats.dropped)],
-                ['Status', stats.ready ? 'Ready' : 'Stabilizing'],
+                ['Status', paused ? 'Paused' : stats.ready ? 'Ready' : 'Stabilizing'],
               ]}
             />
             <ButtonRow style={{ marginTop: '0.6rem' }}>

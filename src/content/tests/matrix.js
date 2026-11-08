@@ -9,7 +9,7 @@ export default {
   seo: {
     title: 'Matrix Digital Rain — Free Fullscreen Falling Code Screensaver',
     description:
-      'Full-screen Matrix-style digital rain in your browser. Pick colors, speed, density, trail length, and katakana, hex, or binary characters. Looks best on OLED in a dark room.',
+      'Full-screen Matrix-style digital rain in your browser. Pick colors, speed, density, trails, and katakana, Latin, hex, or binary characters. Best on OLED.',
   },
   testSeo: {
     title: 'Matrix Digital Rain — Fullscreen',
@@ -28,7 +28,7 @@ export default {
         heading: 'Blue pill or red pill?',
         blocks: [
           'A tribute to the famous “digital rain” from the 1999 film: columns of half-width katakana, digits, and symbols streaming down the screen, each led by a bright character that leaves a fading trail.',
-          'In the fullscreen view you can change the rain and background colors, speed, density, trail length, character size, and character set (katakana, Latin, hex, or binary). Press **Space** to pause and **H** to hide the controls for a clean screen.',
+          'In the fullscreen view you can change the rain and background colors, speed, density, trail length, character size, and character set (katakana, Latin, hex, or binary). Press **Space** to pause, **↑ / ↓** to change speed, **C** to cycle colors, and **H** to hide the controls for a clean screen.',
         ],
       },
       {
@@ -54,7 +54,7 @@ export default {
             ul: [
               'A sci-fi backdrop for a stream, desk setup photo, or party screen.',
               'A quick “look at these blacks” demo for a new OLED.',
-              'Ambient motion on a second monitor — but don’t leave the same static setup running for hours on an OLED; see the [burn-in guide](/guides/oled-burn-in).',
+              'Ambient motion on a second monitor — on an OLED, keep it fullscreen with the controls hidden so no taskbar or browser bar sits static for hours; see the [burn-in guide](/guides/oled-burn-in).',
             ],
           },
         ],
@@ -62,7 +62,7 @@ export default {
     ],
     lookFor: {
       good: [
-        'Smooth, steady falling streams with fading trails.',
+        'Steady falling streams with fading trails. Characters step down one row at a time by design, so that isn’t stutter.',
         'On OLED: a truly black background between the streams.',
       ],
       bad: [
@@ -80,7 +80,7 @@ export default {
       'Press H to hide the controls and Space to pause.',
       'Try amber or cyan for a retro terminal look.',
     ],
-    related: ['black-level', 'local-dimming', 'burn-in', 'refresh-rate'],
+    related: ['bouncing-logo', 'starfield', 'fireworks', 'aurora'],
     affiliates: 'matrix',
     disclaimer:
       'Purely for entertainment — not a diagnostic test. Contains continuous motion; take a break if it causes discomfort.',

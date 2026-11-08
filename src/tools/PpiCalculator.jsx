@@ -40,10 +40,10 @@ function detected() {
   return { w: info.physicalWidth, h: info.physicalHeight };
 }
 
-/** Windows-style scaling suggestion for desktop viewing distance, targeting ~109 effective PPI. */
+/** Windows-style scaling suggestion for desktop viewing distance, targeting ~108 effective PPI. */
 function suggestScaling(ppi) {
   if (ppi > 250) return null;
-  return Math.min(300, Math.max(100, Math.round((ppi / 109) * 4) * 25));
+  return Math.min(300, Math.max(100, Math.round((ppi / 108) * 4) * 25));
 }
 
 const fmt = (n, d = 1) => (Number.isFinite(n) ? n.toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d }) : '—');
@@ -323,7 +323,7 @@ const PpiCalculator = () => {
                 <small>
                   {scaling
                     ? `Desktop distance · ~${fmt(width / (scaling / 100), 0)} × ${fmt(height / (scaling / 100), 0)} workspace`
-                    : 'Phone/tablet density — the OS picks scaling'}
+                    : 'Phone, tablet, or high-end laptop density — use the OS default'}
                 </small>
               </dd>
             </div>

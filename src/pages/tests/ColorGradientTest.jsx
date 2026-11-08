@@ -41,7 +41,7 @@ const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)
 function buildBands(a, b, steps, labelFrom) {
   const span = Math.max(...a.map((v, i) => Math.abs(b[i] - v)));
   const levels = span + 1;
-  const count = steps > 1 && steps < levels ? steps : Math.max(levels, 2);
+  const count = steps > 1 && steps < levels ? steps : levels;
   return Array.from({ length: count }, (_, j) => {
     const t = count === 1 ? 0 : j / (count - 1);
     return {
@@ -146,6 +146,7 @@ const ColorGradientTest = () => {
     setPreset(PRESETS[(i + dir + PRESETS.length) % PRESETS.length].value);
   };
   const cycleRange = (dir) => {
+    if (preset === 'custom') return;
     const keys = Object.keys(RANGES);
     const i = keys.indexOf(range);
     setRange(keys[(i + dir + keys.length) % keys.length]);
@@ -257,6 +258,7 @@ const ColorGradientTest = () => {
     >
       <canvas
         ref={canvasRef}
+        role="img"
         aria-label="Gradient ramp"
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', imageRendering: 'pixelated' }}
       />

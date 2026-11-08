@@ -7,9 +7,9 @@ export default {
   badges: [],
   summary: 'White windows from 1% to 100% of the screen to see ABL, local dimming, and blooming.',
   seo: {
-    title: 'White Window Brightness Test — Check ABL & Blooming (1–100%) | Free',
+    title: 'Monitor Brightness & White Window Test (ABL, Blooming)',
     description:
-      'Show a white window at 1, 2, 5, 10, 25, 50 or 100% of your screen with live APL readout. See OLED auto brightness limiting (ABL), Mini-LED local dimming and blooming, and learn why HDR peak brightness is quoted at 10%.',
+      'Free white window test from 1% to 100% of the screen with APL readout. See OLED ABL and Mini-LED blooming, and set a comfortable SDR brightness for your room.',
   },
   testSeo: {
     title: 'White Window Test — Fullscreen',
@@ -32,8 +32,8 @@ export default {
           {
             ul: [
               '**ABL (automatic brightness limiting)**, mainly OLED: as APL rises, the whole screen dims. A small window may be very bright, while full-screen white is a fraction of that.',
-              '**Local dimming**, Mini-LED and FALD LCDs: the backlight is split into zones. Small windows can be driven extra bright, but light spills into neighboring black zones as a halo (**blooming**).',
-              '**Edge-lit and basic LCDs**: one backlight for the whole screen, so brightness barely changes with window size — but black around the window is only as dark as the panel allows.',
+              '**Local dimming**, Mini-LED and other full-array (FALD) LCDs: the backlight is split into zones. Small windows can be driven extra bright, but light spills into neighboring black zones as a halo (**blooming**).',
+              '**LCDs without local dimming**: one backlight for the whole screen, so brightness barely changes with window size — but black around the window is only as dark as the panel allows.',
             ],
           },
         ],
@@ -67,6 +67,27 @@ export default {
               '**Window has visibly soft or blocky edges of light in the black**: individual dimming zones lighting up.',
               '**No change at all with size**: typical for LCDs without local dimming, and for OLED monitors in modes that cap brightness to avoid ABL.',
             ],
+          },
+        ],
+      },
+      {
+        id: 'set-brightness',
+        heading: 'Setting brightness for your room',
+        blocks: [
+          'Screen brightness is measured in **nits** (candelas per square metre, cd/m²). For SDR desktop use, **about 120 nits** in a dim or evenly lit room is the usual calibration target. A bright office or a desk next to a window may need 200–300 nits; in a dark room 80–100 nits is often plenty.',
+          {
+            ol: [
+              'Choose a neutral picture mode (Standard, sRGB, Movie) and turn off auto-brightness, eco modes and dynamic contrast.',
+              'Start the test and choose a **100%** window at a **100%** window level. Hold a sheet of white printer paper next to the screen under your normal room lighting.',
+              'Adjust the display’s **Brightness** (called Backlight or OLED Light on many TVs) until the screen’s white looks about as bright as the paper: not glowing beside it, not dull gray.',
+              'Check the [black level](/black-level) and [white saturation](/white-saturation) tests afterwards. You shouldn’t need more brightness to see shadow detail, and Contrast shouldn’t clip highlights.',
+            ],
+          },
+          'On most monitors, **Brightness** sets how much light the backlight or OLED panel emits, making everything brighter or darker without changing the signal. **Contrast** sets the white level of the signal, and too much clips highlights. Many TVs label things differently: *Brightness* shifts the black level, while *Backlight* or *OLED Light* sets light output. The white saturation and black level tests show what each control does on your display.',
+          { note: 'On OLED, full-screen white is the case where ABL dims the screen most. Normal desktop content is usually closer to the 25–50% windows, so check those sizes too before settling on a setting.' },
+          {
+            warning:
+              'Many displays dim using **PWM**, switching the backlight or pixels on and off very quickly. On many panels the flicker gets worse at low brightness settings and can cause eye strain. If a low brightness setting bothers you, raise brightness and use softer room lighting, or look for a flicker-free or DC-dimming option. A browser can’t detect PWM. See the [setup checklist](/guides/setup-checklist#pwm-flicker) for simple ways to check for it.',
           },
         ],
       },
@@ -113,7 +134,7 @@ export default {
       'Give each size a few seconds — some dimming is gradual.',
       'If you have a light meter or colorimeter, measure each window size for real numbers.',
     ],
-    related: ['local-dimming', 'contrast', 'uniformity', 'hdr-test'],
+    related: ['black-level', 'white-saturation', 'local-dimming', 'contrast', 'uniformity', 'hdr-test'],
     affiliates: 'brightness',
     disclaimer:
       'A visual aid for seeing brightness behavior. It cannot measure brightness in nits or certify HDR performance — that requires a calibrated light meter or colorimeter.',
@@ -141,7 +162,7 @@ export default {
       {
         question: 'What brightness level should I use?',
         answer:
-          'Match the screen to your room: around 120–200 nits suits typical indoor desktop use, less in a dark room, more near a bright window. If white pages feel glaring or you squint at dark scenes, adjust brightness first.',
+          'Match the screen to your room: about 120 nits is the usual SDR target for a dim or evenly lit room, 80–100 nits suits a dark room, and 200–300 nits may be needed near a bright window. Without a meter, show a 100% white window and match it to a sheet of white paper under your room light. If white pages feel glaring, lower brightness.',
       },
       {
         question: 'Why does my screen get dimmer when I open a white web page?',

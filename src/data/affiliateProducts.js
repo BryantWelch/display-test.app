@@ -188,6 +188,12 @@ export const pageAffiliates = {
       'Banding often improves with a proper profile—and a factory-calibrated panel gives you a stronger starting point.',
     products: [products.asusProArt, products.calibriteProHl, products.i1Basic],
   },
+  hdr: {
+    title: 'Real HDR needs the right panel',
+    intro:
+      'Edge-lit HDR400 monitors can’t show much HDR. OLED and Mini-LED panels with a wide P3 gamut are the usual upgrade—and a meter confirms the real nits.',
+    products: [products.alienwareOled, products.asusProArt, products.calibriteProHl],
+  },
   colorDistance: {
     title: 'For color-critical work',
     intro:

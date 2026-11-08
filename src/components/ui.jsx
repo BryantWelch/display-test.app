@@ -51,6 +51,11 @@ export const Prose = styled.div`
     scroll-margin-top: calc(var(--nav-height) + 1rem);
   }
 
+  /* Hash links target the section, so the offset has to live here too or the heading slides under the fixed header. */
+  section[id] {
+    scroll-margin-top: calc(var(--nav-height) + 1rem);
+  }
+
   h3 {
     font-size: var(--fs-h3);
     margin: 1.5rem 0 0.5rem;

@@ -5,7 +5,7 @@ import AdSlot from '../components/AdSlot';
 import FAQSection from '../components/FAQSection';
 import JsonLd from '../components/JsonLd';
 import { Badge, ButtonLink, Card, Grid, ArrowRight } from '../components/ui';
-import { guides, guidePath, infoPath, testsByCategory, tests } from '../registry';
+import { guides, guidePath, infoPath, testsByCategory } from '../registry';
 import { SITE } from '../registry/routeMeta';
 import { getDisplayInfo } from '../utils/displayInfo';
 import { measureRefreshRate } from '../utils/frameTiming';
@@ -33,23 +33,6 @@ const HeroInner = styled.div`
     grid-template-columns: 1fr;
     padding: 3rem 1rem 2.5rem;
     gap: 2rem;
-  }
-`;
-
-const Kicker = styled.p`
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  font-size: var(--fs-small);
-  color: var(--text-muted);
-  margin-bottom: 1.25rem;
-
-  span {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.15);
   }
 `;
 
@@ -138,11 +121,17 @@ const CategorySection = styled.section`
 
   header {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    margin-bottom: 1.1rem;
+  }
+
+  header.split {
+    flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
     gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.1rem;
   }
 
   h2 {
@@ -150,8 +139,10 @@ const CategorySection = styled.section`
   }
 
   header p {
-    color: var(--text-muted);
+    color: var(--text-subtle);
     font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 62ch;
   }
 `;
 
@@ -174,10 +165,6 @@ const TestCard = styled(Link)`
 
   h3 {
     font-size: 1.08rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
   }
 
   p {
@@ -212,6 +199,13 @@ const Honest = styled.section`
     color: var(--text-muted);
     line-height: 1.7;
   }
+`;
+
+const CardBadges = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: -0.15rem;
 `;
 
 const GuideCard = styled(TestCard)``;
@@ -298,9 +292,6 @@ const Home = () => {
       <Hero>
         <HeroInner>
           <div>
-            <Kicker>
-              <span aria-hidden="true" /> Free · No install · {tests.length} tests and tools
-            </Kicker>
             <Title>
               Know your display. <em>Find every flaw.</em>
             </Title>
@@ -333,14 +324,16 @@ const Home = () => {
             <Grid $min="250px">
               {category.tests.map((t) => (
                 <TestCard key={t.slug} to={infoPath(t)}>
-                  <h3>
-                    {t.name}
-                    {t.badges?.map((b) => (
-                      <Badge key={b} $tone={b === 'New' ? 'new' : undefined}>
-                        {b}
-                      </Badge>
-                    ))}
-                  </h3>
+                  <h3>{t.name}</h3>
+                  {t.badges?.length ? (
+                    <CardBadges>
+                      {t.badges.map((b) => (
+                        <Badge key={b} $tone={b === 'New' ? 'new' : undefined}>
+                          {b}
+                        </Badge>
+                      ))}
+                    </CardBadges>
+                  ) : null}
                   <p>{t.summary}</p>
                 </TestCard>
               ))}
@@ -352,7 +345,7 @@ const Home = () => {
 
         {guides.length ? (
           <CategorySection aria-labelledby="home-guides">
-            <header>
+            <header className="split">
               <h2 id="home-guides">Guides</h2>
               <p>
                 <Link to="/guides" style={{ color: 'var(--accent)' }}>

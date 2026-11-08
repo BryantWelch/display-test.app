@@ -120,9 +120,11 @@ const Callout = styled.div`
   }
 `;
 
-const isSafari = () => {
+const isAppleWebKit = () => {
   const ua = navigator.userAgent || '';
-  return /Safari\//.test(ua) && !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS|Android/.test(ua);
+  const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const safari = /Safari\//.test(ua) && !/Chrome|Chromium|Edg|OPR|Android/.test(ua);
+  return ios || safari;
 };
 
 function drawGraph(canvas, intervals, frameMs) {
@@ -193,14 +195,16 @@ const RefreshRateTool = () => {
 
   const ready = !!summary;
   const low = ready && summary.samples >= 120 && summary.snappedHz <= 61;
-  const safari = ready && isSafari();
+  const safari = ready && isAppleWebKit();
 
   return (
     <div>
       <Top>
-        <Big $tone={low ? 'warn' : undefined} aria-live="polite">
-          <strong>{ready ? summary.snappedHz : '—'}</strong>
-          <span>{ready ? 'Hz refresh rate' : 'Measuring…'}</span>
+        <Big $tone={low ? 'warn' : undefined}>
+          <div aria-live="polite" aria-atomic="true">
+            <strong>{ready ? summary.snappedHz : '—'}</strong>
+            <span>{ready ? 'Hz refresh rate' : 'Measuring…'}</span>
+          </div>
           <small>{ready ? `${summary.hz.toFixed(2)} Hz measured` : 'Keep this tab in front'}</small>
         </Big>
         <Stats>
@@ -234,8 +238,8 @@ const RefreshRateTool = () => {
       <GraphWrap>
         <canvas ref={canvasRef} role="img" aria-label="Frame time graph for the last 240 frames" />
         <figcaption>
-          Frame time for the last {WINDOW} frames. The dashed line is the median; red bars are frames that took more
-          than 1.5× longer (dropped or late frames). Dropped, min, and max cover this window.
+          Frame time for the last {WINDOW} frames. The dashed line is the measured refresh interval; red bars are
+          frames that took more than 1.5× longer (dropped or late frames). Dropped, min, and max cover this window.
         </figcaption>
       </GraphWrap>
 
@@ -251,11 +255,12 @@ const RefreshRateTool = () => {
           is actually set to, so this usually means the monitor isn’t running at its rated refresh rate:
           <ul>
             <li>
-              <strong>Windows:</strong> Settings → System → Display → Advanced display → Choose a refresh rate.
+              <strong>Windows:</strong> Settings → System → Display → Advanced display → Choose a refresh rate. Pick
+              the highest fixed rate, not “Dynamic”.
             </li>
             <li>
               <strong>Cable / port:</strong> use DisplayPort or HDMI 2.1 with a certified cable. HDMI 2.0 tops out
-              around 144 Hz at 1440p and 60 Hz at 4K.
+              around 144 Hz at 1440p and 60 Hz at 4K, and some monitors only reach their top rate over DisplayPort.
             </li>
             <li>
               <strong>Desktop PC:</strong> plug into the graphics card, not the motherboard’s video output.
@@ -270,7 +275,8 @@ const RefreshRateTool = () => {
             </li>
             {safari ? (
               <li>
-                <strong>Safari</strong> limits pages to 60 fps on most Macs. Try Chrome or Firefox, or a ProMotion Mac.
+                <strong>Safari</strong>, and every browser on iPhone and iPad, limits web pages to 60 fps by default,
+                even on 120 Hz ProMotion screens. On a Mac, try Chrome or Firefox.
               </li>
             ) : null}
           </ul>

@@ -38,6 +38,7 @@ export default {
             ],
           },
           'Monitor sharpness and overscan settings can also add halos or blur; set sharpness to its neutral value (often 0, 5, or 50 depending on the brand) and turn overscan off on TVs.',
+          'When a TV is used as a monitor, or a GPU sends YCbCr 4:2:2 or 4:2:0 over HDMI, color detail is shared between neighboring pixels. Black-and-white text can look fine while red or blue text on dark backgrounds smears. Label the TV input as **PC** (or enable its PC mode) and set the GPU output to RGB or YCbCr 4:4:4, then confirm with the [chroma subsampling test](/chroma-subsampling).',
         ],
       },
       {
@@ -49,7 +50,7 @@ export default {
               'Set your display to its native resolution and the scaling you normally use, and sit at your usual distance.',
               'Click **Start text clarity test**. The **Paragraphs** view fills the screen with text in your choice of font, size, weight, spacing, and colors.',
               'Switch to **Tiny sizes** to see 8–16px text side by side. Note the smallest size you can read without leaning in or squinting.',
-              'Switch to **Fringing**. Compare the real browser text, then the three generated samples (grayscale, RGB, BGR) to see which suits your panel.',
+              'Switch to **Fringing**. Compare the real browser text, then the three generated samples (grayscale, RGB, BGR) to see which suits your panel. The pixel tiles below them show your subpixel layout up close, and the edge tile reveals over-sharpening halos.',
               'Try both black-on-white and white-on-black — fringing and blooming show up differently on each.',
             ],
           },
@@ -80,8 +81,10 @@ export default {
             ul: [
               '**Windows:** press Start, type `cttune` (“Adjust ClearType text”), and run the wizard separately on each monitor at native resolution. Pick the samples that look best to you, not the ones you think are “correct”.',
               '**OLED on Windows:** if fringing bothers you, try turning ClearType off in the same wizard to get grayscale smoothing in most apps, and use 125–150% scaling if text is still too small. ClearType can reduce fringing on QD-OLED and WOLED but can’t fully remove it, and some apps ignore the setting.',
-              '**macOS:** text is always grayscale-smoothed. If it looks soft, choose a “looks like” resolution that is exactly half the panel’s native resolution, or use a higher-PPI display.',
-              '**Everywhere:** use the native resolution, enlarge with OS scaling or browser zoom rather than lowering resolution, and set monitor sharpness to neutral.',
+              '**Windows scaling:** at 125% or 150%, older apps that aren’t DPI-aware get stretched and look blurry while modern apps stay sharp. Turn on “Let Windows try to fix apps so they’re not blurry” in Settings → System → Display (under Scale or Advanced scaling settings), or set a per-app override under the app’s Properties → Compatibility → Change high DPI settings.',
+              '**macOS:** text is always grayscale-smoothed, so 1080p and 1440p external monitors look softer than on Windows. If text looks soft, choose a “looks like” resolution that is exactly half the panel’s native resolution, or use a higher-PPI display (a 5K 27″ or 4K 24″ panel at 200% looks print-sharp).',
+              '**TVs:** set the HDMI input type or icon to **PC** (or turn on PC / Game mode), set picture size to Just Scan / Screen Fit to disable overscan, and turn sharpness to neutral. This usually enables 4:4:4 chroma and switches off processing that blurs text.',
+              '**Everywhere:** use the native resolution, enlarge with OS scaling or browser zoom rather than lowering resolution, and set monitor sharpness to neutral — lower it until the edge tile in the **Fringing** view shows no bright or dark outline.',
             ],
           },
           { note: 'Run the test again after any change. ClearType changes apply to newly opened windows, so you may need to reload this page.' },
@@ -99,6 +102,7 @@ export default {
         'Everything looks soft or slightly doubled — usually a non-native resolution or scaling.',
         'Obvious green, magenta, or rainbow halos around text at normal distance (subpixel layout mismatch, common on QD-OLED / WOLED).',
         'Halos or bright outlines around dark text on white — monitor sharpness set too high.',
+        'Black-and-white text is sharp but colored text smears, especially red or blue on dark — chroma subsampling (common on TVs without PC mode).',
         'Thin strokes that look bold in some places and faint in others, or shimmer as you move your eyes.',
       ],
     },
@@ -123,6 +127,11 @@ export default {
         question: 'Why does text look blurry on my monitor?',
         answer:
           'The most common causes are a non-native resolution, fractional scaling on some apps, monitor sharpness set too low or high, and low pixel density. Set the native resolution first, then enlarge with OS scaling. Running the ClearType tuner (`cttune`) on Windows often helps too.',
+      },
+      {
+        question: 'Why is text blurry on a TV used as a PC monitor?',
+        answer:
+          'TVs often overscan, sharpen, and receive 4:2:0 or 4:2:2 chroma by default, which smears colored text. Set the HDMI input to PC mode (on LG, change the input icon to PC), pick Just Scan / Screen Fit, set sharpness to neutral, and make sure the GPU outputs RGB or 4:4:4. Check the result with the [chroma subsampling test](/chroma-subsampling).',
       },
       {
         question: 'Why do OLED monitors have color fringing on text?',

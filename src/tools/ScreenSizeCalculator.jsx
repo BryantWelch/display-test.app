@@ -354,7 +354,7 @@ const ScreenSizeCalculator = () => {
         <>
           <Panel aria-label="Visual comparison">
             <Bar>
-              <h3 style={{ margin: 0 }}>Side-by-side, to scale</h3>
+              <h3 style={{ margin: 0 }}>To scale</h3>
               <Segmented
                 options={[
                   { value: 'overlap', label: 'Overlap' },
@@ -432,7 +432,7 @@ const ScreenSizeCalculator = () => {
                 label="Your distance"
                 value={unit === 'cm' ? distanceCm : Math.round(distanceIn)}
                 min={unit === 'cm' ? 30 : 12}
-                max={unit === 'cm' ? 500 : 200}
+                max={unit === 'cm' ? 500 : 196}
                 step={unit === 'cm' ? 5 : 1}
                 onChange={(v) => setDistanceCm(unit === 'cm' ? v : Math.round(v * IN_TO_CM))}
                 format={(v) => (unit === 'cm' ? `${v} cm` : `${v}″`)}

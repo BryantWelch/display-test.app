@@ -7,9 +7,9 @@ export default {
   badges: ['Popular'],
   summary: 'Frame-locked moving objects to judge ghosting, overshoot, and motion blur at your real refresh rate.',
   seo: {
-    title: 'Monitor Ghosting & Motion Blur Test (Response Time) | Free UFO Test',
+    title: 'Monitor Ghosting Test: Motion Blur & Response Time (UFO Test)',
     description:
-      'Free online ghosting test: frame-locked moving UFOs at full, ½ and ¼ frame rate to spot motion blur, smearing, and overdrive overshoot. Set your monitor’s overdrive by eye — no download.',
+      'Free online ghosting test with frame-locked UFOs at full, ½ and ¼ frame rate. Spot motion blur, smearing, and overdrive overshoot, and tune overdrive by eye.',
   },
   testSeo: {
     title: 'Motion Blur & Ghosting Test — Fullscreen',
@@ -60,7 +60,8 @@ export default {
         heading: 'Motion blur, ghosting, and overshoot',
         blocks: [
           { h3: 'Sample-and-hold blur' },
-          'Almost every LCD and OLED holds each frame on screen for the whole refresh. Your eyes move smoothly while the image jumps in steps, so the picture smears across your retina. This blur depends on **how long each frame stays on screen**, not on pixel speed. At 60 Hz each frame is held for 16.7 ms; at 240 Hz it’s 4.2 ms. That’s why higher refresh rates look clearer even on an instant-response OLED.',
+          'Almost every LCD and OLED holds each frame on screen for the whole refresh. Your eyes move smoothly while the image jumps in steps, so the picture smears across your retina. This blur depends on **how long each frame stays on screen** and how fast the object moves, not on how fast the pixels switch. At 60 Hz each frame is held for 16.7 ms; at 240 Hz it’s 4.2 ms. That’s why higher refresh rates look clearer even on an instant-response OLED.',
+          'As a rule of thumb, the smear is about as wide as the distance the object jumps each frame: 8 px per frame gives roughly 8 px of blur at any refresh rate. At the same speed in pixels per second, doubling the refresh rate halves the pixels per frame, and the blur with it.',
           { h3: 'Ghosting (slow pixel transitions)' },
           'If pixels can’t finish changing color within one refresh, a faint copy of the object trails behind it. On VA panels this often looks like dark, smoky **black smearing** when bright objects move over dark backgrounds.',
           { h3: 'Overshoot (inverse ghosting)' },
@@ -76,7 +77,7 @@ export default {
               head: ['Spec', 'What it measures', 'What it tells you'],
               rows: [
                 ['**GtG** (gray-to-gray)', 'Time for a pixel to move between two gray levels, usually 10%–90% of the change', 'How much ghosting / smearing to expect. Marketing figures are often a best case at maximum overdrive.'],
-                ['**MPRT** (moving picture response time)', 'How long each frame stays visible', 'Sample-and-hold blur. Without strobing, MPRT can’t be shorter than the frame time (6.9 ms at 144 Hz).'],
+                ['**MPRT** (moving picture response time)', 'How long each frame stays visible', 'Sample-and-hold blur. Without strobing, MPRT can’t be much shorter than the frame time (6.9 ms at 144 Hz).'],
               ],
             },
           },
@@ -92,9 +93,9 @@ export default {
         heading: 'Strobing, BFI, VRR, and pursuit-camera photos',
         blocks: [
           { h3: 'Backlight strobing and black frame insertion' },
-          'Strobing modes (ULMB, DyAc, ELMB, “Aim Stabilizer”, “MBR”) and OLED black frame insertion flash each frame briefly instead of holding it. That cuts sample-and-hold blur a lot. In exchange you get lower brightness, possible flicker, and sometimes a double-image “strobe crosstalk” in parts of the screen. Strobing works best when the frame rate matches the refresh rate, so try the full-rate lane.',
+          'Strobing modes (ULMB, DyAc, ELMB, “Aim Stabilizer”, “MBR”) and OLED black frame insertion flash each frame briefly instead of holding it. That cuts sample-and-hold blur a lot. In exchange you get lower brightness, possible flicker, and sometimes a double-image “strobe crosstalk” in parts of the screen. Strobing works best when the frame rate matches the refresh rate, so judge it in the full-rate lane. In the ½ and ¼ rate lanes each frame is flashed more than once, so a double or multiple image there is expected.',
           { h3: 'Variable refresh rate (G-SYNC / FreeSync)' },
-          'VRR matches the refresh to the game’s frame rate to avoid tearing and stutter. It doesn’t remove blur. Browsers render at the fixed desktop refresh rate, so VRR normally isn’t active during this test. Many monitors tune overdrive for maximum refresh, so overshoot can increase at lower in-game frame rates under VRR.',
+          'VRR matches the refresh to the game’s frame rate to avoid tearing and stutter. It doesn’t remove blur. Browsers render at the fixed desktop refresh rate, so VRR normally isn’t active during this test. Most strobing modes switch off when VRR is on; only a few monitors can run both at once. Many monitors tune overdrive for maximum refresh, so overshoot can increase at lower in-game frame rates under VRR.',
           { h3: 'Taking a pursuit-camera photo with a phone' },
           {
             ol: [
@@ -118,7 +119,7 @@ export default {
       bad: [
         'A long dark or smoky trail behind the object, especially on black (slow transitions / VA smearing).',
         'A bright, white, or colored outline around the object (overdrive overshoot — lower the overdrive setting).',
-        'Several distinct copies of the object with strobing on (strobe crosstalk).',
+        'Several distinct copies of the object in the full-rate lane with strobing on (strobe crosstalk).',
         'Frequent red marks in the dropped-frame strip — the browser is stuttering, so fix that before judging.',
       ],
     },

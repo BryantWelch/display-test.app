@@ -31,15 +31,38 @@ export const tests = index(testMeta, fullLoaders, 'test');
 export const guides = index(guideMeta, fullLoaders, 'guide');
 
 const fullCache = new Map();
+const toolCache = new Map();
+
+/** Tag a promise with status/value so React's use() reads it synchronously once settled. */
+function tracked(promise) {
+  promise.status = 'pending';
+  promise.then(
+    (value) => {
+      promise.status = 'fulfilled';
+      promise.value = value;
+    },
+    (reason) => {
+      promise.status = 'rejected';
+      promise.reason = reason;
+    }
+  );
+  return promise;
+}
 
 /** Load (and cache) the full content entry for a test or guide. */
 export function loadFullEntry(entry, kind = 'test') {
   const key = `${kind}:${entry.slug}`;
   if (!fullCache.has(key)) {
-    const promise = import.meta.env.SSR ? Promise.resolve(entry) : fullLoaders[key]();
-    promise.then((full) => {
-      promise.value = full;
-    });
+    const promise = tracked(import.meta.env.SSR ? Promise.resolve(entry) : fullLoaders[key]());
+    if (!import.meta.env.SSR) {
+      promise
+        .then((full) => {
+          if (full.inlineTool) loadTool(full).catch(() => {});
+          // Symptom checker (and any future guide widget) can fetch alongside the copy.
+          if (typeof full.interactive === 'function') full.interactive().catch(() => {});
+        })
+        .catch(() => {});
+    }
     fullCache.set(key, promise);
   }
   return fullCache.get(key);
@@ -48,8 +71,15 @@ export function loadFullEntry(entry, kind = 'test') {
 /** Full entry for rendering; suspends until loaded on the client. */
 export function useFullEntry(entry, kind = 'test') {
   if (import.meta.env.SSR) return entry;
-  const promise = loadFullEntry(entry, kind);
-  return promise.value ?? use(promise);
+  return use(loadFullEntry(entry, kind));
+}
+
+/** Load (and cache) the inline tool component for a test. */
+export function loadTool(test) {
+  if (!toolCache.has(test.slug)) {
+    toolCache.set(test.slug, tracked(test.inlineTool().then((mod) => mod.default)));
+  }
+  return toolCache.get(test.slug);
 }
 
 const testsBySlug = Object.fromEntries(tests.map((t) => [t.slug, t]));
@@ -92,7 +122,6 @@ export function getRelatedTests(test, limit = 4) {
 }
 
 const lazyTests = new Map();
-const lazyTools = new Map();
 
 /** React.lazy wrapper for a fullscreen test component, cached so identity is stable. */
 export function getLazyTest(test) {
@@ -100,23 +129,22 @@ export function getLazyTest(test) {
   return lazyTests.get(test.slug);
 }
 
-/** React.lazy wrapper for an inline (on-page) tool component. */
-export function getLazyTool(test) {
-  if (!test.inlineTool) return null;
-  if (!lazyTools.has(test.slug)) lazyTools.set(test.slug, lazy(test.inlineTool));
-  return lazyTools.get(test.slug);
-}
-
-/** Resolve once the content for an info or guide URL is loaded (used before hydration). */
+/** Resolve once the content for an info, guide, or fullscreen URL is loaded. */
 export function preloadRoute(pathname) {
   const guideMatch = pathname.match(/^\/guides\/([^/]+)\/?$/);
   if (guideMatch) {
     const guide = getGuide(guideMatch[1]);
     return guide ? loadFullEntry(guide, 'guide') : Promise.resolve();
   }
+  const fullscreenMatch = pathname.match(/^\/test\/([^/]+)\/?$/);
+  if (fullscreenMatch) {
+    const test = getTest(fullscreenMatch[1]);
+    return test?.load ? test.load().then(() => undefined) : Promise.resolve();
+  }
   const testMatch = pathname.match(/^\/([^/]+)\/?$/);
   const test = testMatch && getTest(testMatch[1]);
-  return test ? loadFullEntry(test) : Promise.resolve();
+  if (!test) return Promise.resolve();
+  return loadFullEntry(test).then((full) => (full.inlineTool ? loadTool(full) : undefined));
 }
 
 /** Warm the chunk when the user hovers/focuses a Start button. */

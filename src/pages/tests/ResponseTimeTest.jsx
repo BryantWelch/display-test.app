@@ -212,8 +212,8 @@ const ResponseTimeTest = () => {
     ctx.fillRect(0, y, W, unit);
 
     if (s.dropIndicator) {
-      const cell = Math.round(3 * dpr);
       const gap = unit;
+      const cell = Math.max(1, Math.min(Math.round(3 * dpr), Math.floor((W * 0.9) / DROP_HISTORY) - gap));
       const stripW = DROP_HISTORY * (cell + gap);
       const sx = Math.floor((W - stripW) / 2);
       const sy = Math.round(20 * dpr);

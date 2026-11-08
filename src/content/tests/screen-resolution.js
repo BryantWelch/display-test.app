@@ -4,12 +4,12 @@ export default {
   category: 'start',
   name: 'What Is My Screen Resolution?',
   shortName: 'Screen Resolution',
-  badges: ['New', 'Popular'],
+  badges: ['Popular'],
   summary: 'See your screen resolution, scaling, refresh rate, HDR, and color gamut — instantly.',
   seo: {
     title: 'What Is My Screen Resolution? Free Screen Resolution Checker',
     description:
-      'Instantly see your real screen resolution, display scaling, device pixel ratio, refresh rate, aspect ratio, HDR and color gamut. Copy a full monitor report — free, no download.',
+      'See your screen resolution, scaling, device pixel ratio, refresh rate, aspect ratio, HDR, and color gamut instantly, then copy a full display report. Free.',
   },
   inlineTool: () => import('../../tools/DisplayInfoTool'),
   page: {
@@ -32,7 +32,7 @@ export default {
         blocks: [
           'Browsers don’t report physical pixels directly. They report **CSS pixels** — a logical unit the operating system and browser scale so text stays readable on dense screens. The link between the two is the **device pixel ratio (DPR)**:',
           { ul: ['**Physical pixels = CSS pixels × device pixel ratio**'] },
-          'A 4K (3840 × 2160) monitor with Windows scaling at 150% reports a CSS screen size of 2560 × 1440 and a DPR of 1.5. A MacBook with a Retina display typically reports a DPR of 2. This tool multiplies the two to show the physical resolution, and lists the CSS size separately because that’s the number most other “what is my resolution” sites show.',
+          'A 4K (3840 × 2160) monitor with Windows scaling at 150% reports a CSS screen size of 2560 × 1440 and a DPR of 1.5. A MacBook with a Retina display typically reports a DPR of 2. This tool multiplies the two to estimate the physical resolution, and lists the CSS size separately because that’s the number most other “what is my resolution” sites show.',
           {
             note: '**Browser zoom also changes the DPR.** At 110% browser zoom on a 100%-scaled screen, the DPR becomes 1.1 and the reported CSS size shrinks. Press **Ctrl+0** (**Cmd+0** on Mac) to reset zoom before reading the numbers.',
           },
@@ -86,7 +86,7 @@ export default {
             ol: [
               'Open **System Settings → Displays** and select the display.',
               'Choose a size preset (“Larger Text” … “More Space”), or turn on **Show all resolutions** to see the full list.',
-              'On Retina and most external high-DPI displays, macOS renders at 2× and scales down, so the “looks like” resolution is smaller than the native pixel count. The browser reports DPR 2 for these modes.',
+              'On Retina and most external high-DPI displays, macOS renders the desktop at 2× the “looks like” size and then scales that image to fit the panel. The browser reports DPR 2, so this page shows the 2× render size — for example 2940 × 1912 for “looks like 1470 × 956” on a MacBook Air whose panel is natively 2560 × 1664. Some Macs, such as the 14" MacBook Pro, default to a mode whose 2× size matches the panel exactly.',
             ],
           },
           {
@@ -100,6 +100,15 @@ export default {
         blocks: [
           'Websites are laid out in CSS pixels so that a 16px font is a readable size on every screen. If browsers reported physical pixels, pages would become tiny on 4K laptops. Because of that, `screen.width` and `screen.height` are always in CSS pixels, and some privacy-focused browsers (Firefox with resistFingerprinting, Tor Browser, Brave) deliberately round or fake them.',
           'With fractional scaling (125%, 150%, 175%), the multiplication can be off by a pixel or two, and with several monitors at different scaling levels the numbers change as you drag the window between screens. Refresh rate is measured, not reported: it’s estimated from how often the browser draws frames, so battery saver, background tabs, and variable refresh rate (G-SYNC/FreeSync) can make it read lower. See the [refresh rate test](/refresh-rate) for a detailed measurement.',
+          { h3: 'Screen, available area, and viewport' },
+          {
+            ul: [
+              '**Screen** (`screen.width × screen.height`) is the whole display the browser window is on, in CSS pixels.',
+              '**Available screen area** (`screen.availWidth × screen.availHeight`) is the screen minus the taskbar or Dock.',
+              '**Viewport** (`window.innerWidth × window.innerHeight`) is just the page area inside this browser window, which shrinks when the window isn’t maximized.',
+            ],
+          },
+          'With several monitors, the browser only describes the screen the window is currently on (Chromium browsers decide this by where most of the window sits). The **Multiple screens** row uses `screen.isExtended`, which only Chromium-based browsers report.',
         ],
       },
     ],
@@ -122,14 +131,14 @@ export default {
       'Compare with the **(Recommended)** resolution in your OS display settings.',
     ],
     related: ['refresh-rate', 'ppi-calculator', 'hdr-test', 'test-patterns'],
-    affiliates: 'testPatterns',
+    affiliates: 'textClarity',
     disclaimer:
       'Values come from your browser and operating system and may be rounded, scaled, or deliberately obscured for privacy. Check your monitor’s spec sheet for its native resolution and maximum refresh rate.',
     faqs: [
       {
         question: 'What is my screen resolution?',
         answer:
-          'The large number at the top of this page is your physical screen resolution — the CSS size reported by your browser multiplied by the device pixel ratio. If your OS scaling is 100% and browser zoom is 100%, it equals the CSS size exactly.',
+          'The large number at the top of this page is your physical screen resolution — the CSS size reported by your browser multiplied by the device pixel ratio. If your OS scaling is 100% and browser zoom is 100%, it equals the CSS size exactly. On a Mac using a scaled “looks like” mode, it shows the 2× render size, which can differ from the panel’s native resolution.',
       },
       {
         question: 'Why does this site say 1536 × 864 when my laptop is 1920 × 1080?',

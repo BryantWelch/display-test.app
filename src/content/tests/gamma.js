@@ -9,7 +9,7 @@ export default {
   seo: {
     title: 'Monitor Gamma Test — Check 2.2 vs 2.4 Gamma Online | Free',
     description:
-      'Estimate your monitor’s gamma in a minute: match solid grays to a pixel-exact line pattern (γ 1.6–2.8), check red, green and blue tracking, and learn what 2.2, 2.4, sRGB and BT.1886 mean.',
+      'Estimate your monitor’s gamma in a minute: match solid grays to a pixel-exact line pattern (1.6–2.8), check RGB tracking, and compare 2.2, 2.4, sRGB and BT.1886.',
   },
   testSeo: {
     title: 'Gamma Test — Fullscreen',
@@ -50,10 +50,10 @@ export default {
               'Click **Start gamma test**. Press **L** to hide the labels so you aren’t biased.',
               'Step back 2–3 m (or squint) until the line pattern looks like a flat gray.',
               'Use the arrow keys (or click) to select the tile whose center blends in best, then press **L** to read its gamma.',
-              'Repeat with **Dark 25%** and **Light 75%** to see whether gamma holds across the range, and with **R / G / B** to check gray tracking.',
+              'Repeat with **Dark 25%** and **Light 75%** to see whether gamma holds across the range, and with the **R**, **G**, **B** or **RGB** channel buttons to check gray tracking.',
             ],
           },
-          { note: 'The pattern only works when one test pixel is one screen pixel. Under 125% or 150% scaling the browser resamples the lines into a blur that no longer averages correctly — the test will warn you.' },
+          { note: 'The pattern only works when one test pixel is one screen pixel. Chromium-based browsers can map the canvas exactly even at 125% or 150% scaling, but other browsers may resample the lines into a blur that no longer averages correctly — the test warns you when it can’t guarantee a 1:1 mapping.' },
         ],
       },
       {
@@ -65,13 +65,13 @@ export default {
               head: ['Target', 'Used for', 'Notes'],
               rows: [
                 ['**Gamma 2.2**', 'Windows, macOS, web, games, most SDR content', 'The default target for desktop monitors in a normally lit room.'],
-                ['**sRGB curve**', 'The formal sRGB standard', 'A piecewise curve with a short linear segment near black; it averages ~2.2 but is noticeably lighter in the deepest shadows.'],
+                ['**sRGB curve**', 'The formal sRGB standard', 'A piecewise curve with a short linear segment near black; it averages ~2.2 but is noticeably lighter in the deepest shadows. At mid-gray it lands between the 2.2 and 2.3 tiles.'],
                 ['**Gamma 2.4 / BT.1886**', 'Film and TV mastering, dark-room viewing', 'BT.1886 is a 2.4 power curve adjusted for the display’s real black level. On an OLED with near-zero black it is essentially pure 2.4.'],
                 ['**Gamma 1.8**', 'Legacy Mac (before 2009) and some print workflows', 'Rarely the right choice today.'],
               ],
             },
           },
-          'In a bright room a slightly lower gamma (≈2.2) keeps shadows visible; in a dark room 2.4 gives a deeper, more film-like image. HDR doesn’t use gamma at all — it uses the PQ (ST 2084) curve, so this test applies to SDR only.',
+          'In a bright room a slightly lower gamma (≈2.2) keeps shadows visible; in a dark room 2.4 gives a deeper, more film-like image. HDR doesn’t use a gamma power curve — it uses PQ (ST 2084) or HLG — so this test applies to SDR only. Turn Windows HDR off before testing: in HDR mode Windows maps SDR content through the piecewise sRGB curve, not your monitor’s gamma setting.',
         ],
       },
       {
@@ -86,6 +86,8 @@ export default {
               '**R, G and B land on different tiles**: the channels track differently, so grays pick up a tint (often pinkish or greenish) at that brightness.',
             ],
           },
+          'At **Light 75%** neighboring tiles differ by only one or two code values, so treat that reading as rough.',
+          'Browsers color-manage the page: on macOS, or on Windows with an ICC display profile active, the test shows the result after the profile is applied (what you see in the browser), not the panel’s raw response.',
           'This is a visual estimate, usually good to about ±0.1–0.2. It assumes your black is truly black; on LCDs with a raised black level the reading skews slightly. A **colorimeter** with calibration software (DisplayCAL, Calman, HCFR) measures the full curve precisely.',
         ],
       },

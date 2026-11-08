@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { Page, Eyebrow, H1, Lead, Button, Card, Meta } from '../components/ui';
 import { Inline } from '../lib/markup';
-import { getTest, tests, testPath, infoPath, prefetchTest } from '../registry';
+import { getTest, tests, testPath, infoPath, loadFullEntry, prefetchTest } from '../registry';
 import { getRouteMeta } from '../registry/routeMeta';
 import { enterTestFullscreen } from '../utils/fullscreen';
 import { getDisplayInfo } from '../utils/displayInfo';
@@ -338,6 +338,8 @@ const Checkup = () => {
   }, {});
 
   const run = async (step) => {
+    prefetchTest(step.test);
+    loadFullEntry(step.test).catch(() => {});
     if (!state.startedAt) update({ startedAt: new Date().toISOString() });
     if (step.test.load) {
       try {
@@ -347,7 +349,7 @@ const Checkup = () => {
       }
       navigate(`${testPath(step.test)}?checkup=1`);
     } else {
-      navigate(infoPath(step.test));
+      navigate(`${infoPath(step.test)}?checkup=1`);
     }
   };
 
@@ -377,7 +379,7 @@ const Checkup = () => {
       <Eyebrow>Guided checkup</Eyebrow>
       <H1>New monitor checkup</H1>
       <Lead>
-        Work through the tests that matter inside a return window, in a sensible order. Each test opens fullscreen
+        Work through the tests that matter inside a return window, in a sensible order. Each test opens
         with a Pass / Minor issue / Fail prompt, and your answers are saved in this browser so you can come back
         later and share a report.
       </Lead>
@@ -431,25 +433,7 @@ const Checkup = () => {
                   </div>
                   <div className="actions">
                     {result ? <Status $result={result}>{RESULT_LABELS[result]}</Status> : null}
-                    {!state.shared && !step.test.load ? (
-                      <>
-                        {['pass', 'minor', 'fail'].map((r) => (
-                          <SmallButton
-                            key={r}
-                            type="button"
-                            $variant={result === r ? undefined : 'secondary'}
-                            aria-pressed={result === r}
-                            onClick={() => setResult(step.slug, r)}
-                          >
-                            {RESULT_LABELS[r]}
-                          </SmallButton>
-                        ))}
-                        <SmallButton type="button" $variant="ghost" onClick={() => run(step)}>
-                          Open tool
-                        </SmallButton>
-                      </>
-                    ) : null}
-                    {!state.shared && step.test.load ? (
+                    {!state.shared ? (
                       <>
                         <SmallButton
                           type="button"

@@ -33,12 +33,16 @@ async function probeHdrDecode() {
   return Promise.all(CODECS.map(async (c) => ({ ...c, result: await probe(c.contentType) })));
 }
 
+const VIDEO_HDR_QUERY = '(video-dynamic-range: high)';
+
+const hasMatchMedia = () => typeof window !== 'undefined' && typeof window.matchMedia === 'function';
+
 const readDisplay = () => ({
   gamut: getColorGamut(),
   dynamicRange: getDynamicRange(),
   videoHdr:
-    window.matchMedia('(video-dynamic-range: standard)').media !== 'not all'
-      ? window.matchMedia('(video-dynamic-range: high)').matches
+    hasMatchMedia() && window.matchMedia('(video-dynamic-range: standard)').media !== 'not all'
+      ? window.matchMedia(VIDEO_HDR_QUERY).matches
       : null,
 });
 
@@ -116,7 +120,7 @@ const Codecs = styled.div`
 function gamutVerdict(gamut) {
   if (!gamut) return { tone: 'muted', value: NR, note: 'This browser doesn’t support the color-gamut media query.' };
   if (gamut === 'Rec. 2020')
-    return { tone: 'good', value: 'Rec. 2020 (beyond P3)', note: 'Very wide gamut reported. Few real panels cover all of Rec. 2020; this means the display is profiled beyond P3.' };
+    return { tone: 'good', value: 'Rec. 2020 (beyond P3)', note: 'Very wide gamut reported. No consumer panel covers all of Rec. 2020: in Windows HDR mode this usually reflects the HDR signal’s Rec. 2020 encoding, otherwise a display profile beyond P3.' };
   if (gamut === 'Display P3')
     return { tone: 'good', value: 'Display P3 (wide gamut)', note: 'The browser can show colors outside sRGB on this screen. Try the fullscreen P3-only test to confirm.' };
   if (gamut === 'sRGB')
@@ -126,15 +130,19 @@ function gamutVerdict(gamut) {
 
 function hdrVerdict({ dynamicRange, videoHdr }) {
   if (!dynamicRange)
-    return { tone: 'muted', value: NR, note: 'This browser doesn’t support the dynamic-range media query (common in Firefox). That doesn’t mean HDR is off.' };
+    return { tone: 'muted', value: NR, note: 'This browser doesn’t support the dynamic-range media query (common in older browsers). That doesn’t mean HDR is off.' };
   if (dynamicRange === 'HDR')
-    return { tone: 'good', value: 'Yes — HDR is on for this screen', note: 'The OS is running this display in HDR mode, so HDR video and images can exceed SDR white.' };
+    return {
+      tone: 'good',
+      value: 'Yes — HDR is on for this screen',
+      note: 'The browser reports this display as HDR: on Windows, Use HDR is on; on Macs, the display supports EDR. HDR video and HDR images can exceed SDR white; this page itself stays at SDR white.',
+    };
   return {
     tone: 'warn',
     value: videoHdr ? 'Video only' : 'No — SDR',
     note: videoHdr
       ? 'The page renders in SDR, but the browser can play HDR video on this screen.'
-      : 'This screen is in SDR mode. On Windows, turn on Use HDR in Settings → System → Display. On Mac, HDR (EDR) is automatic on supported displays.',
+      : 'The browser reports this screen as SDR. On Windows, turn on Use HDR in Settings → System → Display; some browsers report SDR even then, so compare with Chrome or Edge. On Mac, HDR (EDR) is automatic on supported displays.',
   };
 }
 
@@ -142,7 +150,16 @@ const HdrTool = () => {
   const [display, setDisplay] = useState(readDisplay);
   const [codecs, setCodecs] = useState(undefined);
 
-  useEffect(() => onDisplayChange(() => setDisplay(readDisplay())), []);
+  useEffect(() => {
+    const update = () => setDisplay(readDisplay());
+    const unsubscribe = onDisplayChange(update);
+    const videoQuery = hasMatchMedia() ? window.matchMedia(VIDEO_HDR_QUERY) : null;
+    videoQuery?.addEventListener?.('change', update);
+    return () => {
+      unsubscribe();
+      videoQuery?.removeEventListener?.('change', update);
+    };
+  }, []);
 
   useEffect(() => {
     let alive = true;

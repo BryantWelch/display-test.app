@@ -48,9 +48,9 @@ const DeadPixelTest = () => {
 
   useEffect(() => {
     if (!running) return undefined;
-    const id = setInterval(() => step(1), interval);
-    return () => clearInterval(id);
-  }, [running, interval, step]);
+    const id = setTimeout(() => step(1), interval);
+    return () => clearTimeout(id);
+  }, [running, interval, index, step]);
 
   const color = index < 0 ? custom : COLORS[index].value;
   const colorName = index < 0 ? 'Custom' : COLORS[index].name;

@@ -4,6 +4,7 @@ import styled, { keyframes } from 'styled-components';
 import TestShell, {
   Section,
   Slider,
+  Toggle,
   ColorSwatches,
   ColorInput,
   Readout,
@@ -12,6 +13,7 @@ import TestShell, {
   Hint,
 } from '../../components/TestShell';
 import { enterTestFullscreen } from '../../utils/fullscreen';
+import { useWakeLock } from '../../hooks/useWakeLock';
 
 const COLORS = [
   { name: 'White', value: '#ffffff' },
@@ -20,7 +22,7 @@ const COLORS = [
   { name: 'Green', value: '#00ff00' },
   { name: 'Blue', value: '#0000ff' },
   { name: '50% gray', value: '#808080' },
-  { name: 'Warm white (light box)', value: '#ffd9b0' },
+  { name: 'Warm white', value: '#ffd9b0' },
 ];
 
 const KEY_HOLD_MS = 2000;
@@ -148,6 +150,8 @@ const SolidScreenTest = () => {
   const [locked, setLocked] = useState(false);
   const [notice, setNotice] = useState(false);
   const [progress, setProgress] = useState(null);
+  const [keepAwake, setKeepAwake] = useState(defaultColor === '#ffffff');
+  const wake = useWakeLock(keepAwake);
   const [isFullscreen, setIsFullscreen] = useState(
     () => typeof document !== 'undefined' && !!document.fullscreenElement
   );
@@ -156,6 +160,7 @@ const SolidScreenTest = () => {
 
   const lockedRef = useRef(false);
   const swallowEscape = useRef(false);
+  const swallowClick = useRef(false);
   const hold = useRef(null);
   const noticeTimer = useRef(null);
   const rafRef = useRef(0);
@@ -198,6 +203,7 @@ const SolidScreenTest = () => {
         setProgress({ value: p, kind: h.kind });
         if (p >= 1) {
           if (h.kind === 'key') swallowEscape.current = true;
+          else swallowClick.current = true;
           unlock();
           return;
         }
@@ -218,6 +224,7 @@ const SolidScreenTest = () => {
   // Capture phase on window runs before TestShell's own key handler, so locked keys never reach it.
   useEffect(() => {
     const onKeyDown = (e) => {
+      swallowClick.current = false;
       if (swallowEscape.current && e.key === 'Escape') {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -248,17 +255,32 @@ const SolidScreenTest = () => {
       if (lockedRef.current) e.stopImmediatePropagation();
     };
     const onBlur = () => {
+      swallowEscape.current = false;
       if (hold.current?.kind === 'key') cancelHold();
+    };
+    // A corner unlock ends with the pointer still down; its release must not click the exit button or panel.
+    const onPointerDown = () => {
+      swallowClick.current = false;
+    };
+    const onClick = (e) => {
+      if (!swallowClick.current) return;
+      swallowClick.current = false;
+      e.preventDefault();
+      e.stopImmediatePropagation();
     };
     window.addEventListener('keydown', onKeyDown, true);
     window.addEventListener('keyup', onKeyUp, true);
     window.addEventListener('fullscreenchange', onFullscreen, true);
     window.addEventListener('blur', onBlur);
+    window.addEventListener('pointerdown', onPointerDown, true);
+    window.addEventListener('click', onClick, true);
     return () => {
       window.removeEventListener('keydown', onKeyDown, true);
       window.removeEventListener('keyup', onKeyUp, true);
       window.removeEventListener('fullscreenchange', onFullscreen, true);
       window.removeEventListener('blur', onBlur);
+      window.removeEventListener('pointerdown', onPointerDown, true);
+      window.removeEventListener('click', onClick, true);
     };
   }, [startHold, cancelHold, showNotice]);
 
@@ -283,6 +305,7 @@ const SolidScreenTest = () => {
     setIsCustom(false);
     setCustom('#ffe4c4');
     setLevel(100);
+    setKeepAwake(defaultColor === '#ffffff');
   };
 
   const shortcuts = [
@@ -328,7 +351,8 @@ const SolidScreenTest = () => {
             </Button>
             <Hint>
               Ignores clicks, taps, and keys and hides these controls. Unlock by holding Esc for 2 seconds, or
-              pressing and holding any screen corner for 3 seconds.
+              pressing and holding any screen corner for 3 seconds. In fullscreen, Esc also leaves fullscreen; the
+              lock stays on.
             </Hint>
             {canFullscreen && !isFullscreen ? (
               <Button
@@ -391,6 +415,18 @@ const SolidScreenTest = () => {
               format={(v) => `${v}%`}
               hint="Dims the color in software — easier on the eyes in a dark room. For real brightness changes, use the monitor's own brightness setting."
             />
+          </Section>
+
+          <Section>
+            <h3>Screen sleep</h3>
+            <Toggle label="Keep screen awake" checked={keepAwake} onChange={setKeepAwake} />
+            {keepAwake && (wake === 'unsupported' || wake === 'denied') ? (
+              <Hint>
+                {wake === 'unsupported'
+                  ? 'This browser can’t keep the screen awake, so your system sleep settings still apply.'
+                  : 'The browser refused to keep the screen awake (battery saver can block it).'}
+              </Hint>
+            ) : null}
           </Section>
 
           <Section>

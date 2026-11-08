@@ -4,12 +4,12 @@ export default {
   category: 'defects',
   name: 'Local Dimming & Blooming Test',
   shortName: 'Local Dimming',
-  badges: ['New'],
+  badges: [],
   summary: 'Small bright objects on pure black to reveal blooming, halos, and slow zone transitions on FALD and Mini-LED displays.',
   seo: {
     title: 'Local Dimming Test — Check Blooming & Halo on Mini-LED / FALD | Free',
     description:
-      'Free full-screen blooming test for Mini-LED, FALD, and HDR monitors and TVs. Move a white square, circle, star field, or subtitles over black to see halos and zone lag, and compare local dimming settings.',
+      'Free full-screen blooming test for Mini-LED, FALD, and edge-lit monitors and TVs. Move a white square, star field, or subtitles over black to spot halos and zone lag.',
   },
   testSeo: {
     title: 'Local Dimming Test — Fullscreen',
@@ -27,13 +27,13 @@ export default {
         id: 'how-it-works',
         heading: 'How local dimming works',
         blocks: [
-          'An LCD panel can’t make light, only block it, so black on a normal LCD is really “backlight leaking through”. Local dimming splits the backlight into **zones** — from a few dozen on budget HDR monitors to several thousand on Mini-LED TVs — and dims each zone to match the picture behind it.',
+          'An LCD panel can’t make light, only block it, so black on a normal LCD is really “backlight leaking through”. Local dimming splits the backlight into **zones** — from a handful of edge-lit strips on budget HDR monitors to several thousand on high-end Mini-LED monitors and TVs — and dims each zone to match the picture behind it.',
           'Each zone is far larger than a pixel. When a small bright object sits inside a zone, the whole zone has to light up, and the LCD can’t fully block the extra light around the object. That gray or colored glow is **blooming** (or a halo).',
           {
             ul: [
               '**Edge-lit dimming** — zones are vertical or horizontal strips. Blooming shows as bright columns or bands across the screen.',
               '**FALD** — a grid of LEDs behind the panel. Blooming is a soft glow or a blocky square around bright objects.',
-              '**Mini-LED** — many more, smaller zones. Halos are tighter but still visible on stars, cursors, and subtitles.',
+              '**Mini-LED** — FALD with much smaller LEDs, so hundreds to thousands of zones. Halos are tighter but still visible on stars, cursors, and subtitles.',
               '**OLED** — every pixel is its own light, so there is no blooming at all. A white dot on black stays a white dot.',
             ],
           },
@@ -50,7 +50,8 @@ export default {
               'Start the test and hide the panel with **H** (the panel itself lights zones).',
               'With the **Square** still, look at the black around it: is it pure black, a soft glow, or a visible block?',
               'Switch to **Star field** and **Subtitles** — the real-world cases. Watch whether small stars dim (zones turning down too far) or carry halos.',
-              'Turn on **Sweep**, **Bounce**, or **Follow** and watch the glow: does it trail behind, step from zone to zone, or pulse?',
+              'Lower **Size** and **Brightness** to see how tiny or dim highlights are handled. Some displays barely light a zone for them.',
+              'Turn on **Sweep**, **Bounce**, or **Follow** and watch the glow: does it trail behind, step from zone to zone, or pulse? In **Follow**, the panel and cursor stay hidden while you move, so they don’t light zones of their own.',
               'Repeat for each local dimming level (Off / Low / Medium / High) and pick the one you like best.',
             ],
           },
@@ -75,7 +76,8 @@ export default {
         id: 'limits',
         heading: 'What a browser can and can’t tell you',
         blocks: [
-          'This is purely visual — a browser can’t see the backlight or count zones. In SDR, many monitors only enable local dimming in HDR mode, and Windows may need HDR turned on for the display’s HDR dimming to engage. A phone camera at fixed exposure can help compare settings side by side, but cameras exaggerate blooming compared with your eyes.',
+          'This is purely visual — a browser can’t see the backlight or count zones. Many monitors only enable local dimming in HDR mode, or use a different, gentler dimming curve in SDR, so Windows may need HDR turned on for the display’s HDR dimming to engage.',
+          'The white here is SDR white. With HDR on, the OS shows it at its SDR content brightness, well below the display’s HDR peak, so blooming around real HDR highlights is usually stronger than what you see here. A phone camera at fixed exposure can help compare settings side by side, but cameras exaggerate blooming compared with your eyes.',
         ],
       },
     ],
@@ -107,7 +109,7 @@ export default {
       'Enable HDR if your monitor only dims locally in HDR mode.',
       'Compare each local dimming level with the same shape and motion.',
     ],
-    related: ['black-level', 'uniformity', 'hdr-test', 'contrast'],
+    related: ['brightness', 'black-level', 'uniformity', 'hdr-test', 'contrast'],
     affiliates: 'contrast',
     disclaimer:
       'A visual aid for comparing local dimming behavior. It doesn’t measure luminance or zone counts; reviews with a meter give objective numbers.',
@@ -135,7 +137,7 @@ export default {
       {
         question: 'Can blooming be fixed?',
         answer:
-          'Not completely — it’s a physical limit of zone size. Lowering the local dimming level, using a brighter room, or using dark themes less aggressively all reduce how noticeable it is.',
+          'Not completely — it’s a physical limit of zone size. Lowering the local dimming level, adding some ambient or bias lighting, or avoiding small bright text on dark themes all make it less noticeable.',
       },
     ],
   },

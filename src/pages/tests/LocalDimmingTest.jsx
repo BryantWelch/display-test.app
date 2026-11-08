@@ -99,7 +99,9 @@ const LocalDimmingTest = () => {
     } else if (s.motion === 'sweep') {
       p.y = restY;
       p.x += p.dir * move;
-      if (p.x > W - hw) {
+      if (W <= hw * 2) {
+        p.x = W / 2;
+      } else if (p.x > W - hw) {
         p.x = W - hw;
         p.dir = -1;
       } else if (p.x < hw) {
@@ -109,11 +111,15 @@ const LocalDimmingTest = () => {
     } else if (s.motion === 'bounce') {
       p.x += p.vx * move;
       p.y += p.vy * move;
-      if (p.x > W - hw || p.x < hw) {
+      if (W <= hw * 2) {
+        p.x = W / 2;
+      } else if (p.x > W - hw || p.x < hw) {
         p.vx = -p.vx;
         p.x = Math.min(W - hw, Math.max(hw, p.x));
       }
-      if (p.y > H - hh || p.y < hh) {
+      if (H <= hh * 2) {
+        p.y = H / 2;
+      } else if (p.y > H - hh || p.y < hh) {
         p.vy = -p.vy;
         p.y = Math.min(H - hh, Math.max(hh, p.y));
       }
@@ -139,8 +145,13 @@ const LocalDimmingTest = () => {
   const { canvasRef } = usePixelCanvas({ animate });
 
   const trackPointer = (e) => {
-    const dpr = window.devicePixelRatio || 1;
-    pointer.current = { x: e.clientX * dpr, y: e.clientY * dpr };
+    const canvas = e.currentTarget;
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    pointer.current = {
+      x: ((e.clientX - rect.left) * canvas.width) / rect.width,
+      y: ((e.clientY - rect.top) * canvas.height) / rect.height,
+    };
   };
 
   const handleReset = () => {
@@ -166,6 +177,7 @@ const LocalDimmingTest = () => {
       description="A small bright object on pure black. On full-array local dimming (FALD) and Mini-LED displays, look for a glow (bloom) around it and for the glow lagging behind as it moves."
       onReset={handleReset}
       shortcuts={shortcuts}
+      revealOnMove={motion !== 'pointer'}
       controls={
         <>
           <Section>
@@ -187,7 +199,12 @@ const LocalDimmingTest = () => {
               onChange={setSpeed}
               format={(v) => `${v} px/s`}
             />
-            {motion === 'pointer' ? <Hint>Move the mouse, or drag a finger across the screen.</Hint> : null}
+            {motion === 'pointer' ? (
+              <Hint>
+                Move the mouse, or drag a finger across the screen. The panel and cursor stay hidden while you move;
+                click or press any key to bring them back.
+              </Hint>
+            ) : null}
           </Section>
 
           <Section>
@@ -199,7 +216,7 @@ const LocalDimmingTest = () => {
               ]}
             />
             <Hint>
-              Run this once per local dimming setting (Off / Low / High) and note which gives the least halo without
+              Run this once per local dimming setting (Off / Low / Medium / High) and note which gives the least halo without
               dimming small highlights. Hide the panel with H — it lights zones too.
             </Hint>
           </Section>

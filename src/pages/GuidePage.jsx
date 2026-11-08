@@ -82,29 +82,22 @@ function Interactive({ guide }) {
   );
 }
 
-const GuidePage = ({ guide: entry }) => {
+function GuideFallback({ entry }) {
+  return (
+    <>
+      {entry.summary ? <Lead>{entry.summary}</Lead> : null}
+      {entry.lastReviewed ? <Meta>Last reviewed {entry.lastReviewed}</Meta> : null}
+    </>
+  );
+}
+
+const GuideBody = ({ entry }) => {
   const guide = useFullEntry(entry, 'guide');
-  const meta = getRouteMeta(guidePath(guide));
   const related = (guide.related || []).map(getTest).filter(Boolean);
   const sections = guide.sections || [];
 
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: guide.title || guide.name,
-    description: meta.description,
-    url: `${SITE.url}${guidePath(guide)}`,
-    dateModified: guide.lastReviewed,
-    author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-    publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-  };
-
   return (
-    <Page $narrow>
-      <JsonLd data={schema} />
-      <Breadcrumbs items={meta.breadcrumbs} />
-      <Eyebrow>Guide</Eyebrow>
-      <H1>{guide.title || guide.name}</H1>
+    <>
       <Lead>
         <Inline text={guide.intro} />
       </Lead>
@@ -159,6 +152,32 @@ const GuidePage = ({ guide: entry }) => {
 
       <FAQSection faqs={guide.faqs} />
       <AdSlot slot="belowContent" margin="3rem 0 0" />
+    </>
+  );
+};
+
+const GuidePage = ({ guide: entry }) => {
+  const meta = getRouteMeta(guidePath(entry));
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: entry.title || entry.name,
+    description: meta.description,
+    url: `${SITE.url}${guidePath(entry)}`,
+    dateModified: entry.lastReviewed,
+    author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+    publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+  };
+
+  return (
+    <Page $narrow>
+      <JsonLd data={schema} />
+      <Breadcrumbs items={meta.breadcrumbs} />
+      <Eyebrow>Guide</Eyebrow>
+      <H1>{entry.title || entry.name}</H1>
+      <Suspense fallback={<GuideFallback entry={entry} />}>
+        <GuideBody entry={entry} />
+      </Suspense>
     </Page>
   );
 };
