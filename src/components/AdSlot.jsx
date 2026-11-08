@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export const AD_SLOTS = {
-  banner: '3936769799', // home_top_banner, also the top unit on guides and test pages
-  belowContent: '7385060214', // home_below_grid, also the unit at the end of a page
-  sidebar: '6371361443', // sidebar_info_page
+  banner: '3936769799', // home_top_banner; top unit on guides, test pages, and gear
+  belowContent: '7385060214', // home_below_grid; unit at the end of a page
+  sidebar: '6371361443', // sidebar on test pages, about, and gear
 };
 
 const CLIENT = 'ca-pub-1728229586138721';

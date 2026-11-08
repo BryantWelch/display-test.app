@@ -1,8 +1,32 @@
+import styled from 'styled-components';
 import Breadcrumbs from '../components/Breadcrumbs';
+import AdSlot from '../components/AdSlot';
 import { Page, Eyebrow, H1, Lead, Prose } from '../components/ui';
 import { Inline } from '../lib/markup';
 import { getRouteMeta } from '../registry/routeMeta';
 import { tests } from '../registry';
+
+const Layout = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 2.5rem;
+  align-items: start;
+  margin-top: 2rem;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Sidebar = styled.aside`
+  position: sticky;
+  top: calc(var(--nav-height) + 1rem);
+  min-width: 0;
+
+  @media (max-width: 1000px) {
+    position: static;
+  }
+`;
 
 const P = ({ text }) => (
   <p>
@@ -11,7 +35,7 @@ const P = ({ text }) => (
 );
 
 const About = () => (
-  <Page $narrow>
+  <Page>
     <Breadcrumbs items={getRouteMeta('/about').breadcrumbs} />
     <Eyebrow>About</Eyebrow>
     <H1>About Display Test</H1>
@@ -20,7 +44,8 @@ const About = () => (
       or phone screen — fast to load, no account, and nothing to install.
     </Lead>
 
-    <Prose style={{ marginTop: '2rem' }}>
+    <Layout>
+      <Prose>
       <h2>What it is for</h2>
       <P text="Most people reach for a display test in one of three moments: a new monitor just arrived and the return window is ticking, something looks wrong (blurry text, washed-out blacks, smearing), or they're tuning settings for games or creative work. The [new monitor checkup](/checkup) covers the first, the [symptom checker](/guides/symptom-checker) the second, and every test page explains what normal looks like for the third." />
 
@@ -50,7 +75,11 @@ const About = () => (
 
       <h2>Sister sites</h2>
       <P text="Testing other gear? Try [keyboard-test.app](https://keyboard-test.app) and [controller-test.app](https://controller-test.app)." />
-    </Prose>
+      </Prose>
+      <Sidebar>
+        <AdSlot slot="sidebar" minHeight={250} margin="0" />
+      </Sidebar>
+    </Layout>
   </Page>
 );
 
