@@ -1,6 +1,6 @@
 {
   "short_name": "Display Test",
-  "name": "Display Testing Website",
+  "name": "Display Test — free monitor tests",
   "icons": [
     {
       "src": "favicon.ico",
@@ -13,8 +13,8 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#0b1120",
+  "background_color": "#0b1120"
 }

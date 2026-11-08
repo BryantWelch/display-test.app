@@ -88,6 +88,69 @@ export const products = {
   },
 };
 
+/** Calibration software (not affiliate links). */
+export const software = [
+  {
+    name: 'DisplayCAL',
+    href: 'https://displaycal.net/',
+    note: 'Free, open-source profiling with most colorimeters. The usual starting point.',
+  },
+  {
+    name: 'Calman',
+    href: 'https://store.portrait.com/consumer-software.html',
+    note: 'Commercial calibration suite used by reviewers and TV calibrators; supports AutoCal on many TVs.',
+  },
+  {
+    name: 'QuickGamma',
+    href: 'https://quickgamma.de/indexen.html',
+    note: 'Free Windows utility for visual gamma adjustment when you don’t own a meter.',
+  },
+  {
+    name: 'Calibrize',
+    href: 'https://windowsreport.com/software/colorjinn-calibrize/',
+    note: 'Simple guided visual calibration for Windows. Better than nothing, not a substitute for a meter.',
+  },
+];
+
+/** Sections for the /gear page. */
+export const gearSections = [
+  {
+    id: 'meters',
+    title: 'Colorimeters',
+    intro:
+      'The only way to get real numbers — brightness in nits, measured gamma, white point, and Delta E. Worth it if you do photo/video work or want a TV properly calibrated.',
+    products: [products.calibrite123, products.spyderX, products.calibriteProHl, products.i1Basic],
+  },
+  {
+    id: 'discs',
+    title: 'Calibration discs',
+    intro:
+      'For TVs fed by a Blu-ray / 4K player. They contain the same kinds of patterns as this site, but go through your player’s video path.',
+    products: [products.spearsMunsil, products.digitalVideoEssentials, products.disneyWow],
+  },
+  {
+    id: 'cables',
+    title: 'Cables',
+    intro:
+      'If the refresh rate test shows 60 Hz on a high-refresh monitor, the cable or port is a common culprit. Use DisplayPort 1.4+ or certified HDMI 2.1.',
+    products: [products.ugreenDp, products.cableMattersHdmi],
+  },
+  {
+    id: 'cleaning',
+    title: 'Cleaning & lighting',
+    intro:
+      'Dust looks like dead pixels and glare looks like uniformity problems. Clean first; light the desk, not the screen.',
+    products: [products.whoosh, products.screenMom, products.benqScreenBar],
+  },
+  {
+    id: 'monitors',
+    title: 'Monitors we point people to',
+    intro:
+      'When a panel fails the checkup, these are sensible replacements by use case: color work, fast IPS gaming, OLED contrast, and large 4K productivity.',
+    products: [products.asusProArt, products.lgUltragear, products.alienwareOled, products.dellPlus],
+  },
+];
+
 export const pageAffiliates = {
   deadPixel: {
     title: 'Clean the screen, then decide what’s next',
@@ -124,6 +187,12 @@ export const pageAffiliates = {
     intro:
       'Banding often improves with a proper profile—and a factory-calibrated panel gives you a stronger starting point.',
     products: [products.asusProArt, products.calibriteProHl, products.i1Basic],
+  },
+  hdr: {
+    title: 'Real HDR needs the right panel',
+    intro:
+      'Edge-lit HDR400 monitors can’t show much HDR. OLED and Mini-LED panels with a wide P3 gamut are the usual upgrade—and a meter confirms the real nits.',
+    products: [products.alienwareOled, products.asusProArt, products.calibriteProHl],
   },
   colorDistance: {
     title: 'For color-critical work',

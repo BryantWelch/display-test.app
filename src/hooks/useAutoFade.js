@@ -1,105 +1,44 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
- * Custom hook to handle auto-fade functionality for UI elements
- * @param {number} normalTimeout - Timeout in ms when control panel is not minimized (default: 5000)
- * @param {number} minimizedTimeout - Timeout in ms when control panel is minimized (default: 2000)
- * @param {boolean} isMinimized - Whether the control panel is minimized
- * @returns {object} - { isVisible, resetTimer, handleMouseMove, handleKeyPress, handleClick }
+ * Hide test chrome after a period of inactivity. Activity (mouse, touch, keys) shows it again.
+ * `paused` keeps it visible (e.g. while the panel has focus or the pointer is over it).
+ * With `revealOnMove` false, plain mouse movement doesn't reveal it (for pointer-driven tests).
  */
-export const useAutoFade = (normalTimeout = 5000, minimizedTimeout = 2000, isMinimized = false) => {
+export const useAutoFade = (timeout = 4000, paused = false, revealOnMove = true) => {
   const [isVisible, setIsVisible] = useState(true);
-  const timeoutRef = useRef(null);
-  const lastActivityRef = useRef(Date.now());
+  const timer = useRef(null);
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
-  // Get the appropriate timeout based on minimized state
-  const getTimeout = useCallback(() => {
-    return isMinimized ? minimizedTimeout : normalTimeout;
-  }, [isMinimized, minimizedTimeout, normalTimeout]);
-
-  // Reset the fade timer
-  const resetTimer = useCallback(() => {
-    lastActivityRef.current = Date.now();
-    
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Show the elements immediately
+  const show = useCallback(() => {
     setIsVisible(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      if (!pausedRef.current) setIsVisible(false);
+    }, timeout);
+  }, [timeout]);
 
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      setIsVisible(false);
-    }, getTimeout());
-  }, [getTimeout]);
-
-  // Handle mouse movement
-  const handleMouseMove = useCallback(() => {
-    resetTimer();
-  }, [resetTimer]);
-
-  // Handle key press
-  const handleKeyPress = useCallback(() => {
-    resetTimer();
-  }, [resetTimer]);
-
-  // Handle click events
-  const handleClick = useCallback(() => {
-    resetTimer();
-  }, [resetTimer]);
-
-  // Handle scroll events
-  const handleScroll = useCallback(() => {
-    resetTimer();
-  }, [resetTimer]);
-
-  // Handle touch events for mobile
-  const handleTouch = useCallback(() => {
-    resetTimer();
-  }, [resetTimer]);
-
-  // Initialize timer and event listeners
   useEffect(() => {
-    resetTimer();
-
-    // Add event listeners for user activity
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('keydown', handleKeyPress);
-    document.addEventListener('click', handleClick);
-    document.addEventListener('scroll', handleScroll);
-    document.addEventListener('touchstart', handleTouch);
-    document.addEventListener('touchmove', handleTouch);
-
+    show();
+    const events = ['pointerdown', 'keydown', 'touchstart', 'wheel', ...(revealOnMove ? ['mousemove'] : [])];
+    events.forEach((e) => document.addEventListener(e, show, { passive: true }));
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      
-      // Remove event listeners
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('keydown', handleKeyPress);
-      document.removeEventListener('click', handleClick);
-      document.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('touchstart', handleTouch);
-      document.removeEventListener('touchmove', handleTouch);
+      clearTimeout(timer.current);
+      events.forEach((e) => document.removeEventListener(e, show));
     };
-  }, [handleMouseMove, handleKeyPress, handleClick, handleScroll, handleTouch, resetTimer]);
+  }, [show, revealOnMove]);
 
-  // Reset timer when minimized state changes
   useEffect(() => {
-    resetTimer();
-  }, [isMinimized, resetTimer]);
+    if (paused) {
+      clearTimeout(timer.current);
+      setIsVisible(true);
+    } else {
+      show();
+    }
+  }, [paused, show]);
 
-  return {
-    isVisible,
-    resetTimer,
-    handleMouseMove,
-    handleKeyPress,
-    handleClick,
-    handleScroll,
-    handleTouch
-  };
+  return { isVisible, show };
 };
 
 export default useAutoFade;

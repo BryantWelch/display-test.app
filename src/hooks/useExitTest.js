@@ -1,47 +1,54 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getInfoRouteFromTestPath } from '../utils/testRoutes';
+import { getInfoRouteFromTestPath } from '../registry';
 
 /**
- * Exit fullscreen tests back to the matching info/guide page.
- * @param {() => void} [onBeforeExit] - optional cleanup (animation, timers)
+ * Exit a fullscreen test back to its info page (or to the checkup when launched from it).
+ * Leaving browser fullscreen (Esc / F11) also exits.
  */
 export function useExitTest(onBeforeExit) {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const exitPath = getInfoRouteFromTestPath(pathname);
+  const { pathname, search } = useLocation();
+  const fromCheckup = new URLSearchParams(search).has('checkup');
+  const exitPath = fromCheckup ? '/checkup' : getInfoRouteFromTestPath(pathname);
+  const exiting = useRef(false);
+  const beforeExit = useRef(onBeforeExit);
+  beforeExit.current = onBeforeExit;
 
-  const handleExit = useCallback(async () => {
-    onBeforeExit?.();
+  const goBack = useCallback(
+    (to = exitPath) => {
+      if (exiting.current) return;
+      exiting.current = true;
+      beforeExit.current?.();
+      navigate(to);
+    },
+    [navigate, exitPath]
+  );
 
-    if (document.fullscreenElement) {
-      try {
-        await document.exitFullscreen();
-        requestAnimationFrame(() => {
-          navigate(exitPath);
-        });
-      } catch (err) {
-        console.log(`Error exiting fullscreen: ${err.message}`);
-        navigate(exitPath);
+  const handleExit = useCallback(
+    async (to) => {
+      const target = typeof to === 'string' ? to : exitPath;
+      if (document.fullscreenElement) {
+        try {
+          exiting.current = true;
+          await document.exitFullscreen();
+        } catch {
+          // ignore
+        }
+        exiting.current = false;
       }
-    } else {
-      navigate(exitPath);
-    }
-  }, [navigate, exitPath, onBeforeExit]);
+      goBack(target);
+    },
+    [goBack, exitPath]
+  );
 
   useEffect(() => {
-    const handleFullScreenChange = () => {
-      if (!document.fullscreenElement) {
-        onBeforeExit?.();
-        navigate(exitPath);
-      }
+    const onChange = () => {
+      if (!document.fullscreenElement && !exiting.current) goBack();
     };
-
-    document.addEventListener('fullscreenchange', handleFullScreenChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullScreenChange);
-    };
-  }, [navigate, exitPath, onBeforeExit]);
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, [goBack]);
 
   return handleExit;
 }
