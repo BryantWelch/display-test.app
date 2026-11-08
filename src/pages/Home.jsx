@@ -314,6 +314,7 @@ const Home = () => {
       </Hero>
 
       <Body>
+        <AdSlot slot="banner" margin="2.5rem 0 0" />
         <div id="tests" style={{ scrollMarginTop: 'calc(var(--nav-height) + 1rem)' }} />
         {testsByCategory.map((category) => (
           <CategorySection key={category.id} id={category.id} aria-labelledby={`cat-${category.id}`}>

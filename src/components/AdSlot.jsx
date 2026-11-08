@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export const AD_SLOTS = {
-  banner: '3936769799',
-  belowContent: '7385060214',
-  sidebar: '6371361443',
+  banner: '3936769799', // home_top_banner, also the top unit on guides and test pages
+  belowContent: '7385060214', // home_below_grid, also the unit at the end of a page
+  sidebar: '6371361443', // sidebar_info_page
 };
 
 const CLIENT = 'ca-pub-1728229586138721';
@@ -12,21 +12,43 @@ const SCRIPT_SRC = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.
 
 // Pages with no AdSlot never call this, so fullscreen tests and ad-free routes
 // don't download AdSense at all. One request is shared by every slot.
-let scriptRequested = false;
+let scriptReady = null;
 
 function requestAdSense() {
-  if (scriptRequested || typeof document === 'undefined') return;
-  scriptRequested = true;
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = SCRIPT_SRC;
-  script.crossOrigin = 'anonymous';
-  document.head.appendChild(script);
+  if (scriptReady) return scriptReady;
+  if (typeof document === 'undefined') return Promise.resolve(false);
+  scriptReady = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = SCRIPT_SRC;
+    script.crossOrigin = 'anonymous';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+  return scriptReady;
+}
+
+function pushWhenSized(ad, attempt = 0) {
+  if (!ad.isConnected) return;
+  if (ad.offsetWidth < 1 && attempt < 12) {
+    requestAnimationFrame(() => pushWhenSized(ad, attempt + 1));
+    return;
+  }
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  } catch {
+    // Ads may be blocked, or this unit was already filled.
+    delete ad.dataset.adPushed;
+  }
 }
 
 const Wrap = styled.aside`
   margin: ${({ $margin }) => $margin || '2rem 0'};
   min-height: ${({ $minHeight }) => $minHeight}px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   contain: layout;
 
   &::before {
@@ -71,17 +93,24 @@ const AdSlot = ({ slot = 'banner', minHeight = 100, margin, className }) => {
 
   useEffect(() => {
     const ad = adRef.current;
-    if (!near || !ad || ad.dataset.adPushed === '1') return;
+    if (!near || !ad || ad.dataset.adPushed === '1') return undefined;
     // The unit is inserted only once it is near the viewport. push() fills the
     // next unfilled <ins>, so earlier off-screen slots must not be in the DOM yet.
+    // Wait until the library has loaded and this element is still on the page,
+    // so a quick navigation cannot hand this request to a different unit.
+    let cancelled = false;
     ad.dataset.adPushed = '1';
-    requestAdSense();
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch {
-      // Ads may be blocked.
-      delete ad.dataset.adPushed;
-    }
+    requestAdSense().then((ok) => {
+      if (cancelled || !ad.isConnected) return;
+      if (!ok) {
+        delete ad.dataset.adPushed;
+        return;
+      }
+      pushWhenSized(ad);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [near]);
 
   return (
