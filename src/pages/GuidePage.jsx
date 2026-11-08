@@ -103,6 +103,8 @@ const GuideBody = ({ entry }) => {
       </Lead>
       {guide.lastReviewed ? <Meta>Last reviewed {guide.lastReviewed}</Meta> : null}
 
+      <AdSlot slot="banner" />
+
       {sections.length > 3 ? (
         <Toc aria-label="On this page">
           <h2>On this page</h2>
@@ -119,11 +121,10 @@ const GuideBody = ({ entry }) => {
       {guide.interactiveFirst ? <Interactive guide={guide} /> : null}
 
       <Prose>
-        {sections.map((section, i) => (
+        {sections.map((section) => (
           <section key={section.id || section.heading} id={section.id}>
             <h2>{section.heading}</h2>
             <Blocks blocks={section.blocks} />
-            {i === 1 ? <AdSlot slot="banner" /> : null}
           </section>
         ))}
       </Prose>

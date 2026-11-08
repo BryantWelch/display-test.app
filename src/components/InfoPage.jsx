@@ -65,6 +65,10 @@ const Sidebar = styled.aside`
   display: grid;
   gap: 1rem;
 
+  > * {
+    min-width: 0;
+  }
+
   @media (max-width: 1000px) {
     position: static;
   }
@@ -267,18 +271,16 @@ function InfoDetails({ entry }) {
   const idx = sameCategory.findIndex((t) => t.slug === test.slug);
   const next = sameCategory[idx + 1] || related[0];
   const sections = page.sections || [];
-  const adAfter = Math.min(1, sections.length - 1);
 
   return (
     <>
       <Layout>
         <div>
           <Prose>
-            {sections.map((section, i) => (
+            {sections.map((section) => (
               <section key={section.heading} id={section.id}>
                 <h2>{section.heading}</h2>
                 <Blocks blocks={section.blocks} />
-                {i === adAfter ? <AdSlot slot="banner" /> : null}
               </section>
             ))}
 
@@ -388,6 +390,7 @@ function InfoDetails({ entry }) {
               <Inline text={page.disclaimer} />
             </p>
           ) : null}
+          <AdSlot slot="sidebar" minHeight={250} margin="0" />
         </Sidebar>
       </Layout>
       <AdSlot slot="belowContent" margin="3rem 0 0" />
@@ -494,6 +497,8 @@ const InfoPage = ({ test: entry }) => {
           </div>
         </CheckupPrompt>
       ) : null}
+
+      <AdSlot slot="banner" />
 
       {entry.inlineTool ? <InlineTool test={entry} /> : null}
 
