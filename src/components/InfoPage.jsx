@@ -390,7 +390,7 @@ function InfoDetails({ entry }) {
               <Inline text={page.disclaimer} />
             </p>
           ) : null}
-          <AdSlot slot="sidebar" minHeight={250} margin="0" />
+          <AdSlot slot="sidebar" margin="0" />
         </Sidebar>
       </Layout>
       <AdSlot slot="belowContent" margin="3rem 0 0" />

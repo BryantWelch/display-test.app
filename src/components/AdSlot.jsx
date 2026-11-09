@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const AD_SLOTS = {
   banner: '3936769799', // home_top_banner; top unit on guides, test pages, and gear
@@ -9,6 +9,10 @@ export const AD_SLOTS = {
 
 const CLIENT = 'ca-pub-1728229586138721';
 const SCRIPT_SRC = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${CLIENT}`;
+const MIN_CREATIVE_PX = 24;
+// Give up if the unit never paints a creative, so a blocked or unfilled request
+// cannot leave a blank box behind.
+const UNFILLED_TIMEOUT_MS = 8000;
 
 // Pages with no AdSlot never call this, so fullscreen tests and ad-free routes
 // don't download AdSense at all. One request is shared by every slot.
@@ -43,30 +47,70 @@ function pushWhenSized(ad, attempt = 0) {
   }
 }
 
+function isPainted(el) {
+  const rect = el.getBoundingClientRect();
+  if (rect.width < MIN_CREATIVE_PX || rect.height < MIN_CREATIVE_PX) return false;
+  for (let node = el; node && node.nodeType === 1; node = node.parentElement) {
+    const computed = getComputedStyle(node);
+    if (computed.display === 'none' || computed.visibility === 'hidden' || Number(computed.opacity) === 0) {
+      return false;
+    }
+    if (node === document.body) break;
+  }
+  return true;
+}
+
+// A creative counts only when its frame is on screen and the unit itself has
+// grown to fit it. Collapsed or invisible frames must not open a labeled gap.
+function creativeIsVisible(ad) {
+  if (!ad?.isConnected) return false;
+  if (ad.getAttribute('data-ad-status') === 'unfilled') return false;
+  const box = ad.getBoundingClientRect();
+  if (box.width < MIN_CREATIVE_PX || box.height < MIN_CREATIVE_PX) return false;
+  const frame = ad.querySelector('iframe');
+  return !!frame && isPainted(frame);
+}
+
 const Wrap = styled.aside`
-  margin: ${({ $margin }) => $margin || '2rem 0'};
-  min-height: ${({ $minHeight }) => $minHeight}px;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  contain: layout;
+  margin: ${({ $status, $margin }) => ($status === 'shown' ? $margin || '2rem 0' : '0')};
 
-  &::before {
-    content: 'Advertisement';
-    display: block;
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-subtle);
-    margin-bottom: 0.35rem;
+  ${({ $status }) =>
+    $status === 'shown'
+      ? css`
+          contain: layout;
+
+          &::before {
+            content: 'Advertisement';
+            display: block;
+            font-size: 0.7rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-subtle);
+            margin-bottom: 0.35rem;
+          }
+        `
+      : $status === 'empty'
+        ? css`
+            display: none;
+          `
+        : css`
+            min-height: 0;
+          `}
+
+  ins.adsbygoogle[data-ad-status='unfilled'] {
+    display: none !important;
   }
 `;
 
-/** Space is reserved up front so ads (or ad blockers) don't shift the page. */
-const AdSlot = ({ slot = 'banner', minHeight = 100, margin, className }) => {
+/** The label and any gap appear only after a creative is actually visible. */
+const AdSlot = ({ slot = 'banner', margin, className }) => {
   const wrapRef = useRef(null);
   const adRef = useRef(null);
   const [near, setNear] = useState(false);
+  const [status, setStatus] = useState('pending');
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -104,21 +148,76 @@ const AdSlot = ({ slot = 'banner', minHeight = 100, margin, className }) => {
       if (cancelled || !ad.isConnected) return;
       if (!ok) {
         delete ad.dataset.adPushed;
+        setStatus('empty');
         return;
       }
       pushWhenSized(ad);
     });
     return () => {
       cancelled = true;
+      // Strict Mode cleans up before the script promise settles. Clearing the
+      // flag lets that second run push; a cancelled run will not.
+      delete ad.dataset.adPushed;
+    };
+  }, [near]);
+
+  useEffect(() => {
+    const ad = adRef.current;
+    if (!near || !ad) return undefined;
+
+    const evaluate = () => {
+      if (creativeIsVisible(ad)) {
+        setStatus('shown');
+        return;
+      }
+      if (ad.getAttribute('data-ad-status') === 'unfilled') {
+        setStatus('empty');
+        return;
+      }
+      // A creative that was visible and then collapsed should take the label
+      // and its gap with it.
+      setStatus((current) => (current === 'shown' ? 'empty' : current));
+    };
+
+    const observer = new MutationObserver(evaluate);
+    observer.observe(ad, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      attributeFilter: ['data-ad-status', 'data-adsbygoogle-status', 'style', 'height', 'width'],
+    });
+
+    const resize = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(evaluate) : null;
+    resize?.observe(ad);
+
+    const timeout = window.setTimeout(() => {
+      if (!creativeIsVisible(ad)) setStatus((current) => (current === 'shown' ? current : 'empty'));
+    }, UNFILLED_TIMEOUT_MS);
+
+    evaluate();
+
+    return () => {
+      observer.disconnect();
+      resize?.disconnect();
+      window.clearTimeout(timeout);
     };
   }, [near]);
 
   return (
-    <Wrap ref={wrapRef} aria-label="Advertisement" $minHeight={minHeight} $margin={margin} className={className}>
+    <Wrap
+      ref={wrapRef}
+      aria-label={status === 'shown' ? 'Advertisement' : undefined}
+      aria-hidden={status === 'empty' ? true : undefined}
+      $status={status}
+      $margin={margin}
+      data-slot={slot}
+      data-ad-state={status}
+      className={className}
+    >
       {near ? (
         <ins
           className="adsbygoogle"
-          style={{ display: 'block', width: '100%', minHeight }}
+          style={{ display: 'block', width: '100%' }}
           data-ad-client={CLIENT}
           data-ad-slot={AD_SLOTS[slot] || slot}
           data-ad-format="auto"
