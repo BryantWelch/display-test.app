@@ -13,6 +13,12 @@ const Layout = styled.div`
   align-items: start;
   margin-top: 2rem;
 
+  /* The sidebar exists only for the ad. Drop the column when that unit is empty. */
+  &:has([data-slot='sidebar'][data-ad-state='empty']) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }
@@ -77,7 +83,7 @@ const About = () => (
       <P text="Testing other gear? Try [keyboard-test.app](https://keyboard-test.app) and [controller-test.app](https://controller-test.app)." />
       </Prose>
       <Sidebar>
-        <AdSlot slot="sidebar" minHeight={250} margin="0" />
+        <AdSlot slot="sidebar" margin="0" />
       </Sidebar>
     </Layout>
   </Page>
