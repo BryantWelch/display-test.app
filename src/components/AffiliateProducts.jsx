@@ -65,21 +65,26 @@ export const AFFILIATE_DISCLOSURE =
   'As an Amazon Associate, Display Test earns from qualifying purchases. Links marked as products may earn a commission at no extra cost to you.';
 
 /**
- * In-content product recommendations (Amazon affiliate links).
- * Pass either `group` (a key of pageAffiliates) or explicit title/intro/products.
+ * In-content recommendations. Pass either `group` (a key of pageAffiliates) or
+ * explicit title/intro/products. Set `affiliate` false for ordinary outbound links.
  */
-const AffiliateProducts = ({ group, title, intro, products }) => {
+const AffiliateProducts = ({ group, title, intro, products, affiliate = true, id }) => {
   const data = group ? pageAffiliates[group] : { title, intro, products };
   if (!data?.products?.length) return null;
+  const headingId = id || `aff-${group || 'custom'}`;
 
   return (
-    <Wrap aria-labelledby={`aff-${group || 'custom'}`}>
-      <Heading id={`aff-${group || 'custom'}`}>{data.title}</Heading>
+    <Wrap aria-labelledby={headingId}>
+      <Heading id={headingId}>{data.title}</Heading>
       {data.intro ? <Intro>{data.intro}</Intro> : null}
       <List>
         {data.products.map((product) => (
           <Item key={product.href}>
-            <ProductLink href={product.href} target="_blank" rel="noopener noreferrer sponsored">
+            <ProductLink
+              href={product.href}
+              target="_blank"
+              rel={affiliate ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
+            >
               {product.name}
               <ExternalIcon />
             </ProductLink>
@@ -87,7 +92,7 @@ const AffiliateProducts = ({ group, title, intro, products }) => {
           </Item>
         ))}
       </List>
-      <Disclosure>{AFFILIATE_DISCLOSURE}</Disclosure>
+      {affiliate ? <Disclosure>{AFFILIATE_DISCLOSURE}</Disclosure> : null}
     </Wrap>
   );
 };

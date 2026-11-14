@@ -138,10 +138,14 @@ const menuLink = `
   font-size: 0.92rem;
   line-height: 1.35;
 
-  &:hover,
-  &.active {
+  &:hover {
     color: var(--text);
     background: var(--surface-2);
+  }
+
+  &.active {
+    color: #fff;
+    font-weight: 700;
   }
 `;
 
