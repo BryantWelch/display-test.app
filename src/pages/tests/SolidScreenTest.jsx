@@ -447,7 +447,7 @@ const SolidScreenTest = () => {
       />
 
       {locked ? (
-        <LockLayer style={{ background: shown }} {...lockPointer} role="presentation">
+        <LockLayer style={{ background: shown }} {...lockPointer} data-touch-lock="" role="presentation">
           {notice ? (
             <Notice role="status" aria-live="polite">
               <strong>Cleaning lock is on</strong>

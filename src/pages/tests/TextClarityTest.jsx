@@ -103,6 +103,17 @@ const LadderRow = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+
+    span:last-child {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
+  }
 `;
 
 const Scroll = styled.div`

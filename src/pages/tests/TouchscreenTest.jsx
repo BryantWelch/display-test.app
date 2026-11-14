@@ -96,12 +96,6 @@ const Hud = styled.div`
   white-space: nowrap;
   pointer-events: none;
 
-  @media (max-width: 560px) {
-    top: auto;
-    bottom: 5.5rem;
-    font-size: 0.82rem;
-  }
-
   strong {
     font-size: 1.05rem;
   }
@@ -109,6 +103,20 @@ const Hud = styled.div`
   button {
     pointer-events: auto;
     min-height: 36px;
+  }
+
+  @media (max-width: 560px) {
+    top: auto;
+    bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+    max-width: calc(100vw - 2rem);
+    white-space: normal;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.82rem;
+
+    button {
+      min-height: 44px;
+    }
   }
 `;
 

@@ -5,6 +5,7 @@ import contentMeta from './scripts/contentMetaPlugin.js';
 export default defineConfig({
   plugins: [react(), contentMeta()],
   server: {
+    host: true,
     port: 3000,
   },
   ssr: {

@@ -53,6 +53,13 @@ export const GlobalStyle = createGlobalStyle`
     --error: var(--danger);
   }
 
+  /* Phones with a notch: grow the bar by the safe area. env() is 0 elsewhere, so this stays 4rem. */
+  @media (max-width: 900px) {
+    :root {
+      --nav-height: calc(4rem + env(safe-area-inset-top, 0px));
+    }
+  }
+
   *,
   *::before,
   *::after {
