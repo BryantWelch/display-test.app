@@ -129,8 +129,10 @@ const CategorySection = styled.section`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.3rem;
-    margin-bottom: 1.1rem;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--border);
   }
 
   header.split {
@@ -141,7 +143,19 @@ const CategorySection = styled.section`
   }
 
   h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
     font-size: var(--fs-h2);
+  }
+
+  h2::before {
+    content: '';
+    width: 2px;
+    height: 1em;
+    flex: none;
+    border-radius: 1px;
+    background: var(--accent);
   }
 
   header p {

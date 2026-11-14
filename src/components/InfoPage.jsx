@@ -7,7 +7,7 @@ import AffiliateProducts from './AffiliateProducts';
 import FAQSection from './FAQSection';
 import JsonLd from './JsonLd';
 import ErrorBoundary from './ErrorBoundary';
-import { Page, Eyebrow, H1, Lead, Meta, Prose, Button, Badge, Card, ArrowRight } from './ui';
+import { Page, Eyebrow, H1, Lead, Prose, Button, Badge, Card, ArrowRight } from './ui';
 import { Blocks, Inline } from '../lib/markup';
 import { enterTestFullscreen } from '../utils/fullscreen';
 import { recordResult, RESULT_LABELS } from '../utils/checkupStore';
@@ -23,6 +23,31 @@ import {
   useFullEntry,
 } from '../registry';
 import { getRouteMeta, SITE } from '../registry/routeMeta';
+
+const Article = styled(Prose)`
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* The header already leaves space under the intro. Later headings keep their top margin. */
+  section:first-child > h2 {
+    margin-top: 0;
+  }
+
+  h2::before {
+    content: '';
+    width: 2px;
+    height: 1em;
+    flex: none;
+    border-radius: 1px;
+    background: var(--accent);
+  }
+`;
 
 const Header = styled.header`
   margin-bottom: 2rem;
@@ -43,9 +68,25 @@ const Actions = styled.div`
   margin-top: 1.5rem;
 `;
 
-const SeeLink = styled.a`
-  color: var(--accent);
-  font-weight: 550;
+const PageMeta = styled.p`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+  margin-top: 0.85rem;
+  color: var(--text-subtle);
+  font-size: var(--fs-small);
+
+  a {
+    color: var(--accent);
+    font-size: var(--fs-body);
+    font-weight: 550;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 `;
 
 const Layout = styled.div`
@@ -99,23 +140,53 @@ const RelatedList = styled.ul`
   list-style: none;
   padding: 0 !important;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.5rem;
+
+  li {
+    margin: 0;
+  }
 
   a {
-    display: block;
-    padding: 0.5rem 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.75rem;
     border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     color: var(--text);
   }
 
   a:hover {
-    background: var(--surface-2);
+    border-color: var(--accent);
   }
 
-  span {
+  a > span {
+    min-width: 0;
+  }
+
+  strong {
     display: block;
+    font-weight: 650;
+    line-height: 1.3;
+  }
+
+  a > span > span {
+    display: block;
+    margin-top: 0.15rem;
     color: var(--text-subtle);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  svg {
+    flex: none;
+    color: var(--text-subtle);
+  }
+
+  a:hover svg {
+    color: var(--accent);
   }
 `;
 
@@ -276,7 +347,7 @@ function InfoDetails({ entry }) {
     <>
       <Layout>
         <div>
-          <Prose>
+          <Article>
             {sections.map((section) => (
               <section key={section.heading} id={section.id}>
                 <h2>{section.heading}</h2>
@@ -334,7 +405,7 @@ function InfoDetails({ entry }) {
                 <Blocks blocks={[{ ul: page.whenToReturn }]} />
               </section>
             ) : null}
-          </Prose>
+          </Article>
 
           {page.affiliates ? <AffiliateProducts group={page.affiliates} /> : null}
           <FAQSection faqs={page.faqs} />
@@ -371,8 +442,11 @@ function InfoDetails({ entry }) {
                 {related.map((t) => (
                   <li key={t.slug}>
                     <Link to={infoPath(t)}>
-                      {t.name}
-                      <span>{t.summary}</span>
+                      <span>
+                        <strong>{t.name}</strong>
+                        <span>{t.summary}</span>
+                      </span>
+                      <ArrowRight />
                     </Link>
                   </li>
                 ))}
@@ -397,6 +471,16 @@ function InfoDetails({ entry }) {
     </>
   );
 }
+
+const formatReviewed = (iso) => {
+  const [year, month, day] = iso.split('-').map(Number);
+  if (!year || !month || !day) return iso;
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
 
 const InfoPage = ({ test: entry }) => {
   const navigate = useNavigate();
@@ -474,10 +558,15 @@ const InfoPage = ({ test: entry }) => {
               {page.startLabel || `Start ${entry.shortName || entry.name}`}
               <ArrowRight />
             </Button>
-            {page.lookFor ? <SeeLink href="#what-to-look-for">What you should see</SeeLink> : null}
           </Actions>
         ) : null}
-        {page.lastReviewed ? <Meta>Last reviewed {page.lastReviewed}</Meta> : null}
+        {page.lookFor || page.lastReviewed ? (
+          <PageMeta>
+            {page.lookFor ? <a href="#what-to-look-for">What you should see</a> : null}
+            {page.lookFor && page.lastReviewed ? <span aria-hidden="true">·</span> : null}
+            {page.lastReviewed ? <span>Last reviewed {formatReviewed(page.lastReviewed)}</span> : null}
+          </PageMeta>
+        ) : null}
       </Header>
 
       {checkupMode ? (
