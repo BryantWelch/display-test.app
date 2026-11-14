@@ -7,7 +7,7 @@ import { useExitTest } from '../hooks/useExitTest';
 import { getTestFromPath } from '../registry';
 import { recordResult, RESULT_LABELS } from '../utils/checkupStore';
 import { Inline } from '../lib/markup';
-import { Section, Description, Label, ResetButton, Button, ButtonRow } from './testControls';
+import { Section, Description, ResetButton, Button, ButtonRow } from './testControls';
 
 export * from './testControls';
 
@@ -17,6 +17,11 @@ const Container = styled.div`
   background: #000;
   overflow: hidden;
   cursor: ${({ $hideCursor }) => ($hideCursor ? 'none' : 'auto')};
+
+  @media (max-width: 768px) {
+    bottom: auto;
+    height: 100dvh;
+  }
 `;
 
 const chrome = `
@@ -51,6 +56,11 @@ const ExitButton = styled.button`
     width: 18px;
     height: 18px;
   }
+
+  @media (max-width: 768px) {
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+    left: max(0.75rem, env(safe-area-inset-left, 0px));
+  }
 `;
 
 const Panel = styled.aside`
@@ -73,9 +83,9 @@ const Panel = styled.aside`
 
   @media (max-width: 768px) {
     width: min(380px, calc(100vw - 1.5rem));
-    right: 0.75rem;
-    bottom: ${({ $minimized }) => ($minimized ? '4.5rem' : '0.75rem')};
-    max-height: calc(100dvh - 6rem);
+    right: max(0.75rem, env(safe-area-inset-right, 0px));
+    bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   }
 `;
 
@@ -112,6 +122,11 @@ const IconButton = styled.button`
   svg {
     width: 20px;
     height: 20px;
+  }
+
+  @media (max-width: 768px) {
+    width: 44px;
+    height: 44px;
   }
 `;
 
@@ -177,6 +192,32 @@ const Shortcuts = styled.dl`
     color: var(--text);
     font-family: var(--font-mono);
     font-size: 0.78rem;
+  }
+`;
+
+const ShortcutsButton = styled(IconButton)`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const Note = styled.p`
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-subtle);
+`;
+
+const DesktopNote = styled(Note)`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileNote = styled(Note)`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
   }
 `;
 
@@ -300,13 +341,77 @@ const TestShell = ({
   const [hiddenByUser, setHiddenByUser] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [panelActive, setPanelActive] = useState(false);
+  const [panelEngaged, setPanelEngaged] = useState(false);
   const [toast, setToast] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const panelRef = useRef(null);
   const toastTimer = useRef(null);
+  const visibleRef = useRef(false);
+  const revealRef = useRef(() => {});
+  const blockClickRef = useRef(null);
 
-  const { isVisible: activityVisible } = useAutoFade(4000, panelActive || showHelp, revealOnMove);
+  // A phone tap leaves the button focused and the pointer "inside" the panel, which would
+  // pause the fade forever. Only hold it open while a finger is down or a field is being edited.
+  const pauseFade = (isMobile ? panelEngaged : panelActive) || showHelp;
+  const { isVisible: activityVisible, show: revealChrome } = useAutoFade(4000, pauseFade, revealOnMove);
   const visible = consented && !hiddenByUser && activityVisible;
+  visibleRef.current = visible;
+  revealRef.current = revealChrome;
   const handleExit = useExitTest(onBeforeExit);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 768px)');
+    const onChange = () => setIsMobile(query.matches);
+    onChange();
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  // On a phone the panel fades, and the same tap would also advance tests that listen for a click.
+  // The first tap only brings the controls back. A cleaning-lock hold still lands.
+  // The phone's click arrives after this reveal re-renders, so the click guard has to outlive that render.
+  useEffect(() => {
+    if (!isMobile || !consented) return undefined;
+    const onPointerDown = (event) => {
+      if (visibleRef.current) return;
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest('button, a, input, select, textarea, label, summary, [data-touch-lock]')
+      ) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      setHiddenByUser(false);
+      revealRef.current();
+      const blockClick = (clickEvent) => {
+        clickEvent.preventDefault();
+        clickEvent.stopPropagation();
+        document.removeEventListener('click', blockClick, true);
+        if (blockClickRef.current === blockClick) blockClickRef.current = null;
+      };
+      if (blockClickRef.current) document.removeEventListener('click', blockClickRef.current, true);
+      blockClickRef.current = blockClick;
+      document.addEventListener('click', blockClick, true);
+      window.setTimeout(() => {
+        if (blockClickRef.current !== blockClick) return;
+        document.removeEventListener('click', blockClick, true);
+        blockClickRef.current = null;
+      }, 700);
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => document.removeEventListener('pointerdown', onPointerDown, true);
+  }, [isMobile, consented]);
+
+  useEffect(
+    () => () => {
+      if (!blockClickRef.current) return;
+      document.removeEventListener('click', blockClickRef.current, true);
+      blockClickRef.current = null;
+    },
+    []
+  );
 
   const flash = useCallback((message) => {
     setToast(message);
@@ -426,15 +531,47 @@ const TestShell = ({
         $minimized={minimized}
         onPointerEnter={() => setPanelActive(true)}
         onPointerLeave={() => setPanelActive(false)}
-        onFocus={() => setPanelActive(true)}
+        onPointerDown={() => {
+          if (!isMobile) return;
+          setPanelEngaged(true);
+          const end = () => {
+            window.removeEventListener('pointerup', end);
+            window.removeEventListener('pointercancel', end);
+            const el = document.activeElement;
+            const editing =
+              el instanceof Element &&
+              panelRef.current?.contains(el) &&
+              el.matches('input, select, textarea');
+            if (!editing) setPanelEngaged(false);
+          };
+          window.addEventListener('pointerup', end);
+          window.addEventListener('pointercancel', end);
+        }}
+        onFocus={(e) => {
+          setPanelActive(true);
+          if (
+            isMobile &&
+            e.target instanceof Element &&
+            e.target.closest('input, select, textarea')
+          ) {
+            setPanelEngaged(true);
+          }
+        }}
         onBlur={(e) => {
           if (!panelRef.current?.contains(e.relatedTarget)) setPanelActive(false);
+          if (!isMobile) return;
+          const next = e.relatedTarget;
+          const stillEditing =
+            next instanceof Element &&
+            panelRef.current?.contains(next) &&
+            next.matches('input, select, textarea');
+          if (!stillEditing) setPanelEngaged(false);
         }}
       >
         <PanelHeader $minimized={minimized}>
           <h2>{title}</h2>
           <div>
-            <IconButton
+            <ShortcutsButton
               type="button"
               aria-label="Keyboard shortcuts"
               aria-pressed={showHelp}
@@ -444,7 +581,7 @@ const TestShell = ({
               }}
             >
               ?
-            </IconButton>
+            </ShortcutsButton>
             <IconButton
               type="button"
               aria-label={minimized ? 'Expand controls' : 'Minimize controls'}
@@ -523,9 +660,8 @@ const TestShell = ({
                 </ResetButton>
               </Section>
             ) : null}
-            <Label as="p" style={{ marginTop: '0.75rem', fontSize: '0.78rem', color: 'var(--text-subtle)' }}>
-              Press H to hide controls, ? for shortcuts.
-            </Label>
+            <DesktopNote>Press H to hide controls, ? for shortcuts.</DesktopNote>
+            <MobileNote>Tap the screen to show the controls again.</MobileNote>
           </PanelBody>
         ) : null}
       </Panel>

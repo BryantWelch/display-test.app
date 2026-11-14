@@ -97,7 +97,11 @@ const Grid2 = styled.div`
   align-items: start;
 
   @media (max-width: 960px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+
+    > * {
+      min-width: 0;
+    }
   }
 `;
 
@@ -210,6 +214,25 @@ const SmallButton = styled(Button)`
   min-height: 40px;
   padding: 0.5rem 1rem;
   font-size: 0.92rem;
+
+  @media (max-width: 640px) {
+    white-space: normal;
+    text-align: center;
+  }
+`;
+
+const WideOnly = styled.span`
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
+const NarrowOnly = styled.span`
+  display: none;
+
+  @media (max-width: 640px) {
+    display: inline;
+  }
 `;
 
 const SideCard = styled(Card)`
@@ -234,6 +257,19 @@ const SideCard = styled(Card)`
   dd {
     text-align: right;
     font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 640px) {
+    dl {
+      grid-template-columns: 1fr;
+      gap: 0.15rem 0;
+    }
+
+    dd {
+      text-align: left;
+      margin-bottom: 0.65rem;
+      overflow-wrap: anywhere;
+    }
   }
 `;
 
@@ -535,7 +571,8 @@ const Checkup = () => {
             )}
             {mounted && !state.shared ? (
               <SmallButton type="button" $variant="secondary" onClick={snapshot} disabled={measuring}>
-                Re-detect (after moving the window)
+                <WideOnly>Re-detect (after moving the window)</WideOnly>
+                <NarrowOnly>Re-detect</NarrowOnly>
               </SmallButton>
             ) : null}
             <Meta style={{ marginTop: 0 }}>

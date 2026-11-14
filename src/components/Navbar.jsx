@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { testsByCategory, infoPath } from '../registry';
@@ -12,6 +13,10 @@ const Bar = styled.header`
   background: rgba(11, 17, 32, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
+
+  @media (max-width: 900px) {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
 `;
 
 const Inner = styled.nav`
@@ -23,8 +28,14 @@ const Inner = styled.nav`
   align-items: center;
   gap: 1.5rem;
 
+  @media (max-width: 900px) {
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+
   @media (max-width: 768px) {
-    padding: 0 1rem;
+    padding-left: max(1rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1rem, env(safe-area-inset-right, 0px));
   }
 `;
 
@@ -260,7 +271,7 @@ const Drawer = styled.div`
   bottom: 0;
   background: var(--bg);
   overflow-y: auto;
-  padding: 1rem 1rem 3rem;
+  padding: 1rem 1rem calc(3rem + env(safe-area-inset-bottom, 0px));
   z-index: 99;
 
   > a,
@@ -498,26 +509,29 @@ const Navbar = () => {
         </Burger>
       </Inner>
 
-      {drawerOpen ? (
-        <Drawer id={drawerId}>
-          <details>
-            <summary>Tests</summary>
-            <TestColumns onNavigate={close} />
-          </details>
-          <Link to="/guides" onClick={close}>
-            Guides
-          </Link>
-          <Link to="/gear" onClick={close}>
-            Gear
-          </Link>
-          <Link to="/about" onClick={close}>
-            About
-          </Link>
-          <Link to="/checkup" className="cta" onClick={close}>
-            New monitor checkup
-          </Link>
-        </Drawer>
-      ) : null}
+      {drawerOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <Drawer id={drawerId}>
+              <details>
+                <summary>Tests</summary>
+                <TestColumns onNavigate={close} />
+              </details>
+              <Link to="/guides" onClick={close}>
+                Guides
+              </Link>
+              <Link to="/gear" onClick={close}>
+                Gear
+              </Link>
+              <Link to="/about" onClick={close}>
+                About
+              </Link>
+              <Link to="/checkup" className="cta" onClick={close}>
+                New monitor checkup
+              </Link>
+            </Drawer>,
+            document.body
+          )
+        : null}
     </Bar>
   );
 };

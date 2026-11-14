@@ -208,6 +208,10 @@ const ToggleLabel = styled.label`
     height: 1.1rem;
     accent-color: var(--accent);
   }
+
+  @media (max-width: 768px) {
+    min-height: 44px;
+  }
 `;
 
 export function Toggle({ label, checked, onChange }) {

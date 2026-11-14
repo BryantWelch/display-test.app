@@ -15,6 +15,10 @@ const Field = styled.div`
   padding: clamp(4rem, 9vh, 5.5rem) clamp(0.75rem, 4vw, 3rem) clamp(1.5rem, 5vh, 3rem);
   font-family: var(--font-mono);
   user-select: none;
+
+  @media (max-width: 768px) {
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+  }
 `;
 
 const Block = styled.div`
@@ -27,17 +31,29 @@ const Caption = styled.p`
   font-size: clamp(0.65rem, 1vw, 0.8rem);
   font-family: var(--font-sans);
   visibility: ${({ $show }) => ($show ? 'visible' : 'hidden')};
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const PatchGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(10, minmax(0, 1fr));
   gap: clamp(0.35rem, 1.2vw, 1rem);
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 `;
 
 const Patch = styled.div`
   height: ${({ $rows }) => ($rows > 2 ? '9vh' : '16vh')};
   border-radius: 2px;
+
+  @media (max-width: 768px) {
+    height: 12vh;
+  }
 `;
 
 const PatchLabel = styled.span`
@@ -47,6 +63,10 @@ const PatchLabel = styled.span`
   font-size: clamp(0.6rem, 1vw, 0.8rem);
   font-weight: 600;
   visibility: ${({ $show }) => ($show ? 'visible' : 'hidden')};
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Bars = styled.div`

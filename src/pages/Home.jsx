@@ -95,6 +95,12 @@ const DisplayCard = styled(Card)`
     font-variant-numeric: tabular-nums;
   }
 
+  @media (max-width: 640px) {
+    dl > div:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
   a {
     display: inline-flex;
     gap: 0.35rem;
