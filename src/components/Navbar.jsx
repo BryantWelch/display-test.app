@@ -2,8 +2,14 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import { ExternalIcon } from './ui';
 import { testsByCategory, infoPath } from '../registry';
 import tvLogo from '../assets/tv.svg';
+
+const OTHER_TOOLS = [
+  { href: 'https://keyboard-test.app', name: 'Keyboard Test' },
+  { href: 'https://controller-test.app', name: 'Controller Test' },
+];
 
 const Bar = styled.header`
   position: fixed;
@@ -251,6 +257,43 @@ const FunRow = styled.div`
   }
 `;
 
+const ToolItem = styled.li`
+  position: relative;
+`;
+
+const ToolMenu = styled.div`
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 220px;
+  padding: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  a:hover {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+
+  svg {
+    color: var(--text-subtle);
+  }
+`;
+
 const Burger = styled.button`
   display: none;
   width: 44px;
@@ -290,6 +333,10 @@ const Drawer = styled.div`
     font-size: 1.05rem;
     cursor: pointer;
     list-style: none;
+  }
+
+  details:not([open]) > :not(summary) {
+    display: none;
   }
 
   details > summary::-webkit-details-marker {
@@ -409,26 +456,34 @@ const TestColumns = ({ onNavigate }) =>
 
 const Navbar = () => {
   const [megaOpen, setMegaOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { pathname } = useLocation();
   const toggleRef = useRef(null);
+  const toolsRef = useRef(null);
   const burgerRef = useRef(null);
   const wrapRef = useRef(null);
   const megaId = useId();
+  const toolsId = useId();
   const drawerId = useId();
 
   useEffect(() => {
     setMegaOpen(false);
+    setToolsOpen(false);
     setDrawerOpen(false);
   }, [pathname]);
 
   useEffect(() => {
-    if (!megaOpen && !drawerOpen) return undefined;
+    if (!megaOpen && !toolsOpen && !drawerOpen) return undefined;
     const onKey = (e) => {
       if (e.key !== 'Escape') return;
       if (megaOpen) {
         setMegaOpen(false);
         toggleRef.current?.focus();
+      }
+      if (toolsOpen) {
+        setToolsOpen(false);
+        toolsRef.current?.focus();
       }
       if (drawerOpen) {
         setDrawerOpen(false);
@@ -436,7 +491,10 @@ const Navbar = () => {
       }
     };
     const onPointer = (e) => {
-      if (megaOpen && wrapRef.current && !wrapRef.current.contains(e.target)) setMegaOpen(false);
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        setMegaOpen(false);
+        setToolsOpen(false);
+      }
     };
     document.addEventListener('keydown', onKey);
     document.addEventListener('pointerdown', onPointer);
@@ -444,7 +502,7 @@ const Navbar = () => {
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('pointerdown', onPointer);
     };
-  }, [megaOpen, drawerOpen]);
+  }, [megaOpen, toolsOpen, drawerOpen]);
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
@@ -455,6 +513,7 @@ const Navbar = () => {
 
   const close = () => {
     setMegaOpen(false);
+    setToolsOpen(false);
     setDrawerOpen(false);
   };
 
@@ -473,7 +532,10 @@ const Navbar = () => {
               type="button"
               aria-expanded={megaOpen}
               aria-controls={megaId}
-              onClick={() => setMegaOpen((v) => !v)}
+              onClick={() => {
+                setMegaOpen((v) => !v);
+                setToolsOpen(false);
+              }}
             >
               Tests <Chevron />
             </MenuToggle>
@@ -492,6 +554,30 @@ const Navbar = () => {
           <li>
             <Item to="/about">About</Item>
           </li>
+          <ToolItem>
+            <MenuToggle
+              ref={toolsRef}
+              type="button"
+              aria-expanded={toolsOpen}
+              aria-controls={toolsId}
+              onClick={() => {
+                setToolsOpen((v) => !v);
+                setMegaOpen(false);
+              }}
+            >
+              Other tools <Chevron />
+            </MenuToggle>
+            {toolsOpen ? (
+              <ToolMenu id={toolsId} aria-label="Other tools">
+                {OTHER_TOOLS.map((tool) => (
+                  <a key={tool.href} href={tool.href} target="_blank" rel="noopener noreferrer">
+                    {tool.name}
+                    <ExternalIcon />
+                  </a>
+                ))}
+              </ToolMenu>
+            ) : null}
+          </ToolItem>
         </Links>
         <Cta to="/checkup">New monitor checkup</Cta>
 
@@ -529,6 +615,18 @@ const Navbar = () => {
               <Link to="/about" onClick={close}>
                 About
               </Link>
+              <details>
+                <summary>Other tools</summary>
+                <ul>
+                  {OTHER_TOOLS.map((tool) => (
+                    <li key={tool.href}>
+                      <a href={tool.href} target="_blank" rel="noopener noreferrer" onClick={close}>
+                        {tool.name} <ExternalIcon />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
               <Link to="/checkup" className="cta" onClick={close}>
                 New monitor checkup
               </Link>
